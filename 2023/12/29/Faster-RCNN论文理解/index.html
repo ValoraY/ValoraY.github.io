@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="deeprookie">
+
+
+
+
+
+<title>Faster RCNN论文理解 | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.svg">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">DeepRookie&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">DeepRookie&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Faster RCNN论文理解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">deeprookie</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 29, 2023&nbsp;&nbsp;12:10:51</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="Faster-RCNN论文理解"><a href="#Faster-RCNN论文理解" class="headerlink" title="Faster RCNN论文理解"></a>Faster RCNN论文理解</h1><p><img src="https://ooo.0x0.ooo/2023/12/29/OKYpMG.png" alt="OKYpMG.png"></p>
+<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1.背景"></a>1.背景</h2><p>基于候选区域的CNNs(RCNN、SPPnet、FastRCNN…)在目标检测领域取得了很好的效果，尤其是共享卷积特征及大地降低了计算代价，提高了训练和测试的速度。如果忽略产生候选区域(region proposals)的耗时，Fast RCNN输入一张图片和其候选区域后几乎可以实现实时检测。因此，现在检测系统的计算瓶颈主要在于产生候选区域的部分。Selective Search (SS)产生一张图片的2000个候选区域要耗时2s，EdgeBoxes则要耗时0.2s（两种方法都只有CPU实现）——太慢了！因此，本文提出利用deep ConvNet来产生候选区域。</p>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2.主要贡献"></a>2.主要贡献</h2><ol>
+<li><strong>用RPN代替selective、EdgeBoxes产生候选区域</strong>：RPN(Region Proposal Networks)，能够同时预测边界框和对象性得分(objectness scores)，并和Fast RCNN目标检测网络共享了卷积特征，实现了网络加速。</li>
+<li>提出了一种“轮流”的训练模式来合并RPN和Fast RCNN</li>
+</ol>
+<h2 id="3-RPN-Region-Proposal-Networks"><a href="#3-RPN-Region-Proposal-Networks" class="headerlink" title="3.RPN(Region Proposal Networks)"></a>3.RPN(Region Proposal Networks)</h2><h3 id="3-1网络结构"><a href="#3-1网络结构" class="headerlink" title="3.1网络结构"></a>3.1网络结构</h3><blockquote>
+<p>下图展示了RPN的总体结构示意图</p>
+</blockquote>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYPHI.png" alt="OKYPHI.png"></p>
+<p>共享卷积层(conv layers)本文实验了ZF模型和VGG-16模型</p>
+<p>输入：一张任意大小的图片</p>
+<p>输出：一系列矩形候选区域及其对应的对象性得分(objectness score——object&#x2F;not-object)</p>
+<blockquote>
+<p>下图展示了”RPN特有部分”的结构示意图</p>
+</blockquote>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYRXD.png" alt="OKYRXD.png"></p>
+<h3 id="3-2平移不变的参考框-Translation-Invariant-Anchors"><a href="#3-2平移不变的参考框-Translation-Invariant-Anchors" class="headerlink" title="3.2平移不变的参考框(Translation-Invariant Anchors)"></a>3.2平移不变的参考框(Translation-Invariant Anchors)</h3><p>用三种不同的尺度(scale)和长宽比(aspect ratio)，在每个滑动窗口位置产生9种不同的参考框。</p>
+<p>参考框和根据参考框计算候选区域的函数，二者都具有平移不变性</p>
+<h3 id="3-3RPN损失函数"><a href="#3-3RPN损失函数" class="headerlink" title="3.3RPN损失函数"></a>3.3RPN损失函数</h3><p><strong>注意！！！这里是RPN的分类和回归网络两个分支的损失函数，不是Fast RCNN的损失函数</strong></p>
+<ol>
+<li><p>怎么判断预测的参考框是正样本还是负样本？</p>
+<ul>
+<li>正样本：将参考框和所有的ground-truth计算IoU，与每个ground-truth有着最大IoU的参考框是正样本；将参考框和所有的ground-truth计算IoU，与任意ground-truth的IoU超过0.7的也是正样本</li>
+<li>负样本：将参考框和所有的ground-truth计算IoU，与所有的ground-truth的IoU&lt;0.3的是负样本</li>
+</ul>
+</li>
+<li><p>最小化Fast RCNN中的多任务损失函数(multi-task loss)</p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYyZr.png" alt="OKYyZr.png"></p>
+</li>
+<li><p>cls：识别参考框(anchor box)属于object or not-object；reg：将参考框(anchor box)回归到真实标注框(ground-truth box)</p>
+</li>
+<li><p>回归的实现方式有所改变：</p>
+<ul>
+<li>RCNN、Fast RCNN：将任意大小的候选区域池化后，执行边界框回归，回归权重被各尺寸的候选区域共享</li>
+<li>RPN：只在相同大小的特征图上进行回归，学习到k个不同的边界框回归器，它们之间的权重互不共享</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-4训练RPN"><a href="#3-4训练RPN" class="headerlink" title="3.4训练RPN"></a>3.4训练RPN</h3><p>以图片为中心采样(“image centric” sampling strategy)：每个mini-batch来自于一张图片包含的正负样本。</p>
+<p>实际做法：在一张图片上随机采样256个参考框，其中正负参考框占比接近1:1，用这些样本作为mini-batch，计算这个mini-batch的损失函数</p>
+<h2 id="4-Faster-RCNN整体训练"><a href="#4-Faster-RCNN整体训练" class="headerlink" title="4.Faster RCNN整体训练"></a>4.Faster RCNN整体训练</h2><p><strong>Faster RCNN &#x3D; RPN + Fast RCNN</strong></p>
+<h3 id="4-1如何共享"><a href="#4-1如何共享" class="headerlink" title="4.1如何共享"></a>4.1如何共享</h3><p><strong>如何在RPN和Fast RCNN间共享卷积层？</strong></p>
+<h4 id="4-1-1思路1：轮流训练"><a href="#4-1-1思路1：轮流训练" class="headerlink" title="4.1.1思路1：轮流训练"></a>4.1.1思路1：轮流训练</h4><p>step 1，训练RPN：用ImageNet上的预训练模型初始化RPN，并在端到端的区域建议任务上微调。</p>
+<p>step 2，训练Fast RCNN：用step-1训练的RPN产生的候选区域 + ImageNet上的预训练模型从头训练一个Fast RCNN检测模型。到此为止，这两个网络还没有共享卷积层的特征。</p>
+<p>step 3，用step-2得到的Fast RCNN检测网络的特征提取部分(Deep ConvNet)初始化RPN的训练，微调RPN特有的的层。此时，两个网络实现了共享卷积层。</p>
+<p>step 4，固定共享卷积层，微调Fast RCNN的全连接层（特有的那些层）。到此为止，两个网络就共享了卷积层并形成了一个统一的网络。</p>
+<p>下图展示了这一轮流训练过程<br><img src="https://ooo.0x0.ooo/2023/12/29/OKYJ71.png" alt="OKYJ71.png"></p>
+<h4 id="4-1-2思路2：近似联合训练法"><a href="#4-1-2思路2：近似联合训练法" class="headerlink" title="4.1.2思路2：近似联合训练法"></a>4.1.2思路2：近似联合训练法</h4><p>做法：训练初始就将RPN和Fast RCNN合并成一个网络，然后用同时进行反向传播来优化。</p>
+<p>问题：无法求解坐标偏导数，因为Fast RCNN的损失函数反向传播也会传导到RPN回归出的坐标部分，但这种方法忽略了这部分</p>
+<h4 id="4-1-3思路3：非近似联合训练法"><a href="#4-1-3思路3：非近似联合训练法" class="headerlink" title="4.1.3思路3：非近似联合训练法"></a>4.1.3思路3：非近似联合训练法</h4><p>利用ROI Warping实现了Fast RCNN尾部网络反向传播到坐标部分的问题</p>
+<h3 id="4-2实现细节"><a href="#4-2实现细节" class="headerlink" title="4.2实现细节"></a>4.2实现细节</h3><ol>
+<li><p>RPN和Fast RCNN的训练和测试都使用了单尺度图片：缩放图片的短边为600px</p>
+</li>
+<li><p>参考框选取了3种尺度：128^2，256^2，512^2，3种长宽比：1:1，1:2，2:1&#x3D;&gt;不需要多尺寸特征、多尺寸滑动窗口来预测大区域</p>
+</li>
+<li><p>处理跨图片边界的参考框：</p>
+<ul>
+<li>训练时忽略所有跨边界的参考框，因为如果不忽略跨边界的参考框，它们会在损失函数中引入很大很难纠正的错误模式，导致训练很难收敛。</li>
+<li>测试时遇到跨图片边界的候选框，会保留其并裁剪其到图片边界</li>
+</ul>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKY4zF.png" alt="OKY4zF.png"></p>
+</li>
+<li><p>基于cls scores针对每一类别的候选区域应用非极大值抑制过滤，以减少冗余。当NMS的IoU的阈值设定为0.7时，每张图片最终会留下大约2k个候选区域，用这2k个候选区域训练Fast RCNN（测试时不一定需要使用2k个，实际使用了300个）</p>
+</li>
+</ol>
+<h3 id="4-3实验"><a href="#4-3实验" class="headerlink" title="4.3实验"></a>4.3实验</h3><p>数据集：PASCAL VOC 2007，5k trainval images，5k test images，超过20个对象类</p>
+<p>评估指标：mAP</p>
+<h3 id="4-4消融实验"><a href="#4-4消融实验" class="headerlink" title="4.4消融实验"></a>4.4消融实验</h3><ol>
+<li><p>困惑：在RPN和Fast RCNN之间共享卷积特征有什么作用？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">实验：在4-step的训练步骤的step-2后停下来，用2个分离的网络（RPN和Fast RCNN）完成获取候选区域和实现目标检测</span><br><span class="line"></span><br><span class="line">实验结果：精度会下降</span><br><span class="line"></span><br><span class="line">解释：说明step-2训练好的Fast RCNN网络的特征提取能力能更好地辅助RPN模块产生候选区域，提高了候选区域的质量</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>困惑：只在测试时使用RPN产生的候选区域，对Fast RCNN检测网络有什么影响?<strong>（注意这里是Fast RCNN，Fast RCNN的训练还是采用selective-search产生的候选区域来实现的，而不是Faster RCNN，即这里RPN和Fast RCNN并没有共享卷积特征）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">实验1：</span><br><span class="line"></span><br><span class="line">- 训练时：selective search产生2k个候选区域+ZF；</span><br><span class="line">- 测试时：固定训练产生的检测器，采用RPN产生的候选区域。这时RPN并没有和此时的ZF共享特征。</span><br><span class="line"></span><br><span class="line">实验结果：测试时用300个RPN产生的候选区域来代替selective-search，精度会下降</span><br><span class="line"></span><br><span class="line">解释：精度损失是因为训练和测试时所用的候选区域(proposals)不一致，该结果为后续实验提供baseline</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">实验2：测试时用RPN产生的前100个候选区域代替前300个</span><br><span class="line"></span><br><span class="line">实验结果：精度下降但下降不多</span><br><span class="line"></span><br><span class="line">解释：说明排名靠前的RPN proposals很准确</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">实验3：测试时用前6k个RPN proposals(without NMS)产生的候选区域</span><br><span class="line"></span><br><span class="line">实验结果：精度并没有比用300个RPN proposals(with NMS)更好，说明NMS并不损害检测时的mAP，</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>测试时RPN的分类和回归输出分别有什么作用？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">实验1：测试时移除RPN的cls layer，然后从没有打分的region proposals随机采样N个proposals进行测试（关闭分类层会导致后续——不会进行NMS，因为NMS是针对每一类(object/not-object)的cls score来进行的，而此时没有分类了）</span><br><span class="line"></span><br><span class="line">实验结果：N=1000时，精度几乎无影响；N=100是，精度大幅下降</span><br><span class="line"></span><br><span class="line">解释：cls scores 考虑到了排名最高的proposals的准确性</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">实验2：测试时移除RPN的reg layer（移除reg layer的后续影响是——proposals变成了anchor boxes）</span><br><span class="line"></span><br><span class="line">实验结果：精度下降</span><br><span class="line"></span><br><span class="line">解释：高质量的候选区域(proposals)主要是因为位置回归，只有参考框不足以准确定位</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>更强大的网络(VGG-16)对RPN产生的候选区域质量有什么影响</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">实验：在上述实验（训练：selective-search + ZF，测试：利用ZF训练的RPN产生候选区域），改用VGG-16训练的RPN产生候选区域进行测试（注意这里RPN和目标检测网络都没有共享卷积特征）</span><br><span class="line"></span><br><span class="line">结果：精度提高</span><br><span class="line"></span><br><span class="line">解释：RPN+VGG-16产生的候选区域质量优于RPN+ZF（用ZF训练出来的RPN）</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="4-5Recall-to-IoU"><a href="#4-5Recall-to-IoU" class="headerlink" title="4.5Recall-to-IoU"></a>4.5Recall-to-IoU</h3><p>这个评估指标主要用于诊断（注意是诊断，不是评估）产生候选区域的方法的优劣</p>
+<p>下图展示了不同候选区域算法（SS、EB、RPN+ZF、RPN+VGG）在不同IoU时的召回率</p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYdLK.png" alt="OKYdLK.png"></p>
+<p>解释：</p>
+<ol>
+<li>当proposals的数量下降的时候，RPN在各个IoU比率下的召回率都只是略微降低</li>
+<li>当proposals的数量下降的时候，SS和EB方法在各个IoU比率下的召回率都显著降低</li>
+<li>这就解释了为什么RPN只需要300个候选区域就能取得比较好的精度</li>
+</ol>
+<h3 id="4-6一阶段检测vs两阶段检测"><a href="#4-6一阶段检测vs两阶段检测" class="headerlink" title="4.6一阶段检测vs两阶段检测"></a>4.6一阶段检测vs两阶段检测</h3><p>和OverFeat比较</p>
+<p>参考资料：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1GB4y1r7rM/?spm_id_from=333.880.my_history.page.click&vd_source=66a72b15abe9693bd8b4f738f5a67ee7">https://www.bilibili.com/video/BV1GB4y1r7rM/?spm_id_from=333.880.my_history.page.click&amp;vd_source=66a72b15abe9693bd8b4f738f5a67ee7</a></p>
+</blockquote>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>deeprookie</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://valoray.github.io/2023/12/29/Faster-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">https://valoray.github.io/2023/12/29/Faster-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/">Faster RCNN项目部署（一）</a>
+            
+            
+            <a class="next" rel="next" href="/2023/12/29/FastRCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">FastRCNN代码复现</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© deeprookie | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

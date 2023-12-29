@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="deeprookie">
+
+
+
+
+
+<title>RCNN代码复现 | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.svg">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">DeepRookie&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">DeepRookie&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">RCNN代码复现</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">deeprookie</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 29, 2023&nbsp;&nbsp;11:45:34</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>本代码最初在colab中实现，以下为全部代码及运行输出结果</p>
+<h1 id="1-挂载谷歌云盘，解压数据集"><a href="#1-挂载谷歌云盘，解压数据集" class="headerlink" title="1.挂载谷歌云盘，解压数据集"></a>1.挂载谷歌云盘，解压数据集</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%pwd</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>‘&#x2F;content’</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!unzip <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Images.zip&#x27;</span> -d <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!unzip <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Airplanes_Annotations.zip&#x27;</span> -d <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="2-安装并导入依赖"><a href="#2-安装并导入依赖" class="headerlink" title="2.安装并导入依赖"></a>2.安装并导入依赖</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!pip install tensorflow==<span class="number">2.8</span><span class="number">.0</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os,cv2,keras</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tf.__version__</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>‘2.8.0’</p>
+<h1 id="3-更改工作目录"><a href="#3-更改工作目录" class="headerlink" title="3.更改工作目录"></a>3.更改工作目录</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /content/drive/MyDrive/AI_content/RCNN</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;content&#x2F;drive&#x2F;MyDrive&#x2F;AI_content&#x2F;RCNN</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">path = <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Images&#x27;</span></span><br><span class="line">annot = <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Airplanes_Annotations&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="4-查看数据和标签"><a href="#4-查看数据和标签" class="headerlink" title="4.查看数据和标签"></a>4.查看数据和标签</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Index=<span class="number">148</span></span><br><span class="line">filename = <span class="string">&quot;airplane_&quot;</span>+<span class="built_in">str</span>(Index)+<span class="string">&quot;.jpg&quot;</span></span><br><span class="line"><span class="built_in">print</span>(filename)</span><br><span class="line">img = cv2.imread(os.path.join(path,filename))</span><br><span class="line">df = pd.read_csv(os.path.join(annot,filename.replace(<span class="string">&quot;.jpg&quot;</span>,<span class="string">&quot;.csv&quot;</span>)))</span><br><span class="line">plt.imshow(img)</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> df.iterrows():</span><br><span class="line">    x1 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">0</span>])</span><br><span class="line">    y1 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">1</span>])</span><br><span class="line">    x2 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">2</span>])</span><br><span class="line">    y2 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">3</span>])</span><br><span class="line">    cv2.rectangle(img,(x1,y1),(x2,y2),(<span class="number">255</span>,<span class="number">0</span>,<span class="number">0</span>), <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.imshow(img)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>airplane_148.jpg</p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYkfL.png" alt="OKYkfL.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYzBi.png" alt="OKYzBi.png"></p>
+<h1 id="5-Selective-search"><a href="#5-Selective-search" class="headerlink" title="5.Selective search"></a>5.Selective search</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cv2.setUseOptimized(<span class="literal">True</span>);</span><br><span class="line">ss = cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">im = cv2.imread(os.path.join(path,<span class="string">&quot;42850.jpg&quot;</span>))</span><br><span class="line">ss.setBaseImage(im)</span><br><span class="line">ss.switchToSelectiveSearchFast()</span><br><span class="line">rects = ss.process()</span><br><span class="line">imOut = im.copy() <span class="comment">#复制原图，在复制后的图片上绘制矩形</span></span><br><span class="line"><span class="keyword">for</span> i, rect <span class="keyword">in</span> (<span class="built_in">enumerate</span>(rects)):</span><br><span class="line">    x, y, w, h = rect</span><br><span class="line">    cv2.rectangle(imOut, (x, y), (x+w, y+h), (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">1</span>, cv2.LINE_AA) <span class="comment">#在imOut上绘制矩形</span></span><br><span class="line"></span><br><span class="line">plt.imshow(imOut)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示可视化的结果</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYbpC.png" alt="OKYbpC.png"></p>
+<h1 id="6-IOU"><a href="#6-IOU" class="headerlink" title="6.IOU"></a>6.IOU</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_iou</span>(<span class="params">bb1, bb2</span>):</span><br><span class="line">  <span class="comment"># assuring for proper dimension.</span></span><br><span class="line">    <span class="keyword">assert</span> bb1[<span class="string">&#x27;x1&#x27;</span>] &lt; bb1[<span class="string">&#x27;x2&#x27;</span>]</span><br><span class="line">    <span class="keyword">assert</span> bb1[<span class="string">&#x27;y1&#x27;</span>] &lt; bb1[<span class="string">&#x27;y2&#x27;</span>]</span><br><span class="line">    <span class="keyword">assert</span> bb2[<span class="string">&#x27;x1&#x27;</span>] &lt; bb2[<span class="string">&#x27;x2&#x27;</span>]</span><br><span class="line">    <span class="keyword">assert</span> bb2[<span class="string">&#x27;y1&#x27;</span>] &lt; bb2[<span class="string">&#x27;y2&#x27;</span>]</span><br><span class="line">  <span class="comment"># calculating dimension of common area between these two boxes.</span></span><br><span class="line">    x_left = <span class="built_in">max</span>(bb1[<span class="string">&#x27;x1&#x27;</span>], bb2[<span class="string">&#x27;x1&#x27;</span>])</span><br><span class="line">    y_top = <span class="built_in">max</span>(bb1[<span class="string">&#x27;y1&#x27;</span>], bb2[<span class="string">&#x27;y1&#x27;</span>])</span><br><span class="line">    x_right = <span class="built_in">min</span>(bb1[<span class="string">&#x27;x2&#x27;</span>], bb2[<span class="string">&#x27;x2&#x27;</span>])</span><br><span class="line">    y_bottom = <span class="built_in">min</span>(bb1[<span class="string">&#x27;y2&#x27;</span>], bb2[<span class="string">&#x27;y2&#x27;</span>])</span><br><span class="line">  <span class="comment"># if there is no overlap output 0 as intersection area is zero.</span></span><br><span class="line">    <span class="keyword">if</span> x_right &lt; x_left <span class="keyword">or</span> y_bottom &lt; y_top:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">  <span class="comment"># calculating intersection area.</span></span><br><span class="line">    intersection_area = (x_right - x_left) * (y_bottom - y_top)</span><br><span class="line">  <span class="comment"># individual areas of both these bounding boxes.</span></span><br><span class="line">    bb1_area = (bb1[<span class="string">&#x27;x2&#x27;</span>] - bb1[<span class="string">&#x27;x1&#x27;</span>]) * (bb1[<span class="string">&#x27;y2&#x27;</span>] - bb1[<span class="string">&#x27;y1&#x27;</span>])</span><br><span class="line">    bb2_area = (bb2[<span class="string">&#x27;x2&#x27;</span>] - bb2[<span class="string">&#x27;x1&#x27;</span>]) * (bb2[<span class="string">&#x27;y2&#x27;</span>] - bb2[<span class="string">&#x27;y1&#x27;</span>])</span><br><span class="line">  <span class="comment"># union area = area of bb1_+ area of bb2 - intersection of bb1 and bb2.</span></span><br><span class="line">    iou = intersection_area / <span class="built_in">float</span>(bb1_area + bb2_area - intersection_area)</span><br><span class="line">    <span class="keyword">assert</span> iou &gt;= <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">assert</span> iou &lt;= <span class="number">1.0</span></span><br><span class="line">    <span class="keyword">return</span> iou</span><br></pre></td></tr></table></figure>
+
+<h1 id="7-准备训练数据"><a href="#7-准备训练数据" class="headerlink" title="7.准备训练数据"></a>7.准备训练数据</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># At the end of below code we will have our train data in these lists</span></span><br><span class="line">train_images=[]</span><br><span class="line">train_labels=[]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> e,i <span class="keyword">in</span> <span class="built_in">enumerate</span>(os.listdir(annot)):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> i.startswith(<span class="string">&quot;airplane&quot;</span>):</span><br><span class="line">            filename = i.split(<span class="string">&quot;.&quot;</span>)[<span class="number">0</span>]+<span class="string">&quot;.jpg&quot;</span></span><br><span class="line">            <span class="built_in">print</span>(e,filename)</span><br><span class="line">            <span class="comment"># 读取图像</span></span><br><span class="line">            image = cv2.imread(os.path.join(path,filename))</span><br><span class="line">            <span class="comment"># 读取标注文件</span></span><br><span class="line">            df = pd.read_csv(os.path.join(annot,i))</span><br><span class="line">            gtvalues=[]</span><br><span class="line">            <span class="keyword">for</span> row <span class="keyword">in</span> df.iterrows():</span><br><span class="line">                x1 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">0</span>])</span><br><span class="line">                y1 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">1</span>])</span><br><span class="line">                x2 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">2</span>])</span><br><span class="line">                y2 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">3</span>])</span><br><span class="line">                gtvalues.append(&#123;<span class="string">&quot;x1&quot;</span>:x1,<span class="string">&quot;x2&quot;</span>:x2,<span class="string">&quot;y1&quot;</span>:y1,<span class="string">&quot;y2&quot;</span>:y2&#125;)</span><br><span class="line">            <span class="comment"># 设置基础图像</span></span><br><span class="line">            ss.setBaseImage(image)   <span class="comment"># setting given image as base image</span></span><br><span class="line">            ss.switchToSelectiveSearchFast()     <span class="comment"># running selective search on base image</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 运行选择性搜索</span></span><br><span class="line">            ssresults = ss.process()     <span class="comment"># processing to get the outputs</span></span><br><span class="line">            imout = image.copy()</span><br><span class="line">            counter = <span class="number">0</span></span><br><span class="line">            falsecounter = <span class="number">0</span></span><br><span class="line">            flag = <span class="number">0</span></span><br><span class="line">            fflag = <span class="number">0</span></span><br><span class="line">            bflag = <span class="number">0</span></span><br><span class="line">             <span class="comment"># 遍历选择性搜索的结果</span></span><br><span class="line">            <span class="keyword">for</span> e,result <span class="keyword">in</span> <span class="built_in">enumerate</span>(ssresults):</span><br><span class="line">                <span class="keyword">if</span> e &lt; <span class="number">2000</span> <span class="keyword">and</span> flag == <span class="number">0</span>:     <span class="comment"># till 2000 to get top 2000 regions only</span></span><br><span class="line">                    <span class="keyword">for</span> gtval <span class="keyword">in</span> gtvalues:</span><br><span class="line">                        x,y,w,h = result</span><br><span class="line">                        iou = get_iou(gtval,&#123;<span class="string">&quot;x1&quot;</span>:x,<span class="string">&quot;x2&quot;</span>:x+w,<span class="string">&quot;y1&quot;</span>:y,<span class="string">&quot;y2&quot;</span>:y+h&#125;)  <span class="comment"># calculating IoU for each of the proposed regions</span></span><br><span class="line">                        <span class="keyword">if</span> counter &lt; <span class="number">30</span>:       <span class="comment"># getting only 30 psoitive examples</span></span><br><span class="line">                            <span class="keyword">if</span> iou &gt; <span class="number">0.70</span>:     <span class="comment"># IoU of being positive is 0.7</span></span><br><span class="line">                                timage = imout[x:x+w,y:y+h]</span><br><span class="line">                                resized = cv2.resize(timage, (<span class="number">224</span>,<span class="number">224</span>), interpolation = cv2.INTER_AREA)</span><br><span class="line">                                train_images.append(resized)</span><br><span class="line">                                train_labels.append(<span class="number">1</span>)</span><br><span class="line">                                counter += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">else</span> :</span><br><span class="line">                            fflag =<span class="number">1</span>              <span class="comment"># to insure we have collected all psotive examples</span></span><br><span class="line">                        <span class="keyword">if</span> falsecounter &lt;<span class="number">30</span>:      <span class="comment"># 30 negatve examples are allowed only</span></span><br><span class="line">                            <span class="keyword">if</span> iou &lt; <span class="number">0.3</span>:         <span class="comment"># IoU of being negative is 0.3</span></span><br><span class="line">                                timage = imout[x:x+w,y:y+h]</span><br><span class="line">                                resized = cv2.resize(timage, (<span class="number">224</span>,<span class="number">224</span>), interpolation = cv2.INTER_AREA)</span><br><span class="line">                                train_images.append(resized)</span><br><span class="line">                                train_labels.append(<span class="number">0</span>)</span><br><span class="line">                                falsecounter += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">else</span> :</span><br><span class="line">                            bflag = <span class="number">1</span>             <span class="comment">#to ensure we have collected all negative examples</span></span><br><span class="line">                    <span class="keyword">if</span> fflag == <span class="number">1</span> <span class="keyword">and</span> bflag == <span class="number">1</span>:</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">&quot;inside&quot;</span>)</span><br><span class="line">                        flag = <span class="number">1</span>        <span class="comment"># to signal the complition of data extaction from a particular image</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(e)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;error in &quot;</span>+filename)</span><br><span class="line">        <span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># conversion of train data into arrays for further training</span></span><br><span class="line">X_new = np.array(train_images)</span><br><span class="line">Y_new = np.array(train_labels)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 为方便下次不用重新处理输入的训练数据，在这里将X_new,Y_new进行保存</span></span><br><span class="line">np.save(<span class="string">&#x27;save_X_new&#x27;</span>,X_new)</span><br><span class="line">np.save(<span class="string">&#x27;save_Y_new&#x27;</span>,Y_new)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取保存的数据X_new,Y_new</span></span><br><span class="line">X_new = np.load(<span class="string">&#x27;save_X_new.npy&#x27;</span>)</span><br><span class="line">Y_new = np.load(<span class="string">&#x27;save_Y_new.npy&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这里因为colab提供的显存不够，只有15g，加载全部数据进去会爆显存，所以只截取一部分样本来进行训练，即X_new_subset 、Y_new_subset </span></span><br><span class="line">total_nums = <span class="built_in">len</span>(Y_new)</span><br><span class="line"><span class="built_in">print</span>(total_nums)</span><br></pre></td></tr></table></figure>
+
+<p>30229</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从训练数据中随机选择 10000 个样本</span></span><br><span class="line">num_samples = <span class="number">5000</span></span><br><span class="line">random_indices = np.random.choice(<span class="built_in">len</span>(X_new), num_samples, replace=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用随机选择的索引来获取样本</span></span><br><span class="line">X_new_subset = X_new[random_indices]</span><br><span class="line">Y_new_subset = Y_new[random_indices]</span><br></pre></td></tr></table></figure>
+
+<h1 id="8-预训练（使用VGG16模型创建一个迁移学习模型）"><a href="#8-预训练（使用VGG16模型创建一个迁移学习模型）" class="headerlink" title="8.预训练（使用VGG16模型创建一个迁移学习模型）"></a>8.预训练（使用VGG16模型创建一个迁移学习模型）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> Model</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> optimizers</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 VGG16 模型来创建一个迁移学习模型</span></span><br><span class="line">vgg = tf.keras.applications.vgg16.VGG16(include_top=<span class="literal">True</span>, weights=<span class="string">&#x27;imagenet&#x27;</span>, input_tensor=<span class="literal">None</span>, input_shape=<span class="literal">None</span>, pooling=<span class="literal">None</span>, classes=<span class="number">1000</span>)</span><br><span class="line"><span class="comment"># 将 VGG16 模型的大部分层设为不可训练，保留最后两层的可训练性</span></span><br><span class="line"><span class="keyword">for</span> layer <span class="keyword">in</span> vgg.layers[:-<span class="number">2</span>]:</span><br><span class="line">  layer.trainable = <span class="literal">False</span></span><br><span class="line"><span class="comment"># 获取 VGG16 模型中名为 &#x27;fc2&#x27; 的层，并获取该层的输出</span></span><br><span class="line">x = vgg.get_layer(<span class="string">&#x27;fc2&#x27;</span>)</span><br><span class="line">last_output =  x.output</span><br><span class="line"><span class="comment"># 在 VGG16 模型的 &#x27;fc2&#x27; 层之后添加了一个新的全连接层，这个全连接层只有一个单元，使用 sigmoid 激活函数来输出二元分类的概率</span></span><br><span class="line">x = tf.keras.layers.Dense(<span class="number">1</span>,activation = <span class="string">&#x27;sigmoid&#x27;</span>)(last_output)</span><br><span class="line"><span class="comment"># 创建一个新的模型，该模型接受 VGG16 的输入，并输出通过添加新层后的结果</span></span><br><span class="line">model = tf.keras.Model(vgg.<span class="built_in">input</span>,x)</span><br><span class="line"><span class="comment"># 编译模型，使用 Adam 优化器，二元交叉熵作为损失函数进行训练，并监控模型的精度（accuracy）指标</span></span><br><span class="line">model.<span class="built_in">compile</span>(optimizer = <span class="string">&quot;adam&quot;</span>,</span><br><span class="line">              loss = <span class="string">&#x27;binary_crossentropy&#x27;</span>,</span><br><span class="line">              metrics = [<span class="string">&#x27;acc&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存一下这个模型文件</span></span><br><span class="line">model.save(<span class="string">&#x27;my_model_vgg16.h5&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>&#x2F;usr&#x2F;local&#x2F;lib&#x2F;python3.10&#x2F;dist-packages&#x2F;keras&#x2F;src&#x2F;engine&#x2F;training.py:3103: UserWarning: You are saving your model as an HDF5 file via <code>model.save()</code>. This file format is considered legacy. We recommend using instead the native Keras format, e.g. <code>model.save(&#39;my_model.keras&#39;)</code>.   saving_api.save_model(</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看模型结构并进行训练</span></span><br><span class="line">model.summary()</span><br><span class="line">model.fit(X_new_subset,Y_new_subset,batch_size = <span class="number">32</span>,epochs = <span class="number">3</span>, verbose = <span class="number">1</span>,validation_split=<span class="number">.05</span>,shuffle = <span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Model: &quot;model&quot;
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_1 (InputLayer)        [(None, 224, 224, 3)]     0         
+                                                                 
+ block1_conv1 (Conv2D)       (None, 224, 224, 64)      1792      
+                                                                 
+ block1_conv2 (Conv2D)       (None, 224, 224, 64)      36928     
+                                                                 
+ block1_pool (MaxPooling2D)  (None, 112, 112, 64)      0         
+                                                                 
+ block2_conv1 (Conv2D)       (None, 112, 112, 128)     73856     
+                                                                 
+ block2_conv2 (Conv2D)       (None, 112, 112, 128)     147584    
+                                                                 
+ block2_pool (MaxPooling2D)  (None, 56, 56, 128)       0         
+                                                                 
+ block3_conv1 (Conv2D)       (None, 56, 56, 256)       295168    
+                                                                 
+ block3_conv2 (Conv2D)       (None, 56, 56, 256)       590080    
+                                                                 
+ block3_conv3 (Conv2D)       (None, 56, 56, 256)       590080    
+                                                                 
+ block3_pool (MaxPooling2D)  (None, 28, 28, 256)       0         
+                                                                 
+ block4_conv1 (Conv2D)       (None, 28, 28, 512)       1180160   
+                                                                 
+ block4_conv2 (Conv2D)       (None, 28, 28, 512)       2359808   
+                                                                 
+ block4_conv3 (Conv2D)       (None, 28, 28, 512)       2359808   
+                                                                 
+ block4_pool (MaxPooling2D)  (None, 14, 14, 512)       0         
+                                                                 
+ block5_conv1 (Conv2D)       (None, 14, 14, 512)       2359808   
+                                                                 
+ block5_conv2 (Conv2D)       (None, 14, 14, 512)       2359808   
+                                                                 
+ block5_conv3 (Conv2D)       (None, 14, 14, 512)       2359808   
+                                                                 
+ block5_pool (MaxPooling2D)  (None, 7, 7, 512)         0         
+                                                                 
+ flatten (Flatten)           (None, 25088)             0         
+                                                                 
+ fc1 (Dense)                 (None, 4096)              102764544 
+                                                                 
+ fc2 (Dense)                 (None, 4096)              16781312  
+                                                                 
+ dense (Dense)               (None, 1)                 4097      
+                                                                 
+=================================================================
+Total params: 134264641 (512.18 MB)
+Trainable params: 16785409 (64.03 MB)
+Non-trainable params: 117479232 (448.15 MB)
+_________________________________________________________________
+Epoch 1/3
+149/149 [==============================] - 43s 214ms/step - loss: 1.4586 - acc: 0.7680 - val_loss: 0.3230 - val_acc: 0.8880
+Epoch 2/3
+149/149 [==============================] - 19s 129ms/step - loss: 0.3880 - acc: 0.8215 - val_loss: 0.3339 - val_acc: 0.8560
+Epoch 3/3
+149/149 [==============================] - 20s 131ms/step - loss: 0.3464 - acc: 0.8495 - val_loss: 0.3104 - val_acc: 0.8760
+
+&lt;keras.src.callbacks.History at 0x7a67e60b2140&gt;
+</code></pre>
+<h1 id="9-创建带有SVM的新网络"><a href="#9-创建带有SVM的新网络" class="headerlink" title="9.创建带有SVM的新网络"></a>9.创建带有SVM的新网络</h1><h2 id="9-1创建供SVM使用的数据集"><a href="#9-1创建供SVM使用的数据集" class="headerlink" title="9.1创建供SVM使用的数据集"></a>9.1创建供SVM使用的数据集</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">svm_image = [];</span><br><span class="line">svm_label = [];</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建SVM数据集采用了和训练数据集不同的iou标准</span></span><br><span class="line"><span class="keyword">for</span> e,i <span class="keyword">in</span> <span class="built_in">enumerate</span>(os.listdir(annot)):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> i.startswith(<span class="string">&quot;airplane&quot;</span>):</span><br><span class="line">            <span class="comment"># 提取图像文件名并读取图像</span></span><br><span class="line">            filename = i.split(<span class="string">&quot;.&quot;</span>)[<span class="number">0</span>]+<span class="string">&quot;.jpg&quot;</span></span><br><span class="line">            <span class="built_in">print</span>(e,filename)</span><br><span class="line">            image = cv2.imread(os.path.join(path,filename))</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 读取对应的标注文件</span></span><br><span class="line">            df = pd.read_csv(os.path.join(annot,i))</span><br><span class="line">            gtvalues=[]</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 解析标注文件中的目标坐标信息</span></span><br><span class="line">            <span class="keyword">for</span> row <span class="keyword">in</span> df.iterrows():</span><br><span class="line">                x1 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">0</span>])</span><br><span class="line">                y1 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">1</span>])</span><br><span class="line">                x2 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">2</span>])</span><br><span class="line">                y2 = <span class="built_in">int</span>(row[<span class="number">1</span>][<span class="number">0</span>].split(<span class="string">&quot; &quot;</span>)[<span class="number">3</span>])</span><br><span class="line">                gtvalues.append(&#123;<span class="string">&quot;x1&quot;</span>:x1,<span class="string">&quot;x2&quot;</span>:x2,<span class="string">&quot;y1&quot;</span>:y1,<span class="string">&quot;y2&quot;</span>:y2&#125;)</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 从图像中截取目标区域并调整大小，作为正样本(ground_truth对应的图像区域，作为正样本)</span></span><br><span class="line">                timage = image[x1:x2,y1:y2]</span><br><span class="line">                resized = cv2.resize(timage, (<span class="number">224</span>,<span class="number">224</span>), interpolation = cv2.INTER_AREA)</span><br><span class="line">                svm_image.append(resized)</span><br><span class="line">                svm_label.append([<span class="number">0</span>,<span class="number">1</span>])<span class="comment"># 正样本标签 [0, 1]</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 执行选择性搜索算法获取区域建议</span></span><br><span class="line">            ss.setBaseImage(image)</span><br><span class="line">            ss.switchToSelectiveSearchFast()</span><br><span class="line">            ssresults = ss.process()</span><br><span class="line">            imout = image.copy()</span><br><span class="line">            counter = <span class="number">0</span></span><br><span class="line">            falsecounter = <span class="number">0</span></span><br><span class="line">            flag = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">             <span class="comment"># 遍历选择性搜索结果以构建负样本</span></span><br><span class="line">            <span class="keyword">for</span> e,result <span class="keyword">in</span> <span class="built_in">enumerate</span>(ssresults):</span><br><span class="line">                <span class="keyword">if</span> e &lt; <span class="number">2000</span> <span class="keyword">and</span> flag == <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">for</span> gtval <span class="keyword">in</span> gtvalues:</span><br><span class="line">                        x,y,w,h = result</span><br><span class="line">                        iou = get_iou(gtval,&#123;<span class="string">&quot;x1&quot;</span>:x,<span class="string">&quot;x2&quot;</span>:x+w,<span class="string">&quot;y1&quot;</span>:y,<span class="string">&quot;y2&quot;</span>:y+h&#125;)</span><br><span class="line"></span><br><span class="line">                        <span class="comment"># 添加满足条件的负样本</span></span><br><span class="line">                        <span class="keyword">if</span> falsecounter &lt;<span class="number">5</span>:</span><br><span class="line">                            <span class="keyword">if</span> iou &lt; <span class="number">0.3</span>:</span><br><span class="line">                                timage = imout[x:x+w,y:y+h]</span><br><span class="line">                                resized = cv2.resize(timage, (<span class="number">224</span>,<span class="number">224</span>), interpolation = cv2.INTER_AREA)</span><br><span class="line">                                svm_image.append(resized)</span><br><span class="line">                                svm_label.append([<span class="number">1</span>,<span class="number">0</span>]) <span class="comment"># 负样本标签 [1, 0]</span></span><br><span class="line">                                falsecounter += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">else</span> :</span><br><span class="line">                            flag = <span class="number">1</span> <span class="comment"># 达到负样本数量上限</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(e)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;error in &quot;</span>+filename)</span><br><span class="line">        <span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 为防止RAM不够，这里把svm_image、svm_label也只选取一部分</span></span><br><span class="line">X_svm = np.array(svm_image)</span><br><span class="line">Y_svm = np.array(svm_label)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 为方便下次不用重新处理输入的训练数据，在这里将X_new,Y_new进行保存</span></span><br><span class="line">np.save(<span class="string">&#x27;save_X_svm&#x27;</span>,X_svm)</span><br><span class="line">np.save(<span class="string">&#x27;save_Y_svm&#x27;</span>,Y_svm)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">total_nums_svm = <span class="built_in">len</span>(Y_svm)</span><br><span class="line"><span class="built_in">print</span>(total_nums_svm)</span><br></pre></td></tr></table></figure>
+
+<p>7750</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X_svm = np.load(<span class="string">&#x27;save_X_svm.npy&#x27;</span>)</span><br><span class="line">Y_svm = np.load(<span class="string">&#x27;save_Y_svm.npy&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从训练数据中随机选择 2000 个样本</span></span><br><span class="line">num_samples = <span class="number">2000</span></span><br><span class="line">random_indices = np.random.choice(<span class="built_in">len</span>(X_svm), num_samples, replace=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用随机选择的索引来获取样本</span></span><br><span class="line">X_svm_subset = X_svm[random_indices]</span><br><span class="line">Y_svm_subset = Y_svm[random_indices]</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-2-SVM模型结构"><a href="#9-2-SVM模型结构" class="headerlink" title="9.2 SVM模型结构"></a>9.2 SVM模型结构</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从现有模型中获取 &#x27;fc2&#x27; 层的输出</span></span><br><span class="line">x = model.get_layer(<span class="string">&#x27;fc2&#x27;</span>).output</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加一个具有2个单元的全连接层，没有激活函数</span></span><br><span class="line">Y = tf.keras.layers.Dense(<span class="number">2</span>)(x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个新的模型，该模型接收现有模型的输入，并输出新添加的全连接层的结果</span></span><br><span class="line">final_model = tf.keras.Model(model.<span class="built_in">input</span>, Y)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译新模型</span></span><br><span class="line">final_model.<span class="built_in">compile</span>(loss=<span class="string">&#x27;hinge&#x27;</span>,  <span class="comment"># 使用hinge loss损失函数</span></span><br><span class="line">                    optimizer=<span class="string">&#x27;adam&#x27;</span>,  <span class="comment"># 优化器为 Adam</span></span><br><span class="line">                    metrics=[<span class="string">&#x27;accuracy&#x27;</span>])  <span class="comment"># 监控模型的准确度指标</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出新模型的概要信息</span></span><br><span class="line">final_model.summary()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载预训练模型的权重</span></span><br><span class="line"><span class="comment"># final_model.load_weights(&#x27;my_model_weights.h5&#x27;)</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>Model: &quot;model_1&quot;
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_1 (InputLayer)        [(None, 224, 224, 3)]     0         
+                                                                 
+ block1_conv1 (Conv2D)       (None, 224, 224, 64)      1792      
+                                                                 
+ block1_conv2 (Conv2D)       (None, 224, 224, 64)      36928     
+                                                                 
+ block1_pool (MaxPooling2D)  (None, 112, 112, 64)      0         
+                                                                 
+ block2_conv1 (Conv2D)       (None, 112, 112, 128)     73856     
+                                                                 
+ block2_conv2 (Conv2D)       (None, 112, 112, 128)     147584    
+                                                                 
+ block2_pool (MaxPooling2D)  (None, 56, 56, 128)       0         
+                                                                 
+ block3_conv1 (Conv2D)       (None, 56, 56, 256)       295168    
+                                                                 
+ block3_conv2 (Conv2D)       (None, 56, 56, 256)       590080    
+                                                                 
+ block3_conv3 (Conv2D)       (None, 56, 56, 256)       590080    
+                                                                 
+ block3_pool (MaxPooling2D)  (None, 28, 28, 256)       0         
+                                                                 
+ block4_conv1 (Conv2D)       (None, 28, 28, 512)       1180160   
+                                                                 
+ block4_conv2 (Conv2D)       (None, 28, 28, 512)       2359808   
+                                                                 
+ block4_conv3 (Conv2D)       (None, 28, 28, 512)       2359808   
+                                                                 
+ block4_pool (MaxPooling2D)  (None, 14, 14, 512)       0         
+                                                                 
+ block5_conv1 (Conv2D)       (None, 14, 14, 512)       2359808   
+                                                                 
+ block5_conv2 (Conv2D)       (None, 14, 14, 512)       2359808   
+                                                                 
+ block5_conv3 (Conv2D)       (None, 14, 14, 512)       2359808   
+                                                                 
+ block5_pool (MaxPooling2D)  (None, 7, 7, 512)         0         
+                                                                 
+ flatten (Flatten)           (None, 25088)             0         
+                                                                 
+ fc1 (Dense)                 (None, 4096)              102764544 
+                                                                 
+ fc2 (Dense)                 (None, 4096)              16781312  
+                                                                 
+ dense_1 (Dense)             (None, 2)                 8194      
+                                                                 
+=================================================================
+Total params: 134268738 (512.19 MB)
+Trainable params: 16789506 (64.05 MB)
+Non-trainable params: 117479232 (448.15 MB)
+_________________________________________________________________
+</code></pre>
+<h2 id="9-3-模型训练"><a href="#9-3-模型训练" class="headerlink" title="9.3 模型训练"></a>9.3 模型训练</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 SVM 数据集对最终模型进行训练，训练过程中的结果将存储在 hist_final 中</span></span><br><span class="line">hist_final = final_model.fit(</span><br><span class="line">    X_svm_subset,  <span class="comment"># SVM 数据集中的图像数据</span></span><br><span class="line">    Y_svm_subset,  <span class="comment"># SVM 数据集中的标签数据</span></span><br><span class="line">    batch_size=<span class="number">32</span>,        <span class="comment"># 批处理大小</span></span><br><span class="line">    epochs=<span class="number">20</span>,            <span class="comment"># 迭代次数</span></span><br><span class="line">    verbose=<span class="number">1</span>,            <span class="comment"># 训练过程中输出日志的详细程度（1为详细输出，0为不输出）</span></span><br><span class="line">    shuffle=<span class="literal">True</span>,         <span class="comment"># 在每个 epoch 开始时是否对数据进行洗牌</span></span><br><span class="line">    validation_split=<span class="number">0.05</span>  <span class="comment"># 验证集的拆分比例，这里设置为 0.05 表示将 5% 的数据作为验证集</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Epoch 1/20
+60/60 [==============================] - 17s 217ms/step - loss: 0.7543 - accuracy: 0.6689 - val_loss: 0.7870 - val_accuracy: 0.6100
+Epoch 2/20
+60/60 [==============================] - 8s 128ms/step - loss: 0.5756 - accuracy: 0.7463 - val_loss: 0.6612 - val_accuracy: 0.7200
+Epoch 3/20
+60/60 [==============================] - 8s 134ms/step - loss: 0.4762 - accuracy: 0.7905 - val_loss: 0.6471 - val_accuracy: 0.7300
+Epoch 4/20
+60/60 [==============================] - 8s 132ms/step - loss: 0.4303 - accuracy: 0.8232 - val_loss: 0.7102 - val_accuracy: 0.6900
+Epoch 5/20
+60/60 [==============================] - 8s 131ms/step - loss: 0.4178 - accuracy: 0.8200 - val_loss: 0.6434 - val_accuracy: 0.7000
+Epoch 6/20
+60/60 [==============================] - 8s 136ms/step - loss: 0.3378 - accuracy: 0.8558 - val_loss: 0.7106 - val_accuracy: 0.7000
+Epoch 7/20
+60/60 [==============================] - 8s 135ms/step - loss: 0.3321 - accuracy: 0.8647 - val_loss: 0.6975 - val_accuracy: 0.7400
+Epoch 8/20
+60/60 [==============================] - 8s 130ms/step - loss: 0.3007 - accuracy: 0.8737 - val_loss: 0.7403 - val_accuracy: 0.7500
+Epoch 9/20
+60/60 [==============================] - 8s 138ms/step - loss: 0.2735 - accuracy: 0.8858 - val_loss: 0.8128 - val_accuracy: 0.7100
+Epoch 10/20
+60/60 [==============================] - 8s 133ms/step - loss: 0.2241 - accuracy: 0.9153 - val_loss: 0.9183 - val_accuracy: 0.6900
+Epoch 11/20
+60/60 [==============================] - 8s 141ms/step - loss: 0.2732 - accuracy: 0.8916 - val_loss: 0.7814 - val_accuracy: 0.7100
+Epoch 12/20
+60/60 [==============================] - 8s 142ms/step - loss: 0.2009 - accuracy: 0.9163 - val_loss: 0.8467 - val_accuracy: 0.7100
+Epoch 13/20
+60/60 [==============================] - 8s 140ms/step - loss: 0.2214 - accuracy: 0.9126 - val_loss: 0.7389 - val_accuracy: 0.7500
+Epoch 14/20
+60/60 [==============================] - 9s 144ms/step - loss: 0.1761 - accuracy: 0.9268 - val_loss: 0.8726 - val_accuracy: 0.7300
+Epoch 15/20
+60/60 [==============================] - 9s 142ms/step - loss: 0.1645 - accuracy: 0.9295 - val_loss: 0.7956 - val_accuracy: 0.7400
+Epoch 16/20
+60/60 [==============================] - 9s 142ms/step - loss: 0.1385 - accuracy: 0.9453 - val_loss: 0.7979 - val_accuracy: 0.7200
+Epoch 17/20
+60/60 [==============================] - 8s 138ms/step - loss: 0.1303 - accuracy: 0.9495 - val_loss: 0.8370 - val_accuracy: 0.7700
+Epoch 18/20
+60/60 [==============================] - 8s 139ms/step - loss: 0.1469 - accuracy: 0.9426 - val_loss: 0.7578 - val_accuracy: 0.7900
+Epoch 19/20
+60/60 [==============================] - 9s 143ms/step - loss: 0.1020 - accuracy: 0.9611 - val_loss: 0.7946 - val_accuracy: 0.7600
+Epoch 20/20
+60/60 [==============================] - 9s 147ms/step - loss: 0.1020 - accuracy: 0.9632 - val_loss: 0.8619 - val_accuracy: 0.7500
+</code></pre>
+<h2 id="9-4-绘制损失变化曲线"><a href="#9-4-绘制损失变化曲线" class="headerlink" title="9.4 绘制损失变化曲线"></a>9.4 绘制损失变化曲线</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制模型训练过程中的损失变化曲线</span></span><br><span class="line">plt.plot(hist_final.history[<span class="string">&#x27;loss&#x27;</span>])        <span class="comment"># 训练集的损失</span></span><br><span class="line">plt.plot(hist_final.history[<span class="string">&#x27;val_loss&#x27;</span>])    <span class="comment"># 验证集的损失</span></span><br><span class="line">plt.title(<span class="string">&quot;model loss&quot;</span>)                     <span class="comment"># 图像标题</span></span><br><span class="line">plt.ylabel(<span class="string">&quot;Loss&quot;</span>)                          <span class="comment"># y 轴标签为损失</span></span><br><span class="line">plt.xlabel(<span class="string">&quot;Epoch&quot;</span>)                         <span class="comment"># x 轴标签为 epoch</span></span><br><span class="line">plt.legend([<span class="string">&quot;Loss&quot;</span>, <span class="string">&quot;Validation Loss&quot;</span>])     <span class="comment"># 添加图例，分别对应训练集和验证集的损失</span></span><br><span class="line">plt.show()                                  <span class="comment"># 显示图像</span></span><br><span class="line"></span><br><span class="line">plt.savefig(<span class="string">&#x27;chart_loss.png&#x27;</span>)               <span class="comment"># 保存图像为文件（在 plt.show() 之后保存是无效的，应该放在 plt.show() 之前）</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYT8S.png" alt="OKYT8S.png"></p>
+<p>​    </p>
+<Figure size 640x480 with 0 Axes>
+
+
+<h1 id="10-测试"><a href="#10-测试" class="headerlink" title="10. 测试"></a>10. 测试</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">###########  it&#x27;s time for test a image    ##########</span></span><br><span class="line">image = cv2.imread(os.path.join(path,<span class="string">&#x27;airplane_020.jpg&#x27;</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ss.setBaseImage(image) <span class="comment"># 设置选择性搜索算法的基础图像为读取的图像</span></span><br><span class="line">ss.switchToSelectiveSearchFast() <span class="comment"># 使用选择性搜索算法的快速模式</span></span><br><span class="line">ssresults = ss.process() <span class="comment"># 对基础图像执行选择性搜索，获取区域建议</span></span><br><span class="line"></span><br><span class="line">imOut = image.copy() <span class="comment"># 创建图像的副本，用于绘制矩形框</span></span><br><span class="line">boxes = [] <span class="comment"># 存储被判断为飞机区域的边界框信息</span></span><br><span class="line">count = <span class="number">0</span> <span class="comment"># 计数器：记录被判断为飞机区域的数量</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 对选择性搜索结果的前 50 个区域建议进行处理</span></span><br><span class="line"><span class="keyword">for</span> e,result <span class="keyword">in</span> <span class="built_in">enumerate</span>(ssresults):</span><br><span class="line">  <span class="keyword">if</span> e &lt; <span class="number">50</span>:</span><br><span class="line">    x,y,w,h = result</span><br><span class="line"></span><br><span class="line">    timage = imout[x:x+w,y:y+h] <span class="comment"># 从原始图像中获取当前建议区域的图像部分</span></span><br><span class="line">    resized = cv2.resize(timage, (<span class="number">224</span>,<span class="number">224</span>), interpolation = cv2.INTER_AREA) <span class="comment"># 调整图像大小为模型的输入尺寸</span></span><br><span class="line">    resized = np.expand_dims(resized,axis = <span class="number">0</span>) <span class="comment"># 将图像扩展一个维度以适应模型输入的要求</span></span><br><span class="line">    out = final_model.predict(resized)  <span class="comment"># 使用最终的模型对该区域进行预测，得到输出结果</span></span><br><span class="line">    <span class="built_in">print</span>(e,out)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(out[<span class="number">0</span>][<span class="number">0</span>]&lt;out[<span class="number">0</span>][<span class="number">1</span>]): <span class="comment"># 如果模型判断该区域可能包含飞机</span></span><br><span class="line">      boxes.append([x,y,w,h]) <span class="comment"># 将边界框信息添加到列表中，并增加计数器</span></span><br><span class="line">      count+=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 对被判断为飞机区域的边界框进行处理</span></span><br><span class="line"><span class="keyword">for</span> box <span class="keyword">in</span> boxes:</span><br><span class="line">    x, y, w, h = box</span><br><span class="line">    <span class="built_in">print</span>(x,y,w,h)</span><br><span class="line"><span class="comment">#     imOut = imOut[x:x+w,y:y+h]</span></span><br><span class="line">    <span class="comment"># 在原始图像上绘制矩形框，以突出显示这些被判断为飞机的区域</span></span><br><span class="line">    cv2.rectangle(imOut, (x, y), (x+w, y+h), (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">1</span>, cv2.LINE_AA)</span><br><span class="line"></span><br><span class="line">plt.imshow(imOut)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<pre><code>1/1 [==============================] - 1s 1s/step
+0 [[ 2.551831  -2.6361141]]
+1/1 [==============================] - 0s 31ms/step
+1 [[ 1.2116516 -1.1462703]]
+1/1 [==============================] - 0s 43ms/step
+2 [[ 3.1247723 -3.0577419]]
+1/1 [==============================] - 0s 38ms/step
+3 [[ 0.3094477  -0.35184118]]
+1/1 [==============================] - 0s 33ms/step
+4 [[ 16.334412 -16.097301]]
+1/1 [==============================] - 0s 36ms/step
+5 [[-1.9055386  1.8246138]]
+1/1 [==============================] - 0s 46ms/step
+6 [[ 3.849068 -3.596069]]
+1/1 [==============================] - 0s 35ms/step
+7 [[-4.3343387  4.457566 ]]
+1/1 [==============================] - 0s 28ms/step
+8 [[ 2.1157243 -2.0935826]]
+1/1 [==============================] - 0s 37ms/step
+9 [[ 1.1227907 -1.0547544]]
+1/1 [==============================] - 0s 32ms/step
+10 [[ 3.028215  -3.0655315]]
+1/1 [==============================] - 0s 35ms/step
+11 [[-3.4406524  3.4818974]]
+1/1 [==============================] - 0s 36ms/step
+12 [[-3.3148727  3.2502732]]
+1/1 [==============================] - 0s 69ms/step
+13 [[-1.7705667  1.8401496]]
+1/1 [==============================] - 0s 119ms/step
+14 [[ 17.1168   -17.020542]]
+1/1 [==============================] - 0s 31ms/step
+15 [[-0.54532474  0.49859324]]
+1/1 [==============================] - 0s 39ms/step
+16 [[ 1.3955598 -1.4487445]]
+1/1 [==============================] - 0s 39ms/step
+17 [[-0.9255678  0.7681236]]
+1/1 [==============================] - 0s 34ms/step
+18 [[-1.0967708  1.0601681]]
+1/1 [==============================] - 0s 35ms/step
+19 [[ 1.6157322 -1.5883387]]
+1/1 [==============================] - 0s 19ms/step
+20 [[ 6.222667 -6.078978]]
+1/1 [==============================] - 0s 22ms/step
+21 [[ 1.9781907 -1.9643315]]
+1/1 [==============================] - 0s 21ms/step
+22 [[ 2.6352754 -2.6751401]]
+1/1 [==============================] - 0s 22ms/step
+23 [[-0.6199166  0.6234232]]
+1/1 [==============================] - 0s 26ms/step
+24 [[ 0.56931984 -0.52301127]]
+1/1 [==============================] - 0s 19ms/step
+25 [[-4.092036   4.0529504]]
+1/1 [==============================] - 0s 20ms/step
+26 [[-1.1211745  1.1134607]]
+1/1 [==============================] - 0s 20ms/step
+27 [[ 1.5422791 -1.504165 ]]
+1/1 [==============================] - 0s 20ms/step
+28 [[ 0.9709082 -1.1293985]]
+1/1 [==============================] - 0s 22ms/step
+29 [[ 6.2005806 -6.223065 ]]
+1/1 [==============================] - 0s 19ms/step
+30 [[ 0.7283702  -0.67930716]]
+1/1 [==============================] - 0s 20ms/step
+31 [[ 3.7712991 -3.7369084]]
+1/1 [==============================] - 0s 20ms/step
+32 [[ 1.7139057 -1.7024881]]
+1/1 [==============================] - 0s 21ms/step
+33 [[ 12.521779 -12.554838]]
+1/1 [==============================] - 0s 24ms/step
+34 [[ 3.4832761 -3.3890066]]
+1/1 [==============================] - 0s 23ms/step
+35 [[ 1.2881904 -1.3030462]]
+1/1 [==============================] - 0s 31ms/step
+36 [[ 1.3349662 -1.2856408]]
+1/1 [==============================] - 0s 20ms/step
+37 [[ 0.29870683 -0.25320527]]
+1/1 [==============================] - 0s 20ms/step
+38 [[-1.2835077  1.3210849]]
+1/1 [==============================] - 0s 19ms/step
+39 [[ 1.3556112 -1.3576012]]
+1/1 [==============================] - 0s 20ms/step
+40 [[ 5.945995  -5.7617545]]
+1/1 [==============================] - 0s 20ms/step
+41 [[ 4.5127177 -4.54366  ]]
+1/1 [==============================] - 0s 19ms/step
+42 [[ 1.2226268 -1.2334687]]
+1/1 [==============================] - 0s 19ms/step
+43 [[ 2.2175348 -2.1676831]]
+1/1 [==============================] - 0s 20ms/step
+44 [[ 5.3103013 -5.1500263]]
+1/1 [==============================] - 0s 22ms/step
+45 [[ 1.7600315 -1.8218967]]
+1/1 [==============================] - 0s 20ms/step
+46 [[ 3.2599857 -2.9830909]]
+1/1 [==============================] - 0s 19ms/step
+47 [[-1.2734337  1.2411362]]
+1/1 [==============================] - 0s 21ms/step
+48 [[ 10.405064 -10.193722]]
+1/1 [==============================] - 0s 20ms/step
+49 [[-1.247491   1.2709295]]
+145 129 35 31
+0 71 98 70
+176 148 64 43
+49 91 49 22
+0 71 77 70
+199 148 38 29
+174 130 21 27
+19 95 58 45
+111 142 27 23
+120 127 32 33
+0 74 48 53
+120 143 33 19
+29 149 36 40
+111 117 34 46
+</code></pre>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYWxN.png" alt="OKYWxN.png"></p>
+<blockquote>
+<p>最后的测试效果没有很好，可能因为使用的训练数据过少，如果显存足够可以不用截取训练集的子集来进行训练，效果应该会提高。</p>
+</blockquote>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>deeprookie</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">Fast RCNN论文理解</a>
+            
+            
+            <a class="next" rel="next" href="/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">RCNN论文理解</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© deeprookie | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
