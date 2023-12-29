@@ -19,37 +19,23 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Faster RCNN项目部署simple-faster-rcnn-pytorch-master 项目源码：https:&#x2F;&#x2F;github.com&#x2F;chenyuntc&#x2F;simple-faster-rcnn-pytorch">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Faster RCNN项目部署（一）">
-<meta property="og:url" content="https://valoray.github.io/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="DeepRookie">
+<meta property="og:url" content="https://valoray.github.io/page/2/index.html">
 <meta property="og:site_name" content="DeepRookie">
-<meta property="og:description" content="Faster RCNN项目部署simple-faster-rcnn-pytorch-master 项目源码：https:&#x2F;&#x2F;github.com&#x2F;chenyuntc&#x2F;simple-faster-rcnn-pytorch">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYfPN.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYllC.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYjTL.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKY2vi.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYsua.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYYzS.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKY6cX.png">
-<meta property="article:published_time" content="2023-12-29T06:50:06.000Z">
-<meta property="article:modified_time" content="2023-12-29T13:02:10.038Z">
 <meta property="article:author" content="deeprookie">
-<meta property="article:tag" content="代码复现">
-<meta property="article:tag" content="Faster RCNN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ooo.0x0.ooo/2023/12/29/OKYfPN.png">
 
 
-<link rel="canonical" href="https://valoray.github.io/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/">
+<link rel="canonical" href="https://valoray.github.io/page/2/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/","path":"2023/12/29/Faster-RCNN项目部署（一）/","title":"Faster RCNN项目部署（一）"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"page/2/index.html","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Faster RCNN项目部署（一） | DeepRookie</title>
+<title>DeepRookie</title>
   
 
 
@@ -82,7 +68,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <p class="site-title">DeepRookie</p>
+      <h1 class="site-title">DeepRookie</h1>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">想到，就去做，无非一朝还是一生</p>
@@ -136,7 +122,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -149,7 +135,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.</span> <span class="nav-text">Faster RCNN项目部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">1.1.</span> <span class="nav-text">1.安装依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%BF%90%E8%A1%8Cdemo"><span class="nav-number">1.2.</span> <span class="nav-text">2.运行demo</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1%E4%B8%8B%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1下载预训练模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2%E8%BF%90%E8%A1%8Cdemo-pipynb"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2运行demo.pipynb</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Train"><span class="nav-number">1.3.</span> <span class="nav-text">3.Train</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1准备数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2修改配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3%E5%BC%80%E5%90%AF%E8%AE%AD%E7%BB%83"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3开启训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4%E5%88%A9%E7%94%A8Pycharm%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%AF%95"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4利用Pycharm进行调试</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -239,18 +224,17 @@
 
     </div>
 
-    <div class="main-inner post posts-expand">
+    <div class="main-inner index posts-expand">
 
-
-  
+    
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -263,13 +247,13 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Faster RCNN项目部署（一） | DeepRookie">
+      <meta itemprop="name" content="undefined | DeepRookie">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          Faster RCNN项目部署（一）
-        </h1>
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">Fast RCNN论文理解</a>
+        </h2>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -280,7 +264,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2023-12-29 14:50:06 / 修改时间：21:02:10" itemprop="dateCreated datePublished" datetime="2023-12-29T14:50:06+08:00">2023-12-29</time>
+      <time title="创建时间：2023-12-29 12:03:34 / 修改时间：21:01:51" itemprop="dateCreated datePublished" datetime="2023-12-29T12:03:34+08:00">2023-12-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -301,46 +285,34 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="Faster-RCNN项目部署"><a href="#Faster-RCNN项目部署" class="headerlink" title="Faster RCNN项目部署"></a>Faster RCNN项目部署</h2><p>simple-faster-rcnn-pytorch-master</p>
-<p><strong>项目源码</strong>：<a target="_blank" rel="noopener" href="https://github.com/chenyuntc/simple-faster-rcnn-pytorch">https://github.com/chenyuntc/simple-faster-rcnn-pytorch</a></p>
-<span id="more"></span>
-
-<p><strong>云服务器环境：</strong></p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYfPN.png" alt="OKYfPN.png"></p>
-<h3 id="1-安装依赖"><a href="#1-安装依赖" class="headerlink" title="1.安装依赖"></a>1.安装依赖</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">!pip install scikit-image</span><br><span class="line">!pip install visdom</span><br><span class="line">!pip install torchnet</span><br><span class="line">!pip install opencv-python</span><br><span class="line">!pip install ipdb</span><br><span class="line">!pip install ipython==7.28.0</span><br><span class="line">!pip install fire</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-运行demo"><a href="#2-运行demo" class="headerlink" title="2.运行demo"></a>2.运行demo</h3><h4 id="2-1下载预训练模型"><a href="#2-1下载预训练模型" class="headerlink" title="2.1下载预训练模型"></a>2.1下载预训练模型</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">百度网盘地址：https://pan.baidu.com/s/1o87RuXW</span><br><span class="line">密码：scxn</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2运行demo-pipynb"><a href="#2-2运行demo-pipynb" class="headerlink" title="2.2运行demo.pipynb"></a>2.2运行demo.pipynb</h4><blockquote>
-<p>问题：在运行<code>img = read_image(&#39;/root/autodl-tmp/FasterRCNN/misc/demo.jpg&#39;)</code>出现错误：<br><code>UnidentifiedImageError：Image.open() cannot identify image file</code></p>
-<p>解决：我也不知道咋解决，因为另外测试后发现PIL的Image.open()是可以用的，我重启了几次不知道为什么就能用了</p>
-</blockquote>
-<h3 id="3-Train"><a href="#3-Train" class="headerlink" title="3.Train"></a>3.Train</h3><h4 id="3-1准备数据"><a href="#3-1准备数据" class="headerlink" title="3.1准备数据"></a>3.1准备数据</h4><p>参考项目官网的<code>5.1 Prepare data--Pascal VOC2007</code></p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYllC.png" alt="OKYllC.png"></p>
-<p>最终得到的数据目录如下</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYjTL.png" alt="OKYjTL.png"></p>
-<h4 id="3-2修改配置"><a href="#3-2修改配置" class="headerlink" title="3.2修改配置"></a>3.2修改配置</h4><ol>
-<li>utils&#x2F;config.py：修改VOC数据集的存放位置<code>voc_data_dir = &#39;/root/autodl-tmp/FasterRCNN/dataset/VOCdevkit/VOC2007/&#39;</code></li>
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Fast-RCNN论文理解"><a href="#Fast-RCNN论文理解" class="headerlink" title="Fast RCNN论文理解"></a>Fast RCNN论文理解</h1><p>在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。</p>
+<h2 id="1-RCNN和SPPnet的缺点"><a href="#1-RCNN和SPPnet的缺点" class="headerlink" title="1.RCNN和SPPnet的缺点"></a>1.RCNN和SPPnet的缺点</h2><h3 id="1-1RCNN的缺点"><a href="#1-1RCNN的缺点" class="headerlink" title="1.1RCNN的缺点"></a>1.1RCNN的缺点</h3><ol>
+<li>训练是多阶段的<ol>
+<li>首先，在候选区域上微调ConvNet</li>
+<li>然后，对ConvNet产生的特征训练SVMs分类器，用来代替微调的CNN网络学到的softmax分类器</li>
+<li>最后，学习边界框回归网络</li>
 </ol>
-<h4 id="3-3开启训练"><a href="#3-3开启训练" class="headerlink" title="3.3开启训练"></a>3.3开启训练</h4><p>如果直接运行代码<code>!python train.py train --env=&#39;fasterrcnn&#39; --plot-every=100</code>，会出现以下问题：</p>
-<blockquote>
-<p>问题：ERROR:visdom:[WinError 10061] 由于目标计算机积极拒绝，无法连接。</p>
-<p>原因：代码中用到了在线可视化工具visdom，但是没有启动</p>
-<p>解决：利用Xshell映射云端服务器的visdom，进行训练过程可视。参考博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_6551">https://blog.csdn.net/m0_6551</a></p>
-</blockquote>
-<p>因此，先利用Xshell映射云端服务器的visdom（参见上面的博客），再在jupyter notebook运行以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python train.py train --env=&#x27;fasterrcnn&#x27; --plot-every=100</span><br></pre></td></tr></table></figure>
-
-<p>运行成功结果如下：<br><img src="https://ooo.0x0.ooo/2023/12/29/OKY2vi.png" alt="OKY2vi.png"></p>
-<h4 id="3-4利用Pycharm进行调试"><a href="#3-4利用Pycharm进行调试" class="headerlink" title="3.4利用Pycharm进行调试"></a>3.4利用Pycharm进行调试</h4><p>因为在jupyter notebook中开启训练时使用了代码<code>python train.py train --env=&#39;fasterrcnn&#39; --plot-every=100</code>，而在Pycharm中无法输入这样的命令进行debug，因此我对<code>train.py</code>做了以下修改：</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYsua.png" alt="OKYsua.png"></p>
-<p>我舍弃了利用fire.Fire()来调用函数train，而是直接在main函数中调用了train()方法，并传递了参数。此时就可以在Pycharm进行debug了。</p>
-<blockquote>
-<p>另外，Pycharm在调试过程会遇到一个问题，即：debug时Pycharm卡住在connected界面不动</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYYzS.png" alt="OKYYzS.png"></p>
-<p>解决：<img src="https://ooo.0x0.ooo/2023/12/29/OKY6cX.png" alt="OKY6cX.png"></p>
-</blockquote>
-
+</li>
+<li>训练耗费时间和空间<ol>
+<li>为了训练SVM分类器和边界框回归网络，从ConvNet抽取到的候选区域的特征要先被写入磁盘</li>
+<li>耗时：<strong>RCNN对每个候选区域都执行ConvNet前向传播来提取特征，没有共享计算</strong></li>
+</ol>
+</li>
+<li>测试很慢<ol>
+<li>每张测试图片要先获取2000个候选区域，再对每个区域抽取特征，耗时很长</li>
+</ol>
+</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
@@ -348,25 +320,8 @@
     
 
     <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/" rel="tag"># 代码复现</a>
-              <a href="/tags/Faster-RCNN/" rel="tag"># Faster RCNN</a>
-          </div>
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2023/12/29/Faster-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" rel="prev" title="Faster RCNN论文理解">
-                  <i class="fa fa-angle-left"></i> Faster RCNN论文理解
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2023/12/29/Faster-RCNN%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="next" title="Faster RCNN代码分析（二）">
-                  Faster RCNN代码分析（二） <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
+        <div class="post-eof"></div>
+      
     </footer>
   </article>
 </div>
@@ -374,7 +329,192 @@
 
 
 
+    
 
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/" class="post-title-link" itemprop="url">RCNN代码复现</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-12-29 11:45:34 / 修改时间：21:01:31" itemprop="dateCreated datePublished" datetime="2023-12-29T11:45:34+08:00">2023-12-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" itemprop="url" rel="index"><span itemprop="name">目标检测</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>本代码最初在colab中实现，以下为全部代码及运行输出结果</p>
+<h1 id="1-挂载谷歌云盘，解压数据集"><a href="#1-挂载谷歌云盘，解压数据集" class="headerlink" title="1.挂载谷歌云盘，解压数据集"></a>1.挂载谷歌云盘，解压数据集</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%pwd</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>‘&#x2F;content’</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!unzip <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Images.zip&#x27;</span> -d <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!unzip <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Airplanes_Annotations.zip&#x27;</span> -d <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN&#x27;</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">RCNN论文理解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-12-29 11:33:04 / 修改时间：21:01:05" itemprop="dateCreated datePublished" datetime="2023-12-29T11:33:04+08:00">2023-12-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" itemprop="url" rel="index"><span itemprop="name">目标检测</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="RCNN"><a href="#RCNN" class="headerlink" title="RCNN"></a>RCNN</h1><h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1.背景"></a>1.背景</h2><p>过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,…xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
+<p>本文创新：用CNN代替传统的特征提取方法来提取图像特征</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 </div>
   </main>
