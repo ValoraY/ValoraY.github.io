@@ -219,13 +219,13 @@
 </ol>
 <h2 id="3-面临问题及解决思路"><a href="#3-面临问题及解决思路" class="headerlink" title="3.面临问题及解决思路"></a>3.面临问题及解决思路</h2><h3 id="3-1问题1：如何用CNN来定位目标？"><a href="#3-1问题1：如何用CNN来定位目标？" class="headerlink" title="3.1问题1：如何用CNN来定位目标？"></a>3.1问题1：如何用CNN来定位目标？</h3><h4 id="3-1-1问题"><a href="#3-1-1问题" class="headerlink" title="3.1.1问题"></a>3.1.1问题</h4><p>分类任务只需要确定类别；检测任务除了需要确定类别，还需要获得对象的检测边界框。CNN过去已经被证明可以用于分类任务，如何利用它来检测边界框呢？</p>
 <h4 id="3-1-2解决思路"><a href="#3-1-2解决思路" class="headerlink" title="3.1.2解决思路"></a>3.1.2解决思路</h4><ol>
-<li><p>基于回归的定位策略：直接用CNN来回归边界框<br><img src="https://img-blog.csdnimg.cn/img_convert/e049a27bfe40948f5e46d0237cee3499.png" alt="OKJqZb.png"></p>
+<li><p>基于回归的定位策略：直接用CNN来回归边界框<br><img src="https://ooo.0x0.ooo/2023/12/29/OKYa0B.png" alt="OKYa0B.png"></p>
 </li>
 <li><p>基于滑动窗口检测器的定位策略：在输入图片上用特定大小和比例的滑动窗口进行滑动，对于滑动到的区域用<strong>浅层的CNN</strong>进行检测，适用于人脸、行人这类<strong>特定比例的任务</strong>。（有人试了，效果不好）</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/fb8c097c75cbf7e599a2245679b2f1da.png" alt="OKJMJF.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYows.png" alt="OKYows.png"></p>
 </li>
 <li><p><strong>基于区域的定位策略（本文√）</strong>：输入一张图片，用某种方法产生一定数量的候选区域（Region proposal），然后用一个深层的CNN提取特征，最后输入分类器种进行分类</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/6808e31e708ffc78a936565fe7a572af.png" alt="OKJ50l.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKVIk6.png" alt="OKVIk6.png"></p>
 </li>
 </ol>
 <h3 id="3-2问题2：标注数据太少"><a href="#3-2问题2：标注数据太少" class="headerlink" title="3.2问题2：标注数据太少"></a>3.2问题2：标注数据太少</h3><h4 id="3-2-1问题"><a href="#3-2-1问题" class="headerlink" title="3.2.1问题"></a>3.2.1问题</h4><p>图像分类领域ImageNet数据集，标注数据丰富，而当时目标检测领域只有PASCAL VOC数据集，标注数据很少</p>
@@ -233,14 +233,14 @@
 <li>传统思路：无监督预训练+有监督微调</li>
 <li>本文思路：迁移学习。在ImageNet大数据集上有监督预训练+在PASCAL VOC小数据集上微调</li>
 </ol>
-<h2 id="4-模型结构"><a href="#4-模型结构" class="headerlink" title="4.模型结构"></a>4.模型结构</h2><p><img src="https://img-blog.csdnimg.cn/img_convert/c9772d52e2880213f4cafa2e3826090d.png" alt="OKJU7B.png"></p>
+<h2 id="4-模型结构"><a href="#4-模型结构" class="headerlink" title="4.模型结构"></a>4.模型结构</h2><p><img src="https://ooo.0x0.ooo/2023/12/29/OKY51K.png" alt="OKY51K.png"></p>
 <h3 id="4-1-三个模块"><a href="#4-1-三个模块" class="headerlink" title="4.1 三个模块"></a>4.1 三个模块</h3><ol>
 <li><p>产生候选区域：selective search</p>
 </li>
 <li><p>抽取图像特征：  利用deep CNN从每个候选区域(region proposal )抽取出一个固定长度(4096-dim)的特征向量(feature vector)</p>
 <ol>
 <li><p>5个卷积层 + 2个全连接层前向传播，删除了源网络最后的1000种分类层（AlexNet）</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/7000b6ccc400ad6eba33e534562a5c81.png" alt="OKJoBP.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKVX8F.png" alt="OKVX8F.png"></p>
 </li>
 <li><p>deep CNN要求输入的图片固定大小，因此需要对不同大小的候选区域进行缩放至(227 x 227 RGB)</p>
 <p>缩放方法：</p>
@@ -281,11 +281,11 @@
 <li>对于高层特征来说，每一个不同的通道，学习到一种高层特征</li>
 <li>对于同一个通道的不同位置，它表示的特征是相同的，只是边界框的位置有偏移</li>
 </ol>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/9f544351a30761d750f97f8f71e455fb.png" alt="OKJxza.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYM5l.png" alt="OKYM5l.png"></p>
 <h2 id="6-消融实验"><a href="#6-消融实验" class="headerlink" title="6.消融实验"></a>6.消融实验</h2><ol>
 <li>在训练CNN的时候，我们使用的是fc7的4096维的输出作为图片的特征，那能不能使用fc6的输出，或pool5的输出作为提取到的特征呢？</li>
 </ol>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/d10131b0f052c5b1fc901b7fc2162e48.png" alt="OKJOf6.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYOKg.png" alt="OKYOKg.png"></p>
 <ol start="2">
 <li><p>使用微调和不使用微调对最终的精度有没有影响？</p>
 <p>在1中选取不同层的输出作为图片的特征的基础上，测试微调后的精度如何改变。实验结果发现：</p>
@@ -299,8 +299,8 @@
 </ol>
 <h2 id="7-边界框回归"><a href="#7-边界框回归" class="headerlink" title="7.边界框回归"></a>7.边界框回归</h2><p>因为我们在进行目标检测，所以不仅要实现分类，还要对目标的边界框进行回归。因此，在提取出CNN特征（这里用的pool5层的特征）后又训练了一个SVM模型，用于回归出目标的边界框，即原始的候选区域到真实框的偏移量。而在实际实验中发现，分类的预测精度较高，但目标的位置预测并不准确。也就是说，我们希望预测框（黄框）尽可能接近真实框（绿框），即损失函数尽可能小</p>
 <p>因此要解决的问题变成了：已知一个不准确的位置，要预测出一个准确的位置（从黄框变成绿框）。</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/07ea0dee3b5e741196735c17f49863f8.png" alt="OKJTMg.png"></p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/a15193a852cfa55dedd16504a0b3a01a.png" alt="OKJWHs.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKVCfb.png" alt="OKVCfb.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKV3pP.png" alt="OKV3pP.png"></p>
 <h2 id="8-错检情况分析"><a href="#8-错检情况分析" class="headerlink" title="8.错检情况分析"></a>8.错检情况分析</h2><p>分析以下四类错误的占比情况</p>
 <ol>
 <li>类别正确，但位置不准确</li>
@@ -308,7 +308,7 @@
 <li>类别识别明显错误</li>
 <li>目标误识别为类别</li>
 </ol>
-<p>!<img src="https://img-blog.csdnimg.cn/img_convert/ff527175c1767ea656d06ef8ca3ac794.png" alt="OKJbXK.png"></p>
+<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYBHa.png" alt="OKYBHa.png"></p>
 <h2 id="9-检测不同因素对算法的敏感度影响（看不懂）"><a href="#9-检测不同因素对算法的敏感度影响（看不懂）" class="headerlink" title="9.检测不同因素对算法的敏感度影响（看不懂）"></a>9.检测不同因素对算法的敏感度影响（看不懂）</h2><h2 id="10-实验设置的一些问题解释"><a href="#10-实验设置的一些问题解释" class="headerlink" title="10.实验设置的一些问题解释"></a>10.实验设置的一些问题解释</h2><ol>
 <li>为什么CNN和SVM的正负例定义的方法不同<ol>
 <li>实验观察：通过实验先确定了SVM的划分方法，然后才确定了CNN的正负样本的划分方法</li>
