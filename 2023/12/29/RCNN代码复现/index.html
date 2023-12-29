@@ -1,217 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
 
-    <meta name="author" content="deeprookie">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本代码最初在colab中实现，以下为全部代码及运行输出结果 1.挂载谷歌云盘，解压数据集1%pwd     ‘&#x2F;content’ 1!unzip &#x27;&#x2F;content&#x2F;drive&#x2F;MyDrive&#x2F;AI_content&#x2F;RCNN&#x2F;Images.zip&#x27; -d &#x27;&#x2F;content&#x2F;drive&#x2F;MyDrive&#x2F;AI_content&#x2F;RCNN&#x27;   1!un">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RCNN代码复现">
+<meta property="og:url" content="https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本代码最初在colab中实现，以下为全部代码及运行输出结果 1.挂载谷歌云盘，解压数据集1%pwd     ‘&#x2F;content’ 1!unzip &#x27;&#x2F;content&#x2F;drive&#x2F;MyDrive&#x2F;AI_content&#x2F;RCNN&#x2F;Images.zip&#x27; -d &#x27;&#x2F;content&#x2F;drive&#x2F;MyDrive&#x2F;AI_content&#x2F;RCNN&#x27;   1!un">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYkfL.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYzBi.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYbpC.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYT8S.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYWxN.png">
+<meta property="article:published_time" content="2023-12-29T03:45:34.000Z">
+<meta property="article:modified_time" content="2023-12-29T03:49:14.316Z">
+<meta property="article:author" content="deeprookie">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ooo.0x0.ooo/2023/12/29/OKYkfL.png">
 
 
+<link rel="canonical" href="https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/","path":"2023/12/29/RCNN代码复现/","title":"RCNN代码复现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>RCNN代码复现 | Hexo</title>
+  
 
 
 
-    <link rel="icon" href="/favicon.svg">
 
 
 
 
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
 
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
 
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-
-
-
-    
-    
-        
-    
-
-
-<meta name="generator" content="Hexo 7.0.0"></head>
-
-<body>
-    <script>
-        // this function is used to check current theme before page loaded.
-        (() => {
-            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
-            const isDark = currentTheme === 'dark';
-            const pagebody = document.getElementsByTagName('body')[0]
-            if (isDark) {
-                pagebody.classList.add('dark-theme');
-                // mobile
-                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
-            } else {
-                pagebody.classList.remove('dark-theme');
-                // mobile
-                document.getElementById("mobile-toggle-theme").innerText = "· Light"
-            }
-        })();
-    </script>
-
-    <div class="wrapper">
-        <header>
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-header header-logo"><a href="/">DeepRookie&#39;s Blog</a></div>
-            <div class="menu navbar-right">
-                
-                    <a class="menu-item" href="/archives">Posts</a>
-                
-                    <a class="menu-item" href="/category">Categories</a>
-                
-                    <a class="menu-item" href="/tag">Tags</a>
-                
-                    <a class="menu-item" href="/about">About</a>
-                
-                <input id="switch_default" type="checkbox" class="switch_default">
-                <label for="switch_default" class="toggleBtn"></label>
-            </div>
-        </div>
-    </nav>
-
-    
-    <nav class="navbar-mobile" id="nav-mobile">
-        <div class="container">
-            <div class="navbar-header">
-                <div>
-                    <a href="/">DeepRookie&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-                </div>
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
-            </div>
-            <div class="menu" id="mobile-menu">
-                
-                    <a class="menu-item" href="/archives">Posts</a>
-                
-                    <a class="menu-item" href="/category">Categories</a>
-                
-                    <a class="menu-item" href="/tag">Tags</a>
-                
-                    <a class="menu-item" href="/about">About</a>
-                
-            </div>
-        </div>
-    </nav>
-
-</header>
-<script>
-    var mobileBtn = function f() {
-        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
-        var mobileMenu = document.getElementById("mobile-menu");
-        if(toggleMenu.classList.contains("active")){
-           toggleMenu.classList.remove("active")
-            mobileMenu.classList.remove("active")
-        }else{
-            toggleMenu.classList.add("active")
-            mobileMenu.classList.add("active")
-        }
-    }
-</script>
-            <div class="main">
-                <div class="container">
-    
-    
-        <div class="post-toc">
-    <div class="tocbot-list">
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
     </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
-        <a onclick="go_top()">Back to top</a>
-        <a onclick="go_bottom()">Go to bottom</a>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
     </div>
+  </div>
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
 
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "Collapse all"
-    }
 
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "Expand all"
-    }
 
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
 
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
 
-</script>
-    
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%8C%82%E8%BD%BD%E8%B0%B7%E6%AD%8C%E4%BA%91%E7%9B%98%EF%BC%8C%E8%A7%A3%E5%8E%8B%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text">1.挂载谷歌云盘，解压数据集</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85%E5%B9%B6%E5%AF%BC%E5%85%A5%E4%BE%9D%E8%B5%96"><span class="nav-number">2.</span> <span class="nav-text">2.安装并导入依赖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%9B%B4%E6%94%B9%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">3.更改工作目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE%E5%92%8C%E6%A0%87%E7%AD%BE"><span class="nav-number">4.</span> <span class="nav-text">4.查看数据和标签</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Selective-search"><span class="nav-number">5.</span> <span class="nav-text">5.Selective search</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-IOU"><span class="nav-number">6.</span> <span class="nav-text">6.IOU</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E5%87%86%E5%A4%87%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE"><span class="nav-number">7.</span> <span class="nav-text">7.准备训练数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-%E9%A2%84%E8%AE%AD%E7%BB%83%EF%BC%88%E4%BD%BF%E7%94%A8VGG16%E6%A8%A1%E5%9E%8B%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">8.预训练（使用VGG16模型创建一个迁移学习模型）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-%E5%88%9B%E5%BB%BA%E5%B8%A6%E6%9C%89SVM%E7%9A%84%E6%96%B0%E7%BD%91%E7%BB%9C"><span class="nav-number">9.</span> <span class="nav-text">9.创建带有SVM的新网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#9-1%E5%88%9B%E5%BB%BA%E4%BE%9BSVM%E4%BD%BF%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">9.1.</span> <span class="nav-text">9.1创建供SVM使用的数据集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-SVM%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">9.2.</span> <span class="nav-text">9.2 SVM模型结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-3-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">9.3.</span> <span class="nav-text">9.3 模型训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-4-%E7%BB%98%E5%88%B6%E6%8D%9F%E5%A4%B1%E5%8F%98%E5%8C%96%E6%9B%B2%E7%BA%BF"><span class="nav-number">9.4.</span> <span class="nav-text">9.4 绘制损失变化曲线</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-%E6%B5%8B%E8%AF%95"><span class="nav-number">10.</span> <span class="nav-text">10. 测试</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">deeprookie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
 
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">RCNN代码复现</h1>
-            
-                <div class="post-meta">
-                    
-                        Author: <a itemprop="author" rel="author" href="/">deeprookie</a>
-                    
+  </aside>
 
-                    
-                        <span class="post-time">
-                        Date: <a href="#">December 29, 2023&nbsp;&nbsp;11:45:34</a>
-                        </span>
-                    
-                    
-                </div>
-            
-        </header>
 
-        <div class="post-content">
-            <p>本代码最初在colab中实现，以下为全部代码及运行输出结果</p>
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="RCNN代码复现 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RCNN代码复现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-12-29 11:45:34 / Modified: 11:49:14" itemprop="dateCreated datePublished" datetime="2023-12-29T11:45:34+08:00">2023-12-29</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本代码最初在colab中实现，以下为全部代码及运行输出结果</p>
 <h1 id="1-挂载谷歌云盘，解压数据集"><a href="#1-挂载谷歌云盘，解压数据集" class="headerlink" title="1.挂载谷歌云盘，解压数据集"></a>1.挂载谷歌云盘，解压数据集</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%pwd</span><br></pre></td></tr></table></figure>
 
 
@@ -607,71 +588,90 @@ Epoch 20/20
 <p>最后的测试效果没有很好，可能因为使用的训练数据过少，如果显存足够可以不用截取训练集的子集来进行训练，效果应该会提高。</p>
 </blockquote>
 
-        </div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
 
         
-            <section class="post-copyright">
-                
-                    <p class="copyright-item">
-                        <span>Author:</span>
-                        <span>deeprookie</span>
-                    </p>
-                
-                
-                    <p class="copyright-item">
-                        <span>Permalink:</span>
-                        <span><a href="https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">https://valoray.github.io/2023/12/29/RCNN%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/</a></span>
-                    </p>
-                
-                
-                    <p class="copyright-item">
-                        <span>License:</span>
-                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
-                    </p>
-                
-                
-                     <p class="copyright-item">
-                         <span>Slogan:</span>
-                         <span>Do you believe in <strong>DESTINY</strong>?</span>
-                     </p>
-                
 
-            </section>
-        
-        <section class="post-tags">
-            <div>
-                <span>Tag(s):</span>
-                <span class="tag">
-                    
-                </span>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" rel="prev" title="RCNN论文理解">
+                  <i class="fa fa-angle-left"></i> RCNN论文理解
+                </a>
             </div>
-            <div>
-                <a href="javascript:window.history.back();">back</a>
-                <span>· </span>
-                <a href="/">home</a>
+            <div class="post-nav-item">
+                <a href="/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" rel="next" title="Fast RCNN论文理解">
+                  Fast RCNN论文理解 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
-        </section>
-        <section class="post-nav">
-            
-                <a class="prev" rel="prev" href="/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">Fast RCNN论文理解</a>
-            
-            
-            <a class="next" rel="next" href="/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">RCNN论文理解</a>
-            
-        </section>
-
-
-    </article>
+          </div>
+    </footer>
+  </article>
 </div>
 
-            </div>
-            <footer id="footer" class="footer">
-    <div class="copyright">
-        <span>© deeprookie | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
-    </div>
-</footer>
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">deeprookie</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
 
     </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" integrity="sha256-tc4b48P1MPGS4PJXHRlChGCW1mEZy62jS/3JEsSHPzU=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
 </body>
-
 </html>

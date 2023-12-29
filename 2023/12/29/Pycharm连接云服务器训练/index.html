@@ -1,217 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
 
-    <meta name="author" content="deeprookie">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="1.在AutoDL租用实例1获得主机名、端口号、用户名和密码  2.点击 Tools，点击 部署Deployment，点击Configuration 3.配置服务器信息并测试连接 4.设置本地路径和远程路径映射 5.勾选同步代码时自动创建文件夹  6.设置远程解释器和同步目录       7.连接成功 8.打开远程Terminal 9.同地区可以选择跨实例拷贝数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pycharm连接云服务器训练">
+<meta property="og:url" content="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1.在AutoDL租用实例1获得主机名、端口号、用户名和密码  2.点击 Tools，点击 部署Deployment，点击Configuration 3.配置服务器信息并测试连接 4.设置本地路径和远程路径映射 5.勾选同步代码时自动创建文件夹  6.设置远程解释器和同步目录       7.连接成功 8.打开远程Terminal 9.同地区可以选择跨实例拷贝数据">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfbuI.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfoUq.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfMPY.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfWE1.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKf5dr.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfO9v.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYILj.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYuNx.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYwFU.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfqvc.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKY3up.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfxFD.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfTaM.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfUNG.png">
+<meta property="article:published_time" content="2023-12-29T06:56:47.000Z">
+<meta property="article:modified_time" content="2023-12-29T07:03:52.551Z">
+<meta property="article:author" content="deeprookie">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png">
 
 
+<link rel="canonical" href="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/","path":"2023/12/29/Pycharm连接云服务器训练/","title":"Pycharm连接云服务器训练"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>Pycharm连接云服务器训练 | Hexo</title>
+  
 
 
 
-    <link rel="icon" href="/favicon.svg">
 
 
 
 
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
 
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
 
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
 
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-
-
-
-    
-    
-        
-    
-
-
-<meta name="generator" content="Hexo 7.0.0"></head>
-
-<body>
-    <script>
-        // this function is used to check current theme before page loaded.
-        (() => {
-            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
-            const isDark = currentTheme === 'dark';
-            const pagebody = document.getElementsByTagName('body')[0]
-            if (isDark) {
-                pagebody.classList.add('dark-theme');
-                // mobile
-                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
-            } else {
-                pagebody.classList.remove('dark-theme');
-                // mobile
-                document.getElementById("mobile-toggle-theme").innerText = "· Light"
-            }
-        })();
-    </script>
-
-    <div class="wrapper">
-        <header>
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-header header-logo"><a href="/">DeepRookie&#39;s Blog</a></div>
-            <div class="menu navbar-right">
-                
-                    <a class="menu-item" href="/archives">Posts</a>
-                
-                    <a class="menu-item" href="/category">Categories</a>
-                
-                    <a class="menu-item" href="/tag">Tags</a>
-                
-                    <a class="menu-item" href="/about">About</a>
-                
-                <input id="switch_default" type="checkbox" class="switch_default">
-                <label for="switch_default" class="toggleBtn"></label>
-            </div>
-        </div>
-    </nav>
-
-    
-    <nav class="navbar-mobile" id="nav-mobile">
-        <div class="container">
-            <div class="navbar-header">
-                <div>
-                    <a href="/">DeepRookie&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-                </div>
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
-            </div>
-            <div class="menu" id="mobile-menu">
-                
-                    <a class="menu-item" href="/archives">Posts</a>
-                
-                    <a class="menu-item" href="/category">Categories</a>
-                
-                    <a class="menu-item" href="/tag">Tags</a>
-                
-                    <a class="menu-item" href="/about">About</a>
-                
-            </div>
-        </div>
-    </nav>
-
-</header>
-<script>
-    var mobileBtn = function f() {
-        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
-        var mobileMenu = document.getElementById("mobile-menu");
-        if(toggleMenu.classList.contains("active")){
-           toggleMenu.classList.remove("active")
-            mobileMenu.classList.remove("active")
-        }else{
-            toggleMenu.classList.add("active")
-            mobileMenu.classList.add("active")
-        }
-    }
-</script>
-            <div class="main">
-                <div class="container">
-    
-    
-        <div class="post-toc">
-    <div class="tocbot-list">
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
     </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
-        <a onclick="go_top()">Back to top</a>
-        <a onclick="go_bottom()">Go to bottom</a>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
     </div>
+  </div>
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
 
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "Collapse all"
-    }
 
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "Expand all"
-    }
 
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
 
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
 
-</script>
-    
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%9C%A8AutoDL%E7%A7%9F%E7%94%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">1.在AutoDL租用实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%82%B9%E5%87%BB-Tools%EF%BC%8C%E7%82%B9%E5%87%BB-%E9%83%A8%E7%BD%B2Deployment%EF%BC%8C%E7%82%B9%E5%87%BBConfiguration"><span class="nav-number">2.</span> <span class="nav-text">2.点击 Tools，点击 部署Deployment，点击Configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BF%A1%E6%81%AF%E5%B9%B6%E6%B5%8B%E8%AF%95%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">3.配置服务器信息并测试连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E8%AE%BE%E7%BD%AE%E6%9C%AC%E5%9C%B0%E8%B7%AF%E5%BE%84%E5%92%8C%E8%BF%9C%E7%A8%8B%E8%B7%AF%E5%BE%84%E6%98%A0%E5%B0%84"><span class="nav-number">4.</span> <span class="nav-text">4.设置本地路径和远程路径映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%8B%BE%E9%80%89%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81%E6%97%B6%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">5.勾选同步代码时自动创建文件夹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E8%AE%BE%E7%BD%AE%E8%BF%9C%E7%A8%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E5%92%8C%E5%90%8C%E6%AD%A5%E7%9B%AE%E5%BD%95"><span class="nav-number">6.</span> <span class="nav-text">6.设置远程解释器和同步目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E8%BF%9E%E6%8E%A5%E6%88%90%E5%8A%9F"><span class="nav-number">7.</span> <span class="nav-text">7.连接成功</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-%E6%89%93%E5%BC%80%E8%BF%9C%E7%A8%8BTerminal"><span class="nav-number">8.</span> <span class="nav-text">8.打开远程Terminal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-%E5%90%8C%E5%9C%B0%E5%8C%BA%E5%8F%AF%E4%BB%A5%E9%80%89%E6%8B%A9%E8%B7%A8%E5%AE%9E%E4%BE%8B%E6%8B%B7%E8%B4%9D%E6%95%B0%E6%8D%AE"><span class="nav-number">9.</span> <span class="nav-text">9.同地区可以选择跨实例拷贝数据</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">deeprookie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
 
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">Pycharm连接云服务器训练</h1>
-            
-                <div class="post-meta">
-                    
-                        Author: <a itemprop="author" rel="author" href="/">deeprookie</a>
-                    
+  </aside>
 
-                    
-                        <span class="post-time">
-                        Date: <a href="#">December 29, 2023&nbsp;&nbsp;14:56:47</a>
-                        </span>
-                    
-                    
-                </div>
-            
-        </header>
 
-        <div class="post-content">
-            <h4 id="1-在AutoDL租用实例"><a href="#1-在AutoDL租用实例" class="headerlink" title="1.在AutoDL租用实例"></a>1.在AutoDL租用实例</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Pycharm连接云服务器训练 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pycharm连接云服务器训练
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-12-29 14:56:47 / Modified: 15:03:52" itemprop="dateCreated datePublished" datetime="2023-12-29T14:56:47+08:00">2023-12-29</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h4 id="1-在AutoDL租用实例"><a href="#1-在AutoDL租用实例" class="headerlink" title="1.在AutoDL租用实例"></a>1.在AutoDL租用实例</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
 
 <h4 id="2-点击-Tools，点击-部署Deployment，点击Configuration"><a href="#2-点击-Tools，点击-部署Deployment，点击Configuration" class="headerlink" title="2.点击 Tools，点击 部署Deployment，点击Configuration"></a>2.点击 <code>Tools</code>，点击 部署<code>Deployment</code>，点击<code>Configuration</code></h4><p><img src="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png" alt="OKfzRF.png"></p>
 <h4 id="3-配置服务器信息并测试连接"><a href="#3-配置服务器信息并测试连接" class="headerlink" title="3.配置服务器信息并测试连接"></a>3.配置服务器信息并测试连接</h4><p><img src="https://ooo.0x0.ooo/2023/12/29/OKfbuI.png" alt="OKfbuI.png"></p>
@@ -229,69 +220,87 @@
 <h4 id="8-打开远程Terminal"><a href="#8-打开远程Terminal" class="headerlink" title="8.打开远程Terminal"></a>8.打开远程Terminal</h4><p><img src="https://ooo.0x0.ooo/2023/12/29/OKfTaM.png" alt="OKfTaM.png"></p>
 <h4 id="9-同地区可以选择跨实例拷贝数据"><a href="#9-同地区可以选择跨实例拷贝数据" class="headerlink" title="9.同地区可以选择跨实例拷贝数据"></a>9.同地区可以选择跨实例拷贝数据</h4><p><img src="https://ooo.0x0.ooo/2023/12/29/OKfUNG.png" alt="OKfUNG.png"></p>
 
-        </div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
 
         
-            <section class="post-copyright">
-                
-                    <p class="copyright-item">
-                        <span>Author:</span>
-                        <span>deeprookie</span>
-                    </p>
-                
-                
-                    <p class="copyright-item">
-                        <span>Permalink:</span>
-                        <span><a href="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/">https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/</a></span>
-                    </p>
-                
-                
-                    <p class="copyright-item">
-                        <span>License:</span>
-                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
-                    </p>
-                
-                
-                     <p class="copyright-item">
-                         <span>Slogan:</span>
-                         <span>Do you believe in <strong>DESTINY</strong>?</span>
-                     </p>
-                
 
-            </section>
-        
-        <section class="post-tags">
-            <div>
-                <span>Tag(s):</span>
-                <span class="tag">
-                    
-                </span>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/12/29/Faster-RCNN%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="prev" title="Faster RCNN代码分析（二）">
+                  <i class="fa fa-angle-left"></i> Faster RCNN代码分析（二）
+                </a>
             </div>
-            <div>
-                <a href="javascript:window.history.back();">back</a>
-                <span>· </span>
-                <a href="/">home</a>
+            <div class="post-nav-item">
             </div>
-        </section>
-        <section class="post-nav">
-            
-            
-            <a class="next" rel="next" href="/2023/12/29/Faster-RCNN%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/">Faster RCNN代码分析（二）</a>
-            
-        </section>
-
-
-    </article>
+          </div>
+    </footer>
+  </article>
 </div>
 
-            </div>
-            <footer id="footer" class="footer">
-    <div class="copyright">
-        <span>© deeprookie | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
-    </div>
-</footer>
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">deeprookie</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
 
     </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" integrity="sha256-tc4b48P1MPGS4PJXHRlChGCW1mEZy62jS/3JEsSHPzU=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
 </body>
-
 </html>
