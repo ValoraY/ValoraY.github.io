@@ -262,9 +262,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2023-12-29 12:03:34 / 修改时间：21:01:51" itemprop="dateCreated datePublished" datetime="2023-12-29T12:03:34+08:00">2023-12-29</time>
+      <time title="创建时间：2023-12-29 12:03:34" itemprop="dateCreated datePublished" datetime="2023-12-29T12:03:34+08:00">2023-12-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-01-02 09:38:40" itemprop="dateModified" datetime="2024-01-02T09:38:40+08:00">2024-01-02</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -288,22 +294,7 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="Fast-RCNN论文理解"><a href="#Fast-RCNN论文理解" class="headerlink" title="Fast RCNN论文理解"></a>Fast RCNN论文理解</h1><p>在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。</p>
 <h2 id="1-RCNN和SPPnet的缺点"><a href="#1-RCNN和SPPnet的缺点" class="headerlink" title="1.RCNN和SPPnet的缺点"></a>1.RCNN和SPPnet的缺点</h2><h3 id="1-1RCNN的缺点"><a href="#1-1RCNN的缺点" class="headerlink" title="1.1RCNN的缺点"></a>1.1RCNN的缺点</h3><ol>
-<li>训练是多阶段的<ol>
-<li>首先，在候选区域上微调ConvNet</li>
-<li>然后，对ConvNet产生的特征训练SVMs分类器，用来代替微调的CNN网络学到的softmax分类器</li>
-<li>最后，学习边界框回归网络</li>
-</ol>
-</li>
-<li>训练耗费时间和空间<ol>
-<li>为了训练SVM分类器和边界框回归网络，从ConvNet抽取到的候选区域的特征要先被写入磁盘</li>
-<li>耗时：<strong>RCNN对每个候选区域都执行ConvNet前向传播来提取特征，没有共享计算</strong></li>
-</ol>
-</li>
-<li>测试很慢<ol>
-<li>每张测试图片要先获取2000个候选区域，再对每个区域抽取特征，耗时很长</li>
-</ol>
-</li>
-</ol>
+<li><p>训练是多阶段的</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/#more" rel="contents">
@@ -524,7 +515,7 @@
 <!--
   <div class="copyright">
     &copy; 
-    <span itemprop="copyrightYear">2023</span>
+    <span itemprop="copyrightYear">2024</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>

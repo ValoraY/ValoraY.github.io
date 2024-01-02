@@ -5,24 +5,27 @@
     <url>/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<h1 id="Fast-RCNN论文理解"><a href="#Fast-RCNN论文理解" class="headerlink" title="Fast RCNN论文理解"></a>Fast RCNN论文理解</h1><p>在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。</p>
 <h2 id="1-RCNN和SPPnet的缺点"><a href="#1-RCNN和SPPnet的缺点" class="headerlink" title="1.RCNN和SPPnet的缺点"></a>1.RCNN和SPPnet的缺点</h2><h3 id="1-1RCNN的缺点"><a href="#1-1RCNN的缺点" class="headerlink" title="1.1RCNN的缺点"></a>1.1RCNN的缺点</h3><ol>
-<li>训练是多阶段的<ol>
+<li><p>训练是多阶段的</p>
+<span id="more"></span>
+
+<ol>
 <li>首先，在候选区域上微调ConvNet</li>
 <li>然后，对ConvNet产生的特征训练SVMs分类器，用来代替微调的CNN网络学到的softmax分类器</li>
 <li>最后，学习边界框回归网络</li>
 </ol>
 </li>
-<li>训练耗费时间和空间<ol>
+<li><p>训练耗费时间和空间</p>
+<ol>
 <li>为了训练SVM分类器和边界框回归网络，从ConvNet抽取到的候选区域的特征要先被写入磁盘</li>
 <li>耗时：<strong>RCNN对每个候选区域都执行ConvNet前向传播来提取特征，没有共享计算</strong></li>
 </ol>
 </li>
-<li>测试很慢<ol>
+<li><p>测试很慢</p>
+<ol>
 <li>每张测试图片要先获取2000个候选区域，再对每个区域抽取特征，耗时很长</li>
 </ol>
 </li>
 </ol>
-<span id="more"></span>
-
 <h3 id="1-2SPPnet的缺点"><a href="#1-2SPPnet的缺点" class="headerlink" title="1.2SPPnet的缺点"></a>1.2SPPnet的缺点</h3><h4 id="1-2-1SPPnet对RCNN的改进"><a href="#1-2-1SPPnet对RCNN的改进" class="headerlink" title="1.2.1SPPnet对RCNN的改进"></a>1.2.1SPPnet对RCNN的改进</h4><p>SPPnet对RCNN进行了改进，引入了一个空间金字塔池化层(SPP layer)，这个层的本质是：通过采用动态的池化核尺寸，来限制最终特征输出尺寸的最大池化层(max pooling layer)。从而使网络借助该层可以把不同大小的候选区域特征图转换成特定大小的输出。</p>
 <p>因此该网络的运行流程大致如下：</p>
 <p>输入整张图片进行前向传播，计算一个卷积特征图&#x3D;&gt;从这个共享特征图抠出每个候选区域的特征图&#x3D;&gt;通过SPP layer把不同大小的候选区域特征图转换成特定大小的输出&#x3D;&gt;对特征向量进行分类。</p>
@@ -171,9 +174,9 @@ http://images.cocodataset.org/zips/test2017.zip
     <title>Faster RCNN论文理解</title>
     <url>/2023/12/29/Faster-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<h1 id="Faster-RCNN论文理解"><a href="#Faster-RCNN论文理解" class="headerlink" title="Faster RCNN论文理解"></a>Faster RCNN论文理解</h1><p><img src="https://ooo.0x0.ooo/2023/12/29/OKYpMG.png" alt="OKYpMG.png"></p>
-<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1.背景"></a>1.背景</h2><p>基于候选区域的CNNs(RCNN、SPPnet、FastRCNN…)在目标检测领域取得了很好的效果，尤其是共享卷积特征及大地降低了计算代价，提高了训练和测试的速度。如果忽略产生候选区域(region proposals)的耗时，Fast RCNN输入一张图片和其候选区域后几乎可以实现实时检测。因此，现在检测系统的计算瓶颈主要在于产生候选区域的部分。Selective Search (SS)产生一张图片的2000个候选区域要耗时2s，EdgeBoxes则要耗时0.2s（两种方法都只有CPU实现）——太慢了！因此，本文提出利用deep ConvNet来产生候选区域。</p>
 <span id="more"></span>
 
+<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1.背景"></a>1.背景</h2><p>基于候选区域的CNNs(RCNN、SPPnet、FastRCNN…)在目标检测领域取得了很好的效果，尤其是共享卷积特征及大地降低了计算代价，提高了训练和测试的速度。如果忽略产生候选区域(region proposals)的耗时，Fast RCNN输入一张图片和其候选区域后几乎可以实现实时检测。因此，现在检测系统的计算瓶颈主要在于产生候选区域的部分。Selective Search (SS)产生一张图片的2000个候选区域要耗时2s，EdgeBoxes则要耗时0.2s（两种方法都只有CPU实现）——太慢了！因此，本文提出利用deep ConvNet来产生候选区域。</p>
 <h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2.主要贡献"></a>2.主要贡献</h2><ol>
 <li><strong>用RPN代替selective、EdgeBoxes产生候选区域</strong>：RPN(Region Proposal Networks)，能够同时预测边界框和对象性得分(objectness scores)，并和Fast RCNN目标检测网络共享了卷积特征，实现了网络加速。</li>
 <li>提出了一种“轮流”的训练模式来合并RPN和Fast RCNN</li>
