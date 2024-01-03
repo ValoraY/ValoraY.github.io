@@ -19,19 +19,19 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Fast RCNN论文理解在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。 1.RCNN和SPPnet的缺点1.1RCNN的缺点 训练是多阶段的">
+    <meta name="description" content="Fast RCNN论文理解在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。 RCNN和SPPnet的缺点RCNN的缺点 训练是多阶段的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fast RCNN论文理解">
 <meta property="og:url" content="https://valoray.github.io/2023/12/29/Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="DeepRookie">
-<meta property="og:description" content="Fast RCNN论文理解在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。 1.RCNN和SPPnet的缺点1.1RCNN的缺点 训练是多阶段的">
+<meta property="og:description" content="Fast RCNN论文理解在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。 RCNN和SPPnet的缺点RCNN的缺点 训练是多阶段的">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYAJv.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYrxY.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKY7Hp.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYNXU.png">
 <meta property="article:published_time" content="2023-12-29T04:03:34.000Z">
-<meta property="article:modified_time" content="2024-01-02T01:38:40.519Z">
+<meta property="article:modified_time" content="2024-01-03T07:09:52.946Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="Fast RCNN">
 <meta property="article:tag" content="论文理解">
@@ -146,7 +146,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">Fast RCNN论文理解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-RCNN%E5%92%8CSPPnet%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">1.RCNN和SPPnet的缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1RCNN%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1RCNN的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2SPPnet%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2SPPnet的缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1SPPnet%E5%AF%B9RCNN%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">1.2.1SPPnet对RCNN的改进</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2SPPnet%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">1.2.2SPPnet的缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.2.</span> <span class="nav-text">2.主要贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">3.模型结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1%E6%80%BB%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1总体流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2%E4%B8%8ESPPnet%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2与SPPnet的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3组成部分及实现步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-ROI%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">1.ROI池化层</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%88%9D%E5%A7%8B%E5%8C%96Fast-RCNN"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">2.初始化Fast RCNN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">3.微调模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E7%9B%AE%E6%A0%87%E7%9A%84%E5%B0%BA%E5%BA%A6%E4%B8%8D%E5%8F%98%E6%80%A7"><span class="nav-number">1.3.3.4.</span> <span class="nav-text">4.目标的尺度不变性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4测试流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5%E6%88%AA%E6%96%AD%E7%9A%84%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3"><span class="nav-number">1.3.5.</span> <span class="nav-text">3.5截断的奇异值分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.3.6.</span> <span class="nav-text">3.6实验设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%BE%E8%AE%A1%E8%AF%84%E4%BC%B0"><span class="nav-number">1.3.7.</span> <span class="nav-text">3.7模型的设计评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E8%AE%AD%E7%BB%83%E6%98%AF%E5%90%A6%E6%9C%89%E6%95%88"><span class="nav-number">1.3.7.1.</span> <span class="nav-text">1.多任务训练是否有效</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%8D%95%E5%B0%BA%E5%BA%A6%E8%BF%98%E6%98%AF%E5%A4%9A%E5%B0%BA%E5%BA%A6%E8%AE%AD%E7%BB%83%EF%BC%9F"><span class="nav-number">1.3.7.2.</span> <span class="nav-text">2.单尺度还是多尺度训练？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E6%9B%B4%E5%A4%9A%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.7.3.</span> <span class="nav-text">3.是否需要更多训练数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-SVM%E6%98%AF%E4%B8%8D%E6%98%AF%E6%AF%94softmax%E5%A5%BD%EF%BC%9F"><span class="nav-number">1.3.7.4.</span> <span class="nav-text">4.SVM是不是比softmax好？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%80%99%E9%80%89%E5%8C%BA%E5%9F%9F%E6%98%AF%E4%B8%8D%E6%98%AF%E8%B6%8A%E5%A4%9A%E8%B6%8A%E5%A5%BD%EF%BC%9F"><span class="nav-number">1.3.7.5.</span> <span class="nav-text">5.候选区域是不是越多越好？</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fast-RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">Fast RCNN论文理解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RCNN%E5%92%8CSPPnet%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">RCNN和SPPnet的缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RCNN%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.1.</span> <span class="nav-text">RCNN的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPPnet%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.2.</span> <span class="nav-text">SPPnet的缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SPPnet%E5%AF%B9RCNN%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">SPPnet对RCNN的改进</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SPPnet%E7%9A%84%E7%BC%BA%E7%82%B9-1"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">SPPnet的缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.2.</span> <span class="nav-text">主要贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">模型结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">总体流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8ESPPnet%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.3.2.</span> <span class="nav-text">与SPPnet的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.3.</span> <span class="nav-text">组成部分及实现步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ROI%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">ROI池化层</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96Fast-RCNN"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">初始化Fast RCNN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">微调模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E7%9A%84%E5%B0%BA%E5%BA%A6%E4%B8%8D%E5%8F%98%E6%80%A7"><span class="nav-number">1.3.3.4.</span> <span class="nav-text">目标的尺度不变性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.3.4.</span> <span class="nav-text">测试流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%AA%E6%96%AD%E7%9A%84%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3"><span class="nav-number">1.3.5.</span> <span class="nav-text">截断的奇异值分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.3.6.</span> <span class="nav-text">实验设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%BE%E8%AE%A1%E8%AF%84%E4%BC%B0"><span class="nav-number">1.3.7.</span> <span class="nav-text">模型的设计评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E4%BB%BB%E5%8A%A1%E8%AE%AD%E7%BB%83%E6%98%AF%E5%90%A6%E6%9C%89%E6%95%88"><span class="nav-number">1.3.7.1.</span> <span class="nav-text">多任务训练是否有效</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E5%B0%BA%E5%BA%A6%E8%BF%98%E6%98%AF%E5%A4%9A%E5%B0%BA%E5%BA%A6%E8%AE%AD%E7%BB%83%EF%BC%9F"><span class="nav-number">1.3.7.2.</span> <span class="nav-text">单尺度还是多尺度训练？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E6%9B%B4%E5%A4%9A%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.7.3.</span> <span class="nav-text">是否需要更多训练数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SVM%E6%98%AF%E4%B8%8D%E6%98%AF%E6%AF%94softmax%E5%A5%BD%EF%BC%9F"><span class="nav-number">1.3.7.4.</span> <span class="nav-text">SVM是不是比softmax好？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%80%99%E9%80%89%E5%8C%BA%E5%9F%9F%E6%98%AF%E4%B8%8D%E6%98%AF%E8%B6%8A%E5%A4%9A%E8%B6%8A%E5%A5%BD%EF%BC%9F"><span class="nav-number">1.3.7.5.</span> <span class="nav-text">候选区域是不是越多越好？</span></a></li></ol></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -283,7 +283,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-01-02 09:38:40" itemprop="dateModified" datetime="2024-01-02T09:38:40+08:00">2024-01-02</time>
+      <time title="修改时间：2024-01-03 15:09:52" itemprop="dateModified" datetime="2024-01-03T15:09:52+08:00">2024-01-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -305,7 +305,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><h1 id="Fast-RCNN论文理解"><a href="#Fast-RCNN论文理解" class="headerlink" title="Fast RCNN论文理解"></a>Fast RCNN论文理解</h1><p>在Fast RCNN提出前，目标检测领域效果较好的算法是RCNN和SPPnet，因此本文主要将Fast RCNN的改进与这两种算法进行对比。</p>
-<h2 id="1-RCNN和SPPnet的缺点"><a href="#1-RCNN和SPPnet的缺点" class="headerlink" title="1.RCNN和SPPnet的缺点"></a>1.RCNN和SPPnet的缺点</h2><h3 id="1-1RCNN的缺点"><a href="#1-1RCNN的缺点" class="headerlink" title="1.1RCNN的缺点"></a>1.1RCNN的缺点</h3><ol>
+<h2 id="RCNN和SPPnet的缺点"><a href="#RCNN和SPPnet的缺点" class="headerlink" title="RCNN和SPPnet的缺点"></a>RCNN和SPPnet的缺点</h2><h3 id="RCNN的缺点"><a href="#RCNN的缺点" class="headerlink" title="RCNN的缺点"></a>RCNN的缺点</h3><ol>
 <li><p>训练是多阶段的</p>
 <span id="more"></span>
 
@@ -327,38 +327,38 @@
 </ol>
 </li>
 </ol>
-<h3 id="1-2SPPnet的缺点"><a href="#1-2SPPnet的缺点" class="headerlink" title="1.2SPPnet的缺点"></a>1.2SPPnet的缺点</h3><h4 id="1-2-1SPPnet对RCNN的改进"><a href="#1-2-1SPPnet对RCNN的改进" class="headerlink" title="1.2.1SPPnet对RCNN的改进"></a>1.2.1SPPnet对RCNN的改进</h4><p>SPPnet对RCNN进行了改进，引入了一个空间金字塔池化层(SPP layer)，这个层的本质是：通过采用动态的池化核尺寸，来限制最终特征输出尺寸的最大池化层(max pooling layer)。从而使网络借助该层可以把不同大小的候选区域特征图转换成特定大小的输出。</p>
+<h3 id="SPPnet的缺点"><a href="#SPPnet的缺点" class="headerlink" title="SPPnet的缺点"></a>SPPnet的缺点</h3><h4 id="SPPnet对RCNN的改进"><a href="#SPPnet对RCNN的改进" class="headerlink" title="SPPnet对RCNN的改进"></a>SPPnet对RCNN的改进</h4><p>SPPnet对RCNN进行了改进，引入了一个空间金字塔池化层(SPP layer)，这个层的本质是：通过采用动态的池化核尺寸，来限制最终特征输出尺寸的最大池化层(max pooling layer)。从而使网络借助该层可以把不同大小的候选区域特征图转换成特定大小的输出。</p>
 <p>因此该网络的运行流程大致如下：</p>
 <p>输入整张图片进行前向传播，计算一个卷积特征图&#x3D;&gt;从这个共享特征图抠出每个候选区域的特征图&#x3D;&gt;通过SPP layer把不同大小的候选区域特征图转换成特定大小的输出&#x3D;&gt;对特征向量进行分类。</p>
 <p>这种做法只需要对整张图片做一次前向传播，得到整张图片的特征图，再从中抠出不同候选区域的特征图即可，不用像RCNN一样对2000张候选区域图像做2000次前向传播，实现了通过共享计算来加速，解决了RCNN预测时速度慢的问题</p>
-<h4 id="1-2-2SPPnet的缺点"><a href="#1-2-2SPPnet的缺点" class="headerlink" title="1.2.2SPPnet的缺点"></a>1.2.2SPPnet的缺点</h4><ol>
+<h4 id="SPPnet的缺点-1"><a href="#SPPnet的缺点-1" class="headerlink" title="SPPnet的缺点"></a>SPPnet的缺点</h4><ol>
 <li>训练是多阶段的：抽取特征&#x3D;&#x3D;》微调网络&#x3D;&#x3D;》训练SVMs分类器&#x3D;&#x3D;》训练边界框回归</li>
 <li>耗费时间和空间：因为要额外训练SVMs分类器和边界框回归网络，所以CNN得出的特征仍然要被写入磁盘</li>
 <li>SPPnet的微调算法部分不能更新卷积层的参数，限制了深层网络的精度</li>
 </ol>
-<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2.主要贡献"></a>2.主要贡献</h2><ol>
+<h2 id="主要贡献"><a href="#主要贡献" class="headerlink" title="主要贡献"></a>主要贡献</h2><ol>
 <li>精度更高（比RCNN、SPPnet）</li>
 <li>训练使用多任务损失函数(multi-task loss)实现单阶段的训练</li>
 <li>训练可以更新所有的网络层</li>
 <li>不需要磁盘进行特征缓存</li>
 </ol>
-<h2 id="3-模型结构"><a href="#3-模型结构" class="headerlink" title="3.模型结构"></a>3.模型结构</h2><h3 id="3-1总体流程"><a href="#3-1总体流程" class="headerlink" title="3.1总体流程"></a>3.1总体流程</h3><p><img src="https://ooo.0x0.ooo/2023/12/29/OKYAJv.png" alt="OKYAJv.png"></p>
+<h2 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h2><h3 id="总体流程"><a href="#总体流程" class="headerlink" title="总体流程"></a>总体流程</h3><p><img src="https://ooo.0x0.ooo/2023/12/29/OKYAJv.png" alt="OKYAJv.png"></p>
 <p>输入一整张图片和一套候选区域（也叫ROIs）&#x3D;&gt;Deep ConvNet（卷积+池化）得到整体的特征图&#x3D;&gt;根据候选区域在原图中的位置，使用ROI投影，获取到候选区域的特征图&#x3D;&gt;针对每个候选区域，用ROI池化层把尺寸不固定的候选区域特征图转换成特定尺寸的特征图（如7 x 7）&#x3D;&gt;接上2个全连接层，得到每个候选区域的特征向量&#x3D;&gt;再接上两个并列的全连接层，获得两个输出：</p>
 <ol>
 <li>利用softmax预测类别（对K+1个类别）</li>
 <li>产生每个类别对应的边界框坐标（(K+1)*4）</li>
 </ol>
-<h3 id="3-2与SPPnet的区别"><a href="#3-2与SPPnet的区别" class="headerlink" title="3.2与SPPnet的区别"></a>3.2与SPPnet的区别</h3><ol>
+<h3 id="与SPPnet的区别"><a href="#与SPPnet的区别" class="headerlink" title="与SPPnet的区别"></a>与SPPnet的区别</h3><ol>
 <li>SPPnet在ConvNet之后接上了SPP layer（空间金字塔池化层），用来把不同尺寸的候选区域特征图转换为特定大小的输出；而Fast RCNN在ConvNet之后接上了ROI pooling layer（ROI池化层），用于把不同尺寸的候选区域特征图转换成特定尺寸的特征图</li>
 <li>SPPnet在提取到图像的CNN特征后，又额外训练SVM进行分类和回归；而Fast RCNN就是直接接了两个并行的全连接层做分类和回归</li>
 </ol>
-<h3 id="3-3组成部分及实现步骤"><a href="#3-3组成部分及实现步骤" class="headerlink" title="3.3组成部分及实现步骤"></a>3.3组成部分及实现步骤</h3><h4 id="1-ROI池化层"><a href="#1-ROI池化层" class="headerlink" title="1.ROI池化层"></a>1.ROI池化层</h4><p>用最大池化把感兴趣区域的特征转换成特定大小的特征图（如7 x 7），是spatial pyramid pooling layer只有一个金字塔层时的特例</p>
-<h4 id="2-初始化Fast-RCNN"><a href="#2-初始化Fast-RCNN" class="headerlink" title="2.初始化Fast RCNN"></a>2.初始化Fast RCNN</h4><p>从在ImageNet上预训练好的图像分类模型（AlexNet）上初始化一个Fast RCNN，改造步骤为;</p>
+<h3 id="组成部分及实现步骤"><a href="#组成部分及实现步骤" class="headerlink" title="组成部分及实现步骤"></a>组成部分及实现步骤</h3><h4 id="ROI池化层"><a href="#ROI池化层" class="headerlink" title="ROI池化层"></a>ROI池化层</h4><p>用最大池化把感兴趣区域的特征转换成特定大小的特征图（如7 x 7），是spatial pyramid pooling layer只有一个金字塔层时的特例</p>
+<h4 id="初始化Fast-RCNN"><a href="#初始化Fast-RCNN" class="headerlink" title="初始化Fast RCNN"></a>初始化Fast RCNN</h4><p>从在ImageNet上预训练好的图像分类模型（AlexNet）上初始化一个Fast RCNN，改造步骤为;</p>
 <p>（1）首先，把Conv Net之后最后一层的最大池化层替换为一个ROI池化层</p>
 <p>（2）其次，网络的最后一个全连接层和softmax层替换为两个并行的全连接层（一个分支用来预测K+1个类别，一个分支用来预测边界框回归）</p>
 <p>（3）最后，网络要接受两个数据输入：a list of images和 a list of ROIs in those images</p>
 <p><img src="https://ooo.0x0.ooo/2023/12/29/OKYrxY.png" alt="OKYrxY.png"></p>
-<h4 id="3-微调模型"><a href="#3-微调模型" class="headerlink" title="3.微调模型"></a>3.微调模型</h4><p>即：通过反向传播来训练整个网络的权重</p>
+<h4 id="微调模型"><a href="#微调模型" class="headerlink" title="微调模型"></a>微调模型</h4><p>即：通过反向传播来训练整个网络的权重</p>
 <p>（1）为什么SPPnet不能更新空间金字塔池化层前的权重？</p>
 <p>根本原因：当训练样本（ROIs）来自于不同的图片时，通过空间金字塔池化层（SPP layer）的反向传播是无效的。（至于为啥无效，没看懂解释）</p>
 <p>（2）Fast RCNN是怎么有效训练的？（通过反向传播来训练整个网络的权重）</p>
@@ -379,26 +379,26 @@
 <p>（4）mini-batch 分层采样</p>
 <p>（5）通过ROI池化层反向传播</p>
 <p>（6）SGD 超参数</p>
-<h4 id="4-目标的尺度不变性"><a href="#4-目标的尺度不变性" class="headerlink" title="4.目标的尺度不变性"></a>4.目标的尺度不变性</h4><p>（1）含义：如果有两个内容相同的目标，唯一区别是一个目标比较小，一个目标比较大，如果网络能将这两个目标都识别出来，说明网络具有较好的尺度不变性</p>
+<h4 id="目标的尺度不变性"><a href="#目标的尺度不变性" class="headerlink" title="目标的尺度不变性"></a>目标的尺度不变性</h4><p>（1）含义：如果有两个内容相同的目标，唯一区别是一个目标比较小，一个目标比较大，如果网络能将这两个目标都识别出来，说明网络具有较好的尺度不变性</p>
 <p>（2）两种策略：</p>
 <ul>
 <li>单尺度训练：每张图片都被处理成预定义好的图片尺寸来进行训练和预测。让网络来直接学会尺度不变性</li>
 <li>多尺度训练：在训练期间，每一张图片都被随机采样成特定的尺度。这也是一种数据增强的手段</li>
 </ul>
-<h3 id="3-4测试流程"><a href="#3-4测试流程" class="headerlink" title="3.4测试流程"></a>3.4测试流程</h3><p>接收输入（一张图片和这张图片中的一系列候选区域），输入网络就能预测出候选区域的类别和精确坐标</p>
-<h3 id="3-5截断的奇异值分解"><a href="#3-5截断的奇异值分解" class="headerlink" title="3.5截断的奇异值分解"></a>3.5截断的奇异值分解</h3><p>能够减少全连接层的参数，从而加速全连接层</p>
-<h3 id="3-6实验设置"><a href="#3-6实验设置" class="headerlink" title="3.6实验设置"></a>3.6实验设置</h3><p>更换不同的CNN网络结构（AlexNet、VGG_CNN_M_1024、VGG16），对比实验结果（精度和测试时间）。</p>
+<h3 id="测试流程"><a href="#测试流程" class="headerlink" title="测试流程"></a>测试流程</h3><p>接收输入（一张图片和这张图片中的一系列候选区域），输入网络就能预测出候选区域的类别和精确坐标</p>
+<h3 id="截断的奇异值分解"><a href="#截断的奇异值分解" class="headerlink" title="截断的奇异值分解"></a>截断的奇异值分解</h3><p>能够减少全连接层的参数，从而加速全连接层</p>
+<h3 id="实验设置"><a href="#实验设置" class="headerlink" title="实验设置"></a>实验设置</h3><p>更换不同的CNN网络结构（AlexNet、VGG_CNN_M_1024、VGG16），对比实验结果（精度和测试时间）。</p>
 <p>此外，还关注了一个问题：对于SPPnet中不太深的ConvNet，只微调全连接层就足以获得较好的精度，然而论文在这里假设：对于很深的网络，上述结论不成立。进而提出了一个问题：微调哪些层的效果更好？</p>
 <p>实验结果是：微调卷积层精度高于只微调全连接层</p>
-<h3 id="3-7模型的设计评估"><a href="#3-7模型的设计评估" class="headerlink" title="3.7模型的设计评估"></a>3.7模型的设计评估</h3><h4 id="1-多任务训练是否有效"><a href="#1-多任务训练是否有效" class="headerlink" title="1.多任务训练是否有效"></a>1.多任务训练是否有效</h4><p>多任务训练：指同时训练分类和边界框回归任务，共同调整一套参数</p>
+<h3 id="模型的设计评估"><a href="#模型的设计评估" class="headerlink" title="模型的设计评估"></a>模型的设计评估</h3><h4 id="多任务训练是否有效"><a href="#多任务训练是否有效" class="headerlink" title="多任务训练是否有效"></a>多任务训练是否有效</h4><p>多任务训练：指同时训练分类和边界框回归任务，共同调整一套参数</p>
 <p>多阶段训练：指分类和边界框回归分成两个阶段进行训练，先训练分类，训练好后冻结参数，再额外训练一个边界框回归分支，也会利用第二个分支的回归结果</p>
 <p>实验结果表明：多任务的训练结果比多阶段的要好</p>
-<h4 id="2-单尺度还是多尺度训练？"><a href="#2-单尺度还是多尺度训练？" class="headerlink" title="2.单尺度还是多尺度训练？"></a>2.单尺度还是多尺度训练？</h4><p>单尺度训练：把短边固定到600像素</p>
+<h4 id="单尺度还是多尺度训练？"><a href="#单尺度还是多尺度训练？" class="headerlink" title="单尺度还是多尺度训练？"></a>单尺度还是多尺度训练？</h4><p>单尺度训练：把短边固定到600像素</p>
 <p>多尺度训练：把短边固定到5种像素</p>
 <p>结果：多尺度精度更高</p>
-<h4 id="3-是否需要更多训练数据"><a href="#3-是否需要更多训练数据" class="headerlink" title="3.是否需要更多训练数据"></a>3.是否需要更多训练数据</h4><p>扩增2007数据集，精度会提高。不会出现传统模型出现的精度饱和的情况</p>
-<h4 id="4-SVM是不是比softmax好？"><a href="#4-SVM是不是比softmax好？" class="headerlink" title="4.SVM是不是比softmax好？"></a>4.SVM是不是比softmax好？</h4><p>实验结果：Fast RCNN中，直接用softmax效果比好</p>
-<h4 id="5-候选区域是不是越多越好？"><a href="#5-候选区域是不是越多越好？" class="headerlink" title="5.候选区域是不是越多越好？"></a>5.候选区域是不是越多越好？</h4><p>实验结果：候选区域越多，精度先提升后下降</p>
+<h4 id="是否需要更多训练数据"><a href="#是否需要更多训练数据" class="headerlink" title="是否需要更多训练数据"></a>是否需要更多训练数据</h4><p>扩增2007数据集，精度会提高。不会出现传统模型出现的精度饱和的情况</p>
+<h4 id="SVM是不是比softmax好？"><a href="#SVM是不是比softmax好？" class="headerlink" title="SVM是不是比softmax好？"></a>SVM是不是比softmax好？</h4><p>实验结果：Fast RCNN中，直接用softmax效果比好</p>
+<h4 id="候选区域是不是越多越好？"><a href="#候选区域是不是越多越好？" class="headerlink" title="候选区域是不是越多越好？"></a>候选区域是不是越多越好？</h4><p>实验结果：候选区域越多，精度先提升后下降</p>
 <p>参考资料：</p>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1y94y1Q7QJ/?spm_id_from=333.880.my_history.page.click&vd_source=66a72b15abe9693bd8b4f738f5a67ee7">https://www.bilibili.com/video/BV1y94y1Q7QJ/?spm_id_from=333.880.my_history.page.click&amp;vd_source=66a72b15abe9693bd8b4f738f5a67ee7</a></p>
