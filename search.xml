@@ -1014,4 +1014,157 @@ Epoch 20/20
         <tag>RCNN</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Django初学教程（一）</title>
+    <url>/2024/01/03/Django%E5%88%9D%E5%AD%A6%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h1><ol>
+<li>创建虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda create -n testDjango python=3.8</span><br><span class="line">conda activate testDjango</span><br><span class="line">pip install Django # 注意这里Django首字母大写</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建项目</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd D:\PythonCode</span><br><span class="line">django-admin startproject mysite</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>创建成功的项目结构为：</p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mysite/</span><br><span class="line">    manage.py</span><br><span class="line">    mysite/</span><br><span class="line">        __init__.py</span><br><span class="line">        settings.py</span><br><span class="line">        urls.py</span><br><span class="line">        asgi.py</span><br><span class="line">        wsgi.py</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>启动服务器：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd mysite</span><br><span class="line">python manage.py runserver</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建应用"><a href="#创建应用" class="headerlink" title="创建应用"></a>创建应用</h1><p>项目&#x3D;（一个及以上的）应用程序 + 配置</p>
+<h2 id="创建应用-1"><a href="#创建应用-1" class="headerlink" title="创建应用"></a>创建应用</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 项目名称为&quot;polls&quot;</span><br><span class="line">python manage.py startapp polls</span><br></pre></td></tr></table></figure>
+
+<p>创建成功的应用结构为：</p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">polls/</span><br><span class="line">    __init__.py</span><br><span class="line">    admin.py</span><br><span class="line">    apps.py</span><br><span class="line">    migrations/</span><br><span class="line">        __init__.py</span><br><span class="line">    models.py</span><br><span class="line">    tests.py</span><br><span class="line">    views.py</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="创建首页"><a href="#创建首页" class="headerlink" title="创建首页"></a>创建首页</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改polls/views.py，创建index view</span><br><span class="line"></span><br><span class="line">from django.http import HttpResponse</span><br><span class="line"></span><br><span class="line">def index(request):</span><br><span class="line">    return HttpResponse(&quot;Hello, world. You&#x27;re at the polls index.&quot;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置url"><a href="#配置url" class="headerlink" title="配置url"></a>配置url</h2><h3 id="应用的url配置文件"><a href="#应用的url配置文件" class="headerlink" title="应用的url配置文件"></a>应用的url配置文件</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 新增polls/urls.py, 用于配置应用&quot;polls&quot;下的url</span><br><span class="line"></span><br><span class="line">from django.urls import path</span><br><span class="line"></span><br><span class="line">from . import views</span><br><span class="line"></span><br><span class="line"># 设置应用程序命名空间</span><br><span class="line"># 在真正的 Django 项目中，可能有五个、十个、二十个或更多应用程序。Django 如何区分它们之间的 URL 名称？——即将命名空间app_name = &quot;polls&quot;添加到 URLconf 中</span><br><span class="line"></span><br><span class="line">app_name = &quot;polls&quot;</span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(&quot;&quot;, views.index, name=&quot;index&quot;),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h3 id="项目的url配置文件"><a href="#项目的url配置文件" class="headerlink" title="项目的url配置文件"></a>项目的url配置文件</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改mysite/urls.py，将应用&quot;polls&quot;下的urls.py引入</span><br><span class="line"></span><br><span class="line">from django.contrib import admin</span><br><span class="line">from django.urls import include, path</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(&quot;polls/&quot;, include(&quot;polls.urls&quot;)),</span><br><span class="line">    path(&quot;admin/&quot;, admin.site.urls),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>启动服务器：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python manage.py runserver</span><br></pre></td></tr></table></figure>
+
+<h1 id="连接Database"><a href="#连接Database" class="headerlink" title="连接Database"></a>连接Database</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在项目的settings.py(即mysite/settings.py)中修改数据库配置</span><br><span class="line"></span><br><span class="line"># 修改数据库配置——更改为mysql数据库</span><br><span class="line">DATABASES = &#123;</span><br><span class="line">    &#x27;default&#x27;: &#123;</span><br><span class="line">        &#x27;ENGINE&#x27;: &#x27;django.db.backends.mysql&#x27;,</span><br><span class="line">        &#x27;NAME&#x27;: &#x27;db_test&#x27;,</span><br><span class="line">        &quot;USER&quot;: &quot;root&quot;,</span><br><span class="line">        &quot;PASSWORD&quot;: &quot;123456xjy&quot;,</span><br><span class="line">        &quot;HOST&quot;: &quot;127.0.0.1&quot;,</span><br><span class="line">        &quot;PORT&quot;: &quot;3306&quot;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首次连接mysql数据库需要在虚拟环境导入以下2个包</span><br><span class="line">pip install pymysql</span><br><span class="line">pip install mysqlclient</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 执行数据迁移——将&quot;mysite/settings.py&quot;中INSTALLED_APPS对应的数据表都创建出来（创建到上述的&quot;db_test&quot;数据库中）</span><br><span class="line">python manage.py migrate</span><br></pre></td></tr></table></figure>
+
+<h1 id="建立Model"><a href="#建立Model" class="headerlink" title="建立Model"></a>建立Model</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li>Change your models (in <code>models.py</code>).</li>
+<li>Run <code>python manage.py makemigrations</code>to create migrations for those changes</li>
+<li>Run <code>python manage.py migrate</code>to apply those changes to the database.</li>
+</ul>
+<h2 id="Change-your-models"><a href="#Change-your-models" class="headerlink" title="Change your models"></a>Change your models</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改polls/models.py，创建类</span><br><span class="line"> </span><br><span class="line">from django.db import models</span><br><span class="line"></span><br><span class="line">class Question(models.Model):</span><br><span class="line">    question_text = models.CharField(max_length=200)</span><br><span class="line">    pub_date = models.DateTimeField(&quot;date published&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Choice(models.Model):</span><br><span class="line">    question = models.ForeignKey(Question, on_delete=models.CASCADE)</span><br><span class="line">    choice_text = models.CharField(max_length=200)</span><br><span class="line">    votes = models.IntegerField(default=0)</span><br></pre></td></tr></table></figure>
+
+<h2 id="make-migrations"><a href="#make-migrations" class="headerlink" title="make migrations"></a>make migrations</h2><ol>
+<li>将应用”polls”放到项目的setting.py（即mysite&#x2F;settings.py）的INSTALLED_APPS中</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改mysite/settings.py，增加一行&quot;polls.apps.PollsConfig&quot;,</span><br><span class="line"></span><br><span class="line">INSTALLED_APPS = [</span><br><span class="line">    &quot;polls.apps.PollsConfig&quot;,</span><br><span class="line">    &quot;django.contrib.admin&quot;,</span><br><span class="line">    &quot;django.contrib.auth&quot;,</span><br><span class="line">    &quot;django.contrib.contenttypes&quot;,</span><br><span class="line">    &quot;django.contrib.sessions&quot;,</span><br><span class="line">    &quot;django.contrib.messages&quot;,</span><br><span class="line">    &quot;django.contrib.staticfiles&quot;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>make migrations</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python manage.py makemigrations polls</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>migrate</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 运行以下代码，即可将models.py中新创建的类Question和类Choice，在数据库中创建出对应的数据表</span><br><span class="line">python manage.py migrate</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>进入Python环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python manage.py shell</span><br></pre></td></tr></table></figure>
+
+<p>We’re using this instead of simply typing “python”, because <code>manage.py</code> sets the <a href="https://docs.djangoproject.com/en/4.2/topics/settings/#envvar-DJANGO_SETTINGS_MODULE"><code>DJANGO_SETTINGS_MODULE</code></a> environment variable, which gives Django the Python import path to your <code>mysite/settings.py</code> file.</p>
+<h1 id="管理后台"><a href="#管理后台" class="headerlink" title="管理后台"></a>管理后台</h1><ol>
+<li>创建超级管理员</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python manage.py createsuperuser</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>运行服务器</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python manage.py runserver</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>将自定义的类注册到管理后台</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改polls/admin.py，将新注册的类Question注册到管理后台</span><br><span class="line"></span><br><span class="line">from django.contrib import admin</span><br><span class="line">from .models import Question</span><br><span class="line"></span><br><span class="line">admin.site.register(Question)</span><br></pre></td></tr></table></figure>
+
+<h1 id="增加Views"><a href="#增加Views" class="headerlink" title="增加Views"></a>增加Views</h1><ol>
+<li>新增视图</li>
+</ol>
+<p>每一个View就干两件事中的一件：要么返回一个HttpResponse，要么返回一个Exception（如Http404）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在polls/views.py新增以下函数（视图）</span><br><span class="line"># 以下均为虚拟实现</span><br><span class="line"></span><br><span class="line">def detail(request, question_id):</span><br><span class="line">    return HttpResponse(&quot;You&#x27;re looking at question %s.&quot; % question_id)</span><br><span class="line"></span><br><span class="line">def results(request, question_id):</span><br><span class="line">    response = &quot;You&#x27;re looking at the results of question %s.&quot;</span><br><span class="line">    return HttpResponse(response % question_id)</span><br><span class="line"></span><br><span class="line">def vote(request, question_id):</span><br><span class="line">    return HttpResponse(&quot;You&#x27;re voting on question %s.&quot; % question_id)</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>配置应用url</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 将新增的view写入pools/urls.py</span><br><span class="line"></span><br><span class="line">from django.urls import path</span><br><span class="line"></span><br><span class="line">from . import views</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    # ex: /polls/</span><br><span class="line">    path(&quot;&quot;, views.index, name=&quot;index&quot;),</span><br><span class="line">    # ex: /polls/5/</span><br><span class="line">    path(&quot;&lt;int:question_id&gt;/&quot;, views.detail, name=&quot;detail&quot;),</span><br><span class="line">    # ex: /polls/5/results/</span><br><span class="line">    path(&quot;&lt;int:question_id&gt;/results/&quot;, views.results, name=&quot;results&quot;),</span><br><span class="line">    # ex: /polls/5/vote/</span><br><span class="line">    path(&quot;&lt;int:question_id&gt;/vote/&quot;, views.vote, name=&quot;vote&quot;),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>用户访问视图的运行流程</li>
+</ol>
+<p>请求页面”&#x2F;polls&#x2F;6&#x2F;“&#x3D;&gt;加载mysite.urls&#x3D;&gt;找到变量”polls&#x2F;“命名的urlpatterns，即<code>path(&quot;polls/&quot;, include(&quot;polls.urls&quot;))</code>&#x3D;&gt;去掉”polls&#x2F;“，剩余”6&#x2F;“&#x3D;&gt;把剩余的”6&#x2F;“发送给”<code>polls.urls</code>“ URLconf&#x3D;&gt;匹配到了<code>path(&quot;&lt;int:question_id&gt;/&quot;, views.detail, name=&quot;detail&quot;)</code>&#x3D;&gt;导致调用了<code>detail()</code> 视图(<code>views.py中的detail()</code>)，具体调用如<code>detail(request=&lt;HttpRequest object&gt;, question_id=34)</code></p>
+<h1 id="修改Views"><a href="#修改Views" class="headerlink" title="修改Views"></a>修改Views</h1><h2 id="index-view"><a href="#index-view" class="headerlink" title="index view"></a>index view</h2><p>上述增加视图中的视图使用了虚拟实现，并没有从数据库中读取记录，或完成其他有实际意义的任务，因此在这一板块将编写实际执行某些操作的视图。</p>
+<ol>
+<li>修改视图(index view)</li>
+</ol>
+<p>法1：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># polls/views.py</span><br><span class="line"># 修改index view (index函数)，使用模板(利用HttpResponse和loader)，读取数据库数据</span><br><span class="line"># 加载调用的模板 polls/index.html并向其传递context。context是将模板变量名称映射到 Python 对象的字典。</span><br><span class="line">from django.http import HttpResponse</span><br><span class="line">from django.template import loader</span><br><span class="line"></span><br><span class="line">from .models import Question</span><br><span class="line"></span><br><span class="line">def index(request):</span><br><span class="line">    latest_question_list = Question.objects.order_by(&quot;-pub_date&quot;)[:5]</span><br><span class="line">    template = loader.get_template(&quot;polls/index.html&quot;)</span><br><span class="line">    context = &#123;</span><br><span class="line">        &quot;latest_question_list&quot;: latest_question_list,</span><br><span class="line">    &#125;</span><br><span class="line">    return HttpResponse(template.render(context, request))</span><br></pre></td></tr></table></figure>
+
+<p>法2：</p>
+<p>利用render()函数代替HttpResponse和loader，简化代码</p>
+<p><code>render()</code>函数第一个参数是请求对象，第二个参数是模板名称，第三个参数是可选的字典。它返回一个<code>HttpResponse</code>对象，这是一个使用给定context的模板对象。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># polls/views.py</span><br><span class="line"></span><br><span class="line">from django.shortcuts import render</span><br><span class="line"></span><br><span class="line">from .models import Question</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def index(request):</span><br><span class="line">    latest_question_list = Question.objects.order_by(&quot;-pub_date&quot;)[:5]</span><br><span class="line">    context = &#123;&quot;latest_question_list&quot;: latest_question_list&#125;</span><br><span class="line">    return render(request, &quot;polls/index.html&quot;, context)</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建模板(index.html)</li>
+</ol>
+<p>如果页面的设计硬编码在视图中，那么当我们想要更改页面的外观时，必须编辑此 Python 代码（即views.py中的函数）。因此我们使用Django的模板系统，通过创建模板，使得页面设计与Python代码分离。</p>
+<p>在应用的目录下创建templates目录（即polls&#x2F;templates&#x2F;），Django会默认在这个目录下寻找模板。</p>
+<p>创建好模板文件后的目录结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 这里还在templates目录下创建了一个polls子目录，在子目录下才放置了模板文件index.html</span><br><span class="line"># 这里新建的polls子目录起到划分命名空间的作用。因为如果在不同的应用程序中具有相同名称的模板，Django 将无法区分它们，所以需要设置命名空间。</span><br><span class="line"></span><br><span class="line">polls/</span><br><span class="line">    __init__.py</span><br><span class="line">    admin.py</span><br><span class="line">    models.py</span><br><span class="line">    views.py</span><br><span class="line">    templates</span><br><span class="line">    	polls</span><br><span class="line">    		index.html</span><br></pre></td></tr></table></figure>
+
+<p>index.html的文件内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># polls/templates/polls/index.html</span><br><span class="line"></span><br><span class="line">&#123;% if latest_question_list %&#125;</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">    &#123;% for question in latest_question_list %&#125;</span><br><span class="line">        &lt;li&gt;&lt;a href=&quot;/polls/&#123;&#123; question.id &#125;&#125;/&quot;&gt;&#123;&#123; question.question_text &#125;&#125;&lt;/a&gt;&lt;/li&gt;</span><br><span class="line">    &#123;% endfor %&#125;</span><br><span class="line">    &lt;/ul&gt;</span><br><span class="line">&#123;% else %&#125;</span><br><span class="line">    &lt;p&gt;No polls are available.&lt;/p&gt;</span><br><span class="line">&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>移除模板文件中的硬编码URL</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改前</span><br><span class="line">&lt;li&gt;&lt;a href=&quot;/polls/&#123;&#123; question.id &#125;&#125;/&quot;&gt;&#123;&#123; question.question_text &#125;&#125;&lt;/a&gt;&lt;/li&gt;</span><br><span class="line"></span><br><span class="line"># 修改后</span><br><span class="line">&lt;li&gt;&lt;a href=&quot;&#123;% url &#x27;detail&#x27; question.id %&#125;&quot;&gt;&#123;&#123; question.question_text &#125;&#125;&lt;/a&gt;&lt;/li&gt;</span><br><span class="line"></span><br><span class="line"># 修改原因：在polls/urls.py中，views.py的detail()函数路径被注册为</span><br><span class="line">path(&quot;&lt;int:question_id&gt;/&quot;, views.detail, name=&quot;detail&quot;),其中name属性为&quot;detail&quot;</span><br><span class="line"></span><br><span class="line"># 继续修改：在polls/urls.py中设置应用程序命名空间(app_name = &quot;polls&quot;)后,继续修改为指向命名空间的详细视图</span><br><span class="line">&lt;li&gt;&lt;a href=&quot;&#123;% url &#x27;polls:detail&#x27; question.id %&#125;&quot;&gt;&#123;&#123; question.question_text &#125;&#125;&lt;/a&gt;&lt;/li&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="detail-view"><a href="#detail-view" class="headerlink" title="detail view"></a>detail view</h2><ol>
+<li>修改视图(detail view)</li>
+</ol>
+<p>使用get方法特别容易产生404错误，因此产生了一个快捷方式，即使用<code>get_object_or_404()</code>来进行查询。<code>get_object_or_404()</code>第一个参数是a Django model，第二个参数是任意数量的关键词参数。如果查询对象存在，则返回该模型对象；如果对象不存在，则返回Http404。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># polls/views.py</span><br><span class="line"></span><br><span class="line">from django.shortcuts import get_object_or_404, render</span><br><span class="line"></span><br><span class="line">from .models import Question</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def detail(request, question_id):</span><br><span class="line">    question = get_object_or_404(Question, pk=question_id)</span><br><span class="line">    return render(request, &quot;polls/detail.html&quot;, &#123;&quot;question&quot;: question&#125;)</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建模板(detail.html)</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;form action=&quot;&#123;% url &#x27;polls:vote&#x27; question.id %&#125;&quot; method=&quot;post&quot;&gt;</span><br><span class="line">&#123;% csrf_token %&#125;</span><br><span class="line">&lt;fieldset&gt;</span><br><span class="line">    &lt;legend&gt;&lt;h1&gt;&#123;&#123; question.question_text &#125;&#125;&lt;/h1&gt;&lt;/legend&gt;</span><br><span class="line">    &#123;% if error_message %&#125;&lt;p&gt;&lt;strong&gt;&#123;&#123; error_message &#125;&#125;&lt;/strong&gt;&lt;/p&gt;&#123;% endif %&#125;</span><br><span class="line">    &#123;% for choice in question.choice_set.all %&#125;</span><br><span class="line">        &lt;input type=&quot;radio&quot; name=&quot;choice&quot; id=&quot;choice&#123;&#123; forloop.counter &#125;&#125;&quot; value=&quot;&#123;&#123; choice.id &#125;&#125;&quot;&gt;</span><br><span class="line">        &lt;label for=&quot;choice&#123;&#123; forloop.counter &#125;&#125;&quot;&gt;&#123;&#123; choice.choice_text &#125;&#125;&lt;/label&gt;&lt;br&gt;</span><br><span class="line">    &#123;% endfor %&#125;</span><br><span class="line">&lt;/fieldset&gt;</span><br><span class="line">&lt;input type=&quot;submit&quot; value=&quot;Vote&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>2中的vote()函数还需要具体实现</li>
+</ol>
+<p>后续内容可以参考官方文档<a href="https://docs.djangoproject.com/en/5.0/intro/tutorial04/">https://docs.djangoproject.com/en/5.0/intro/tutorial04/</a></p>
+]]></content>
+      <categories>
+        <category>开发技能</category>
+      </categories>
+      <tags>
+        <tag>Django</tag>
+      </tags>
+  </entry>
 </search>
