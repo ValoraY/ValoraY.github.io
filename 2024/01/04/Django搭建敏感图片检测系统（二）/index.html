@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="项目需求目前，我已经实现了一个函数detect_sensitive(img_path) 12345678910def detect_sensitive(img_path):	# 1.加载训练好的检测和识别模型，获取图片中的文字，保存在sentence中，并设置初始敏感概率为0.12	# 2.初始化trie树，检查sentence中是否包含敏感词，若包含，将敏感概率设置为0.4592	# 3.加载T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django搭建敏感图片检测系统（二）">
+<meta property="og:url" content="https://valoray.github.io/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="DeepRookie">
+<meta property="og:description" content="项目需求目前，我已经实现了一个函数detect_sensitive(img_path) 12345678910def detect_sensitive(img_path):	# 1.加载训练好的检测和识别模型，获取图片中的文字，保存在sentence中，并设置初始敏感概率为0.12	# 2.初始化trie树，检查sentence中是否包含敏感词，若包含，将敏感概率设置为0.4592	# 3.加载T">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZoQ7a.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZoGMK.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZodxC.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZo0XN.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZosJL.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZoVli.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZofBX.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/04/OZoSHS.png">
+<meta property="article:published_time" content="2024-01-04T05:57:45.000Z">
+<meta property="article:modified_time" content="2024-01-04T06:08:56.560Z">
+<meta property="article:author" content="deeprookie">
+<meta property="article:tag" content="Django">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ooo.0x0.ooo/2024/01/04/OZoQ7a.png">
+
+
+<link rel="canonical" href="https://valoray.github.io/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/","path":"2024/01/04/Django搭建敏感图片检测系统（二）/","title":"Django搭建敏感图片检测系统（二）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Django搭建敏感图片检测系统（二） | DeepRookie</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">DeepRookie</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">想到，就去做，无非一朝还是一生</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">项目需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.</span> <span class="nav-text">创建项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">创建应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E5%BA%94%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">注册应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E9%85%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">初始配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E5%BA%94%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%88%B0%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%B8%AD"><span class="nav-number">5.1.</span> <span class="nav-text">引入应用配置文件到项目配置文件中</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E5%BA%94%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%EF%BC%8C%E7%94%A8%E4%BA%8E%E9%85%8D%E7%BD%AE%E5%BA%94%E7%94%A8%E2%80%9Ddetector%E2%80%9D%E4%B8%8B%E7%9A%84url"><span class="nav-number">5.1.1.</span> <span class="nav-text">新建应用配置文件，用于配置应用”detector”下的url</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%EF%BC%8C%E5%BC%95%E5%85%A5%E5%BA%94%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">5.1.2.</span> <span class="nav-text">修改项目配置文件，引入应用配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE%E5%BC%95%E5%85%A5"><span class="nav-number">5.1.3.</span> <span class="nav-text">测试配置文件是否正确引入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5MySQL%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">5.2.</span> <span class="nav-text">连接MySQL数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%BB%98%E8%AE%A4%E4%BD%8D%E7%BD%AE"><span class="nav-number">5.3.</span> <span class="nav-text">修改静态文件默认位置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B"><span class="nav-number">6.1.</span> <span class="nav-text">创建模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B-1"><span class="nav-number">6.1.1.</span> <span class="nav-text">创建模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB"><span class="nav-number">6.1.2.</span> <span class="nav-text">数据迁移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%A7%86%E5%9B%BE"><span class="nav-number">6.2.</span> <span class="nav-text">创建视图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%A7%86%E5%9B%BE%E5%87%BD%E6%95%B0"><span class="nav-number">6.2.1.</span> <span class="nav-text">创建视图函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%A7%86%E5%9B%BEurl"><span class="nav-number">6.2.2.</span> <span class="nav-text">配置视图url</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93%E6%A8%A1%E6%9D%BF%E6%96%87%E4%BB%B6"><span class="nav-number">6.2.3.</span> <span class="nav-text">渲染模板文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E6%BC%94%E7%A4%BA"><span class="nav-number">7.</span> <span class="nav-text">项目演示</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="deeprookie"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">deeprookie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ValoraY" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ValoraY" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1432843916@qq.com" title="E-Mail → mailto:1432843916@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/m0_51619560/category_12535222.html" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_51619560&#x2F;category_12535222.html" rel="noopener me" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+    <div class="links-of-blogroll motion-element links-of-blogroll-block">
+      <div class="links-of-blogroll-title">
+        <!-- modify icon to fire by szw -->
+        <i class="fa fa-history fa-" aria-hidden="true"></i>
+        近期文章
+      </div>
+      <ul class="links-of-blogroll-list">
+        
+        
+          <li>
+            <a href="/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Django搭建敏感图片检测系统（二）" target="_blank">Django搭建敏感图片检测系统（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/03/Django%E5%88%9D%E5%AD%A6%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" title="Django初学教程（一）" target="_blank">Django初学教程（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/" title="Pycharm连接云服务器训练" target="_blank">Pycharm连接云服务器训练</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/29/Faster-RCNN%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Faster RCNN代码分析（二）" target="_blank">Faster RCNN代码分析（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/" title="Faster RCNN项目部署（一）" target="_blank">Faster RCNN项目部署（一）</a>
+          </li>
+        
+      </ul>
+    </div>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Django搭建敏感图片检测系统（二） | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Django搭建敏感图片检测系统（二）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-01-04 13:57:45 / 修改时间：14:08:56" itemprop="dateCreated datePublished" datetime="2024-01-04T13:57:45+08:00">2024-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E8%83%BD/" itemprop="url" rel="index"><span itemprop="name">开发技能</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="项目需求"><a href="#项目需求" class="headerlink" title="项目需求"></a>项目需求</h1><p>目前，我已经实现了一个函数<code>detect_sensitive(img_path)</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def detect_sensitive(img_path):</span><br><span class="line">	# 1.加载训练好的检测和识别模型，获取图片中的文字，保存在sentence中，并设置初始敏感概率为0.12</span><br><span class="line">	# 2.初始化trie树，检查sentence中是否包含敏感词，若包含，将敏感概率设置为0.4592</span><br><span class="line">	# 3.加载TextCNN模型，获取textCNN模型得出的sentence的预测结果，若预测为敏感信息，将敏感概率增加0.3</span><br><span class="line">	# 3.1加载 word_2_index 字典和词嵌入层</span><br><span class="line">	# 3.2加载 TextCNN 模型</span><br><span class="line">	# 3.3对文本进行预处理，并使用 TextCNN 模型进行预测</span><br><span class="line">	# 4.最终判断该图片包含的文本是否为敏感信息isSensitive</span><br><span class="line">	# 5.返回sentence，isSensitive</span><br><span class="line">	return sentence, isSensitive</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>它的作用是：传入一张图片，先利用训练好的检测和识别模型识别出图片中的文字，再判断文字是否为敏感信息。最终的返回值有2个，分别为<code>sentence</code>和<code>isSensitive</code>，<code>sentence</code>代表图片中的文字，<code>isSensitive</code>代表这张图片所含的文字是否为敏感信息。</p>
+<p>我希望借助这个函数搭建一个”敏感图片检测系统“，系统的需求为</p>
+<ul>
+<li>上传一张图片</li>
+<li>首先，在”白名单表“中查询这张图片是否存在，如果存在，直接将”白名单表“中的<code>statement</code>和<code>isSensitive</code>字段返回；如果不存在，就将图片传入<code>detect_sensitive()</code>进行检查，得到返回值<code>statement</code>和<code>isSensitive</code></li>
+<li>其次，如果<code>isSensitive</code>为True，返回告警信息，并将告警信息存入一张”告警信息表“，同时将这张图片和它对应的敏感类型存入”白名单表“中；如果<code>isSensitive</code>为False，返回正常信息，并将这张图片和它对应的敏感类型存入”白名单表“中。</li>
+</ul>
+<p>数据库的物理结构设计如下：</p>
+<p>”白名单表“用于存储用户上传的图片，白名单里的图片无需通过敏感信息检测模块，表内容包含编号、图片MD5值、<code>statement</code>、<code>isSensitive</code>。</p>
+<p>表1 白名单表结构</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>数据类型</th>
+<th>主键</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>Primary Key</td>
+<td>记录ID</td>
+</tr>
+<tr>
+<td>img_md5</td>
+<td>varchar(32)</td>
+<td></td>
+<td>图片MD5值</td>
+</tr>
+<tr>
+<td>isSensitive</td>
+<td>tinyint(1)</td>
+<td></td>
+<td>图片是否敏感</td>
+</tr>
+<tr>
+<td>statement</td>
+<td>longtext</td>
+<td></td>
+<td>图片中的文字</td>
+</tr>
+</tbody></table>
+<p>”告警信息表“包含以下字段：信息编号、图片路径、图片MD5值、<code>statement</code>、<code>isSensitive</code>。</p>
+<p>表2 告警信息表结构</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>数据类型</th>
+<th>主键</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>Primary Key</td>
+<td>信息ID</td>
+</tr>
+<tr>
+<td>img_path</td>
+<td>varchar(255)</td>
+<td></td>
+<td>图片路径</td>
+</tr>
+<tr>
+<td>img_md5</td>
+<td>varchar(32)</td>
+<td></td>
+<td>图片MD5值</td>
+</tr>
+<tr>
+<td>statement</td>
+<td>longtext</td>
+<td></td>
+<td>图片中的文字</td>
+</tr>
+<tr>
+<td>isSensitive</td>
+<td>tinyint(1)</td>
+<td></td>
+<td>图片是否敏感</td>
+</tr>
+</tbody></table>
+<p>我计划后端使用Django框架实现，前端使用html、css及JavaScript实现。</p>
+<h1 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h1><ol>
+<li>创建虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda create -n sensitiveFilter python=3.8</span><br><span class="line">conda activate sensitiveFilter</span><br><span class="line">pip install Django # 注意这里Django首字母大写</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建项目</li>
+</ol>
+<p>项目名为<code>sensi_img_filter</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd D:\PythonCode</span><br><span class="line">django-admin startproject sensi_img_filter</span><br></pre></td></tr></table></figure>
+
+<p>创建成功的项目结构为：</p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sensi_img_filter/</span><br><span class="line"> manage.py</span><br><span class="line"> sensi_img_filter/</span><br><span class="line">     __init__.py</span><br><span class="line">     settings.py</span><br><span class="line">     urls.py</span><br><span class="line">     asgi.py</span><br><span class="line">     wsgi.py</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>启动服务器：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd sensi_img_filter # cd到外层的项目文件夹下</span><br><span class="line">python manage.py runserver # 启动服务器</span><br></pre></td></tr></table></figure>
+
+<p>项目&#x3D;（一个及以上的）应用程序 + 配置</p>
+<h1 id="创建应用"><a href="#创建应用" class="headerlink" title="创建应用"></a>创建应用</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 应用名称为&quot;detector&quot;</span><br><span class="line">python manage.py startapp detector</span><br></pre></td></tr></table></figure>
+
+<p>创建成功的应用结构为：</p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">detector/</span><br><span class="line"> __init__.py</span><br><span class="line"> admin.py</span><br><span class="line"> apps.py</span><br><span class="line"> migrations/</span><br><span class="line">     __init__.py</span><br><span class="line"> models.py</span><br><span class="line"> tests.py</span><br><span class="line"> views.py</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h1 id="注册应用"><a href="#注册应用" class="headerlink" title="注册应用"></a>注册应用</h1><p>在创建应用之后，我们需要将应用注册到项目中，让项目知道自己又多了一个应用，同时方便后期的数据迁移。将应用”<code>detector</code>”放到项目的setting.py（即<code>sensi_img_filter/settings.py</code>）的<code>INSTALLED_APPS</code>中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 修改mysite/settings.py，增加一行&#x27;detector.apps.DetectorConfig&#x27;,完成注册</span><br><span class="line"></span><br><span class="line">INSTALLED_APPS = [</span><br><span class="line">    &#x27;detector.apps.DetectorConfig&#x27;,</span><br><span class="line">    &#x27;django.contrib.admin&#x27;,</span><br><span class="line">    &#x27;django.contrib.auth&#x27;,</span><br><span class="line">    &#x27;django.contrib.contenttypes&#x27;,</span><br><span class="line">    &#x27;django.contrib.sessions&#x27;,</span><br><span class="line">    &#x27;django.contrib.messages&#x27;,</span><br><span class="line">    &#x27;django.contrib.staticfiles&#x27;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h1 id="初始配置"><a href="#初始配置" class="headerlink" title="初始配置"></a>初始配置</h1><h2 id="引入应用配置文件到项目配置文件中"><a href="#引入应用配置文件到项目配置文件中" class="headerlink" title="引入应用配置文件到项目配置文件中"></a>引入应用配置文件到项目配置文件中</h2><h3 id="新建应用配置文件，用于配置应用”detector”下的url"><a href="#新建应用配置文件，用于配置应用”detector”下的url" class="headerlink" title="新建应用配置文件，用于配置应用”detector”下的url"></a>新建应用配置文件，用于配置应用”detector”下的url</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 新增detector/urls.py, 用于配置应用&quot;detector&quot;下的url</span><br><span class="line"></span><br><span class="line">from django.urls import path</span><br><span class="line"></span><br><span class="line"># 设置应用程序命名空间</span><br><span class="line"># 在真正的 Django 项目中，可能有五个、十个、二十个或更多应用程序。Django 如何区分它们之间的 URL 名称？——即将命名空间app_name = &quot;detector&quot;添加到 URLconf 中</span><br><span class="line"></span><br><span class="line">app_name = &quot;detector&quot;</span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改项目配置文件，引入应用配置文件"><a href="#修改项目配置文件，引入应用配置文件" class="headerlink" title="修改项目配置文件，引入应用配置文件"></a>修改项目配置文件，引入应用配置文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 修改sensi_img_filter/urls.py，将应用&quot;polls&quot;下的urls.py引入</span><br><span class="line"></span><br><span class="line">from django.contrib import admin</span><br><span class="line">from django.urls import include, path</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    path(&quot;detector/&quot;, include(&quot;detector.urls&quot;)),</span><br><span class="line">    path(&quot;admin/&quot;, admin.site.urls),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试配置文件是否正确引入"><a href="#测试配置文件是否正确引入" class="headerlink" title="测试配置文件是否正确引入"></a>测试配置文件是否正确引入</h3><ol>
+<li><p>创建index view</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 修改detecor/views.py，创建index view(仅为虚拟实现)</span><br><span class="line"></span><br><span class="line">from django.http import HttpResponse</span><br><span class="line"></span><br><span class="line">def index(request):</span><br><span class="line">    return HttpResponse(&quot;Hello, world. You&#x27;re at the polls index.&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在应用配置文件<code>detector/urls.py</code>中添加url配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 在detector/urls.py中配置index view的url</span><br><span class="line"></span><br><span class="line">from django.urls import path</span><br><span class="line"></span><br><span class="line">from . import views</span><br><span class="line"></span><br><span class="line">app_name = &quot;detector&quot;</span><br><span class="line">urlpatterns = [</span><br><span class="line">    # ex:/detector/</span><br><span class="line">    # path(&quot;&quot;, views.index, name=&quot;index&quot;),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动服务器后访问链接：<a target="_blank" rel="noopener" href="http://127.0.0.1:8000/detector/%EF%BC%8C%E5%8D%B3%E5%8F%AF%E8%AE%BF%E9%97%AE%E5%88%B0index">http://127.0.0.1:8000/detector/，即可访问到index</a> view，说明应用的配置文件已经正确引入到项目配置文件中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py runserver # 启动服务器</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="连接MySQL数据库"><a href="#连接MySQL数据库" class="headerlink" title="连接MySQL数据库"></a>连接MySQL数据库</h2><ol>
+<li><p>导入依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 首次连接mysql数据库需要在虚拟环境导入以下2个包</span><br><span class="line">pip install pymysql</span><br><span class="line">pip install mysqlclient</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改项目的数据库配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 在项目的settings.py(即sensi_img_filter/settings.py)中修改数据库配置</span><br><span class="line"></span><br><span class="line"># 修改数据库配置——更改为mysql数据库</span><br><span class="line">DATABASES = &#123;</span><br><span class="line">    &#x27;default&#x27;: &#123;</span><br><span class="line">        &#x27;ENGINE&#x27;: &#x27;django.db.backends.mysql&#x27;,</span><br><span class="line">        &#x27;NAME&#x27;: &#x27;info_filter&#x27;, # 修改为数据库的名字</span><br><span class="line">        &quot;USER&quot;: &quot;root&quot;,</span><br><span class="line">        &quot;PASSWORD&quot;: &quot;123456xjy&quot;,</span><br><span class="line">        &quot;HOST&quot;: &quot;127.0.0.1&quot;,</span><br><span class="line">        &quot;PORT&quot;: &quot;3306&quot;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数据迁移</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 执行数据迁移——将&quot;sensi_img_filter/settings.py&quot;中INSTALLED_APPS对应的数据表都创建出来（创建到上述的&quot;info_filter&quot;数据库中）</span><br><span class="line">python manage.py migrate</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="修改静态文件默认位置"><a href="#修改静态文件默认位置" class="headerlink" title="修改静态文件默认位置"></a>修改静态文件默认位置</h2><p>默认我们会将整个项目（可能包含多个应用）的静态文件（如css、js、images等）都放到项目路径下的static目录下，因此修改项目的<code>setting.py</code>（即<code>sensi_img_filter/setting.py</code>）中对静态文件默认路径的配置.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 修改前</span><br><span class="line"># STATIC_URL = &#x27;static/&#x27;</span><br><span class="line"></span><br><span class="line"># 修改后</span><br><span class="line">STATIC_URL = &#x27;/static/&#x27;</span><br><span class="line">STATICFILES_DIRS = [BASE_DIR / &#x27;static&#x27;]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZoQ7a.png" alt="OZoQ7a.png"></p>
+<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><h2 id="创建模型"><a href="#创建模型" class="headerlink" title="创建模型"></a>创建模型</h2><h3 id="创建模型-1"><a href="#创建模型-1" class="headerlink" title="创建模型"></a>创建模型</h3><p>在<code>detector/models.py</code>中创建模型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">from django.db import models</span><br><span class="line"></span><br><span class="line"># Create your models here.</span><br><span class="line">class WhiteTableModel(models.Model):</span><br><span class="line">    img_md5 = models.CharField(max_length=32)</span><br><span class="line">    isSensitive = models.BooleanField()</span><br><span class="line">    statement = models.TextField(max_length=500)</span><br><span class="line"></span><br><span class="line">class InfoTableModel(models.Model):</span><br><span class="line">    img_path = models.CharField(max_length=255)</span><br><span class="line">    img_md5 = models.CharField(max_length=32)</span><br><span class="line">    statement = models.TextField(max_length=500)</span><br><span class="line">    isSensitive = models.BooleanField()</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h3><ol>
+<li><p>产生迁移文件（可以类比为生成SQL代码）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py makemigrations detector # 这里能执行成功多亏已经在项目的setting.py的INSTALLED_APPS中注册了新应用detector</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行迁移（类比为执行SQL代码）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 运行以下代码，即可将models.py中新创建的类，在数据库中创建出对应的数据表</span><br><span class="line">python manage.py migrate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果在后期某张数据表需要发生变动，那么直接修改models.py中该类的定义，再次执行步骤1和2即可在数据表同步这一变动</p>
+</li>
+</ol>
+<h2 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h2><h3 id="创建视图函数"><a href="#创建视图函数" class="headerlink" title="创建视图函数"></a>创建视图函数</h3><p>在这里创建了<code>form_view()</code>和<code>handle_upload()</code>两个视图函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">from django.shortcuts import render</span><br><span class="line">from django.http import JsonResponse</span><br><span class="line">from .models import ImageModel, WhiteTableModel, InfoTableModel</span><br><span class="line">from .utils.utils import detect_sensitive, calculate_md5, save_image</span><br><span class="line"></span><br><span class="line">def form_view(request):</span><br><span class="line">    return render(request, &#x27;detector/form.html&#x27;)</span><br><span class="line"></span><br><span class="line">def handle_upload(request):</span><br><span class="line">    if request.method == &quot;POST&quot;:</span><br><span class="line">        img_file = request.FILES[&#x27;image&#x27;]</span><br><span class="line">        if img_file:</span><br><span class="line">            img_md5 = calculate_md5(img_file)</span><br><span class="line"></span><br><span class="line">            white_obj = WhiteTableModel.objects.filter(img_md5=img_md5).first()</span><br><span class="line">            if white_obj:</span><br><span class="line">                context = &#123;&#x27;message&#x27;: white_obj.statement, &#x27;isSensitive&#x27;: white_obj.isSensitive&#125;</span><br><span class="line">                # return render(request, &quot;detector/upload.html&quot;, &#123;&#x27;context&#x27;: context&#125;)</span><br><span class="line">            else:</span><br><span class="line">                # 将图片保存至某个路径供detect_sensitive使用</span><br><span class="line">                img_path = save_image(img_file, img_md5)</span><br><span class="line"></span><br><span class="line">                statement, isSensitive = detect_sensitive(img_path)</span><br><span class="line"></span><br><span class="line">                # 如果被识别为敏感图片</span><br><span class="line">                if isSensitive == True:</span><br><span class="line">                    # 创建一个信息记录并保存</span><br><span class="line">                    InfoTableModel.objects.create(</span><br><span class="line">                        img_path=img_path,</span><br><span class="line">                        img_md5=img_md5,</span><br><span class="line">                        statement=statement,</span><br><span class="line">                        isSensitive=isSensitive</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                # 不论是敏感图片还是非敏感图片，都要加入白名单</span><br><span class="line">                WhiteTableModel.objects.create(</span><br><span class="line">                    img_md5=img_md5,</span><br><span class="line">                    isSensitive=isSensitive,</span><br><span class="line">                    statement=statement</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">                # 如果被识别为敏感图片，则返回告警信息，否则返回正常信息</span><br><span class="line">                # if isSensitive == True:</span><br><span class="line">                #     context = &#123;&#x27;message&#x27;: statement, &#x27;isSensitive&#x27;: isSensitive&#125;</span><br><span class="line">                # else:</span><br><span class="line">                #     context = &#123;&#x27;message&#x27;: statement, &#x27;isSensitive&#x27;: isSensitive&#125;</span><br><span class="line">                # return JsonResponse(context)</span><br><span class="line">                context = &#123;&#x27;message&#x27;: statement, &#x27;isSensitive&#x27;: isSensitive&#125;</span><br><span class="line">            return render(request, &quot;detector/upload.html&quot;, &#123;&#x27;context&#x27;: context&#125;)</span><br><span class="line">        else:</span><br><span class="line">            error_message = &#x27;图片上传出错啦！&#x27;</span><br><span class="line">            return render(request, &#x27;detector/error.html&#x27;, &#123;&#x27;error_message&#x27;: error_message&#125;)</span><br><span class="line">    else:</span><br><span class="line">        error_message = &#x27;只接受POST请求！&#x27;</span><br><span class="line">        return render(request, &#x27;detector/error.html&#x27;, &#123;&#x27;error_message&#x27;: error_message&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># test index view</span><br><span class="line"># from django.http import HttpResponse</span><br><span class="line"># # 访问链接：http://127.0.0.1:8000/detector/</span><br><span class="line"># def index(request):</span><br><span class="line">#     return HttpResponse(&quot;Hello, world. You&#x27;re at the polls index.&quot;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上述函数中用到的三个工具函数detect_sensitive, calculate_md5, save_image在utils目录下的utils.py文件夹。该文件夹内容较多，此处不做赘述。</p>
+<h3 id="配置视图url"><a href="#配置视图url" class="headerlink" title="配置视图url"></a>配置视图url</h3><p>要想请求上述创建的两个视图函数，需要现在应用的<code>urls.py(detector/urls.py)</code>中配置这两个视图的url</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># detector/settings.py</span><br><span class="line"></span><br><span class="line">from django.urls import path</span><br><span class="line"></span><br><span class="line">from . import views</span><br><span class="line"></span><br><span class="line">app_name = &quot;detector&quot;</span><br><span class="line">urlpatterns = [</span><br><span class="line">    # /detector/</span><br><span class="line">    # path(&quot;&quot;, views.index, name=&quot;index&quot;),</span><br><span class="line">    # /detector/handle_upload/</span><br><span class="line">    path(&quot;handle_upload/&quot;, views.handle_upload, name=&quot;handle_upload&quot;),</span><br><span class="line">    # /detector/form/</span><br><span class="line">    path(&quot;form/&quot;, views.form_view, name=&quot;form&quot;),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>要想访问<code>form_view()</code>函数，在启动服务器后访问链接 <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/detector/form/%EF%BC%8C%E5%90%8C%E7%90%86%E8%A6%81%E6%83%B3%E8%AE%BF%E9%97%AE%60handle_upload()%60%E5%87%BD%E6%95%B0%EF%BC%8C%E5%8F%AA%E9%9C%80%E8%AE%BF%E9%97%AEhttp://127.0.0.1:8000/detector/handle_upload/%EF%BC%88%E4%B8%8D%E8%BF%87handle_upload()%E8%A6%81%E6%B1%82%E4%BD%BF%E7%94%A8POST%E8%AF%B7%E6%B1%82%E8%AE%BF%E9%97%AE%EF%BC%8C%E7%9B%B4%E6%8E%A5%E9%87%87%E5%8F%96GET%E8%AF%B7%E6%B1%82%E8%AE%BF%E9%97%AE%E4%BC%9A%E8%BF%94%E5%9B%9E%E4%B8%80%E6%9D%A1%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF%EF%BC%8C%E5%9B%A0%E6%AD%A4%E6%88%91%E4%BB%AC%E4%BC%9A%E5%9C%A8%E8%AE%BF%E9%97%AEform_view()%E5%90%8E%E6%B8%B2%E6%9F%93%E5%87%BA%60detector/form.html%60%EF%BC%8C%E5%9C%A8%E8%BF%99%E4%B8%AA%E8%A1%A8%E5%8D%95%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%EF%BC%8C%E5%B0%B1%E5%8F%AF%E4%BB%A5%E9%87%87%E7%94%A8POST%E8%AF%B7%E6%B1%82%E6%AD%A3%E7%A1%AE%E8%AE%BF%E9%97%AE%60handle_upload()%60%E5%87%BD%E6%95%B0%EF%BC%8C%E8%8E%B7%E5%BE%97%E5%AF%B9%E5%BA%94%E7%9A%84%E5%93%8D%E5%BA%94%EF%BC%89">http://127.0.0.1:8000/detector/form/，同理要想访问`handle_upload()`函数，只需访问http://127.0.0.1:8000/detector/handle_upload/（不过handle_upload()要求使用POST请求访问，直接采取GET请求访问会返回一条错误信息，因此我们会在访问form_view()后渲染出`detector/form.html`，在这个表单上传文件，就可以采用POST请求正确访问`handle_upload()`函数，获得对应的响应）</a></p>
+<h3 id="渲染模板文件"><a href="#渲染模板文件" class="headerlink" title="渲染模板文件"></a>渲染模板文件</h3><p>我们会将一个应用使用的模板文件全部放入应用目录下的<code>templates</code>目录下（即<code>detector/templates/</code>），Django会默认在这个目录下寻找模板。</p>
+<p>创建好模板文件后的目录结构如下：</p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZoGMK.png" alt="OZoGMK.png"></p>
+<blockquote>
+<p>这里还在templates目录下创建了一个detector子目录，在子目录下才放置了模板文件<code>form.html</code><br>这里新建的detector子目录起到划分命名空间的作用。因为如果在不同的应用程序中具有相同名称的模板，Django 将无法区分它们，所以需要设置命名空间。</p>
+</blockquote>
+<p>那么，模板文件form.html的内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- form.html --&gt;</span><br><span class="line">&#123;% load static %&#125;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;title&gt;Upload Image&lt;/title&gt;</span><br><span class="line">    &lt;link rel=&quot;stylesheet&quot; href=&quot;&#123;% static &#x27;css/form_style.css&#x27; %&#125;&quot;&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line"></span><br><span class="line">    &lt;form method=&quot;POST&quot; action=&quot;&#123;% url &#x27;detector:handle_upload&#x27; %&#125;&quot;  enctype=&quot;multipart/form-data&quot;&gt;</span><br><span class="line">      &#123;% csrf_token %&#125;</span><br><span class="line">      &lt;label for=&quot;imageUpload&quot;&gt;上传图片&lt;/label&gt;&lt;br&gt;</span><br><span class="line">      &lt;input type=&quot;file&quot; id=&quot;imageUpload&quot; name=&quot;image&quot;&gt;</span><br><span class="line">      &lt;input type=&quot;submit&quot; value=&quot;上传&quot;&gt;</span><br><span class="line">    &lt;/form&gt;</span><br><span class="line"></span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：</p>
+<ol>
+<li>需要在<code>&lt;form&gt;</code>表单内部增加这行代码：<code>&#123;% csrf_token %&#125;</code>，否则会报错<code>Forbidden (CSRF token missing.): /detector/form/</code></li>
+<li><code>action</code>属性值表示点击<code>submit</code>时会将表单提交到什么位置，这里用了软编码<code>&quot;&#123;% url 'detector:handle_upload' %&#125;&quot;</code>，其中detector:表示程序命名空间，与<code>detector/urls.py</code>中的(<code>app_name=&quot;detector&quot;</code>)相对应；<code>handle_upload</code>表示要将提交到<code>handle_upload</code>这个url路径，与<code>detector/urls.py</code>中的<br><code>path(&quot;handle_upload/&quot;, views.handle_upload, name=&quot;handle_upload&quot;),</code>中的<code>name</code>相对应</li>
+<li>最头部的<code>&#123;% load static %&#125;</code>需要添加上，只有这样才能加载到项目的setting.py中配置的static默认路径，才能加载到我们的css和images静态文件</li>
+</ol>
+</blockquote>
+<p>当通过<code>form.html</code>提交表单后，表单信息被正确提交到<code>upload_handle()</code>视图，经过<code>handle_upload()</code>函数处理，会将响应的<code>context</code>传递给模板文件<code>upload.html</code>进行渲染，这部分的对应代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">context = &#123;&#x27;message&#x27;: statement, &#x27;isSensitive&#x27;: isSensitive&#125;</span><br><span class="line">return render(request, &quot;detector/upload.html&quot;, &#123;&#x27;context&#x27;: context&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>模板文件<code>upload.html</code>的内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#123;% load static %&#125;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;title&gt;Upload Image&lt;/title&gt;</span><br><span class="line">    &lt;link rel=&quot;stylesheet&quot; href=&quot;&#123;% static &#x27;css/upload_style.css&#x27; %&#125;&quot;&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line"></span><br><span class="line">    &#123;% if context.isSensitive %&#125;</span><br><span class="line">        &lt;p class=&quot;sensitive&quot;&gt;图片中的文字为:&lt;/p&gt;</span><br><span class="line">        &lt;p class=&quot;sensitive&quot;&gt;&#123;&#123; context.message &#125;&#125;&lt;/p&gt;</span><br><span class="line">        &lt;p class=&quot;sensitive&quot;&gt;检查结果为：&lt;/p&gt;</span><br><span class="line">        &lt;p class=&quot;sensitive&quot;&gt;敏感信息，需要屏蔽&lt;/p&gt;</span><br><span class="line">    &#123;% else %&#125;</span><br><span class="line">        &lt;p class=&quot;normal&quot;&gt;图片中的文字为: &lt;/p&gt;</span><br><span class="line">        &lt;p class=&quot;normal&quot;&gt;&#123;&#123; context.message &#125;&#125;&lt;/p&gt;</span><br><span class="line">        &lt;p class=&quot;normal&quot;&gt;检查结果为：&lt;/p&gt;</span><br><span class="line">        &lt;p class=&quot;normal&quot;&gt;正常信息，允许通过&lt;/p&gt;</span><br><span class="line">    &#123;% endif %&#125;</span><br><span class="line"></span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>至此，项目的主体内容就已经完成。</p>
+<h1 id="项目演示"><a href="#项目演示" class="headerlink" title="项目演示"></a>项目演示</h1><p>上传图片：</p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZodxC.png" alt="OZodxC.png"></p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZo0XN.png" alt="OZo0XN.png"></p>
+<p>结果展示：</p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZosJL.png" alt="OZosJL.png"></p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZoVli.png" alt="OZoVli.png"></p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZofBX.png" alt="OZofBX.png"></p>
+<p>查看告警信息表</p>
+<p><img src="https://ooo.0x0.ooo/2024/01/04/OZoSHS.png" alt="OZoSHS.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Django/" rel="tag"># Django</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/03/Django%E5%88%9D%E5%AD%A6%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="Django初学教程（一）">
+                  <i class="fa fa-angle-left"></i> Django初学教程（一）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+<!--
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">deeprookie</span>
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
