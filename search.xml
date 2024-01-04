@@ -1410,7 +1410,7 @@ Epoch 20/20
 <p>在右侧对话框直接运行提供的测试案例，让bot给我画小狗插画，效果如下</p>
 <p><img src="https://ooo.0x0.ooo/2024/01/04/OZqacG.png" alt="OZqacG.png"></p>
 <p>如果想要在这个bot上进行二次开发，可以点击项目右侧的Duplicate，就会把这个项目复制到我们的个人工作空间，可以进行二次开发</p>
-<h2 id="创建自己的Bot"><a href="#创建自己的Bot" class="headerlink" title="创建自己的Bot"></a>创建自己的Bot</h2><h3 id="直接使用”全才”gpt4-仅文字对话"><a href="#直接使用”全才”gpt4-仅文字对话" class="headerlink" title="直接使用”全才”gpt4(仅文字对话)"></a>直接使用”全才”gpt4(仅文字对话)</h3><h4 id="创建Bot"><a href="#创建Bot" class="headerlink" title="创建Bot"></a>创建Bot</h4><p><img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png"></p>
+<h2 id="创建自己的Bot"><a href="#创建自己的Bot" class="headerlink" title="创建自己的Bot"></a>创建自己的Bot</h2><h3 id="直接使用全才gpt4-仅文字对话"><a href="#直接使用全才gpt4-仅文字对话" class="headerlink" title="直接使用全才gpt4(仅文字对话)"></a>直接使用全才gpt4(仅文字对话)</h3><h4 id="创建Bot"><a href="#创建Bot" class="headerlink" title="创建Bot"></a>创建Bot</h4><p><img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png"></p>
 <h4 id="给Bot取名"><a href="#给Bot取名" class="headerlink" title="给Bot取名"></a>给Bot取名</h4><p><img src="https://ooo.0x0.ooo/2024/01/04/OZqAPC.png" alt="OZqAPC.png"></p>
 <h4 id="使用GPT4"><a href="#使用GPT4" class="headerlink" title="使用GPT4"></a>使用GPT4</h4><p>不用设置左侧的提示词和中间的插件，直接在右边使用</p>
 <p><img src="https://ooo.0x0.ooo/2024/01/04/OZqNuS.png" alt="OZqNuS.png"></p>
@@ -1426,12 +1426,12 @@ Epoch 20/20
 <td><img src="https://ooo.0x0.ooo/2024/01/04/OZq1NK.png" alt="OZq1NK.png"></td>
 </tr>
 </tbody></table>
-<h3 id="直接使用”全才”gpt4-文字-图片-联网-…"><a href="#直接使用”全才”gpt4-文字-图片-联网-…" class="headerlink" title="直接使用”全才”gpt4(文字+图片+联网+…)"></a>直接使用”全才”gpt4(文字+图片+联网+…)</h3><p>点击中间Plugins后面的＋，为gpt添加插件，常用插件的功能如下</p>
+<h3 id="直接使用全才gpt4-文字-图片-联网-…"><a href="#直接使用全才gpt4-文字-图片-联网-…" class="headerlink" title="直接使用全才gpt4(文字+图片+联网+…)"></a>直接使用全才gpt4(文字+图片+联网+…)</h3><p>点击中间Plugins后面的＋，为gpt添加插件，常用插件的功能如下</p>
 <p><img src="https://ooo.0x0.ooo/2024/01/04/OZqK9L.png" alt="OZqK9L.png"></p>
 <p>添加以上插件后，此时的gpt就具有了联网搜索、文生图、识别图片内容、搜索github的api等功能，还可以探索其他的插件。添加了插件后的使用效果如下：</p>
 <p><img src="https://ooo.0x0.ooo/2024/01/04/OZqrFN.png" alt="OZqrFN.png"></p>
 <p>但是这个图片上传后分析的功能好像有问题，上传图片后出现以下错误<code>对不起，由于技术限制，我无法解析这张图片的内容。我会尽快向后端技术团队反馈以便解决此问题。感谢你的理解和耐心等待。</code></p>
-<h3 id="“专才”gpt4"><a href="#“专才”gpt4" class="headerlink" title="“专才”gpt4"></a>“专才”gpt4</h3><p>创建一个属于自己的、专门用于完成特定任务的Bot。</p>
+<h3 id="专才gpt4"><a href="#专才gpt4" class="headerlink" title="专才gpt4"></a>专才gpt4</h3><p>创建一个属于自己的、专门用于完成特定任务的Bot。</p>
 <h4 id="创建Bot-1"><a href="#创建Bot-1" class="headerlink" title="创建Bot"></a>创建Bot</h4><p>我想创建一个专门用于解决编程问题的助手，具体操作步骤如下：</p>
 <p><img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png"></p>
 <p><img src="https://ooo.0x0.ooo/2024/01/04/OZq57I.png" alt="OZq57I.png"></p>
