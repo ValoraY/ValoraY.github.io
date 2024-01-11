@@ -19,14 +19,13 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="RCNN背景过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,…xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类 本文创新：用CNN代替传统的特征提取方法来提取图像特征">
+    <meta name="description" content="RCNN 背景 过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,...xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类 本文创新：用CNN代替传统的特征提取方法来提取图像特征">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RCNN论文理解">
 <meta property="og:url" content="https://valoray.github.io/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="DeepRookie">
-<meta property="og:description" content="RCNN背景过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,…xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类 本文创新：用CNN代替传统的特征提取方法来提取图像特征">
+<meta property="og:description" content="RCNN 背景 过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,...xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类 本文创新：用CNN代替传统的特征提取方法来提取图像特征">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYa0B.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYows.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKVIk6.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKY51K.png">
@@ -42,7 +41,7 @@
 <meta property="article:tag" content="论文理解">
 <meta property="article:tag" content="RCNN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ooo.0x0.ooo/2023/12/29/OKYa0B.png">
+<meta name="twitter:image" content="https://ooo.0x0.ooo/2023/12/29/OKYows.png">
 
 
 <link rel="canonical" href="https://valoray.github.io/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">
@@ -152,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RCNN"><span class="nav-number">1.</span> <span class="nav-text">RCNN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.2.</span> <span class="nav-text">主要贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E4%B8%B4%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.</span> <span class="nav-text">面临问题及解决思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%981%EF%BC%9A%E5%A6%82%E4%BD%95%E7%94%A8CNN%E6%9D%A5%E5%AE%9A%E4%BD%8D%E7%9B%AE%E6%A0%87%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">问题1：如何用CNN来定位目标？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">解决思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%982%EF%BC%9A%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E5%A4%AA%E5%B0%91"><span class="nav-number">1.3.2.</span> <span class="nav-text">问题2：标注数据太少</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-1"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF-1"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">解决思路</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.</span> <span class="nav-text">模型结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E6%A8%A1%E5%9D%97"><span class="nav-number">1.4.1.</span> <span class="nav-text">三个模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%80%9D%E8%B7%AF"><span class="nav-number">1.4.2.</span> <span class="nav-text">训练思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96%E7%BD%91%E7%BB%9C"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">训练特征提取网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83SVMs%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">训练SVMs分类器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%80%9D%E8%B7%AF"><span class="nav-number">1.4.3.</span> <span class="nav-text">测试思路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.5.</span> <span class="nav-text">可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">消融实验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%B9%E7%95%8C%E6%A1%86%E5%9B%9E%E5%BD%92"><span class="nav-number">1.7.</span> <span class="nav-text">边界框回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E6%A3%80%E6%83%85%E5%86%B5%E5%88%86%E6%9E%90"><span class="nav-number">1.8.</span> <span class="nav-text">错检情况分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%90%8C%E5%9B%A0%E7%B4%A0%E5%AF%B9%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%8F%E6%84%9F%E5%BA%A6%E5%BD%B1%E5%93%8D%EF%BC%88%E7%9C%8B%E4%B8%8D%E6%87%82%EF%BC%89"><span class="nav-number">1.9.</span> <span class="nav-text">检测不同因素对算法的敏感度影响（看不懂）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E9%87%8A"><span class="nav-number">1.10.</span> <span class="nav-text">实验设置的一些问题解释</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#rcnn"><span class="nav-number">1.</span> <span class="nav-text">RCNN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.2.</span> <span class="nav-text">主要贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E4%B8%B4%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.</span> <span class="nav-text">面临问题及解决思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%981%E5%A6%82%E4%BD%95%E7%94%A8cnn%E6%9D%A5%E5%AE%9A%E4%BD%8D%E7%9B%AE%E6%A0%87"><span class="nav-number">1.3.1.</span> <span class="nav-text">问题1：如何用CNN来定位目标？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">解决思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%982%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E5%A4%AA%E5%B0%91"><span class="nav-number">1.3.2.</span> <span class="nav-text">问题2：标注数据太少</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-1"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF-1"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">解决思路</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.</span> <span class="nav-text">模型结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E6%A8%A1%E5%9D%97"><span class="nav-number">1.4.1.</span> <span class="nav-text">三个模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%80%9D%E8%B7%AF"><span class="nav-number">1.4.2.</span> <span class="nav-text">训练思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96%E7%BD%91%E7%BB%9C"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">训练特征提取网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83svms%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">训练SVMs分类器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%80%9D%E8%B7%AF"><span class="nav-number">1.4.3.</span> <span class="nav-text">测试思路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.5.</span> <span class="nav-text">可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">消融实验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%B9%E7%95%8C%E6%A1%86%E5%9B%9E%E5%BD%92"><span class="nav-number">1.7.</span> <span class="nav-text">边界框回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E6%A3%80%E6%83%85%E5%86%B5%E5%88%86%E6%9E%90"><span class="nav-number">1.8.</span> <span class="nav-text">错检情况分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%90%8C%E5%9B%A0%E7%B4%A0%E5%AF%B9%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%8F%E6%84%9F%E5%BA%A6%E5%BD%B1%E5%93%8D%E7%9C%8B%E4%B8%8D%E6%87%82"><span class="nav-number">1.9.</span> <span class="nav-text">检测不同因素对算法的敏感度影响（看不懂）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E8%A7%A3%E9%87%8A"><span class="nav-number">1.10.</span> <span class="nav-text">实验设置的一些问题解释</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -310,131 +309,197 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="RCNN"><a href="#RCNN" class="headerlink" title="RCNN"></a>RCNN</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,…xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
+    <div class="post-body" itemprop="articleBody"><link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="rcnn">RCNN</h1>
+<h2 id="背景">背景</h2>
+<p>过去主流的目标检测思路：输入一张图片==》获取一系列区域==》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,...xn）==》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
 <p>本文创新：用CNN代替传统的特征提取方法来提取图像特征</p>
 <span id="more"></span>
-
-<h2 id="主要贡献"><a href="#主要贡献" class="headerlink" title="主要贡献"></a>主要贡献</h2><ol>
+<h2 id="主要贡献">主要贡献</h2>
+<ol type="1">
 <li>用CNN代替传统的特征提取方法来提取图像特征</li>
 <li>迁移学习（模型微调）：模型在大的源领域数据集上预训练后，再在特定目标领域的小数据集上微调，能够适应新任务的要求。——解决目标领域数据稀缺问题。</li>
 </ol>
-<h2 id="面临问题及解决思路"><a href="#面临问题及解决思路" class="headerlink" title="面临问题及解决思路"></a>面临问题及解决思路</h2><h3 id="问题1：如何用CNN来定位目标？"><a href="#问题1：如何用CNN来定位目标？" class="headerlink" title="问题1：如何用CNN来定位目标？"></a>问题1：如何用CNN来定位目标？</h3><h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>分类任务只需要确定类别；检测任务除了需要确定类别，还需要获得对象的检测边界框。CNN过去已经被证明可以用于分类任务，如何利用它来检测边界框呢？</p>
-<h4 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h4><ol>
-<li><p>基于回归的定位策略：直接用CNN来回归边界框<br><img src="https://ooo.0x0.ooo/2023/12/29/OKYa0B.png" alt="OKYa0B.png"></p>
-</li>
+<h2 id="面临问题及解决思路">面临问题及解决思路</h2>
+<h3 id="问题1如何用cnn来定位目标">问题1：如何用CNN来定位目标？</h3>
+<h4 id="问题">问题</h4>
+<p>分类任务只需要确定类别；检测任务除了需要确定类别，还需要获得对象的检测边界框。CNN过去已经被证明可以用于分类任务，如何利用它来检测边界框呢？</p>
+<h4 id="解决思路">解决思路</h4>
+<ol type="1">
+<li><p>基于回归的定位策略：直接用CNN来回归边界框 <img
+src="https://ooo.0x0.ooo/2023/12/29/OKYa0B.png"
+alt="OKYa0B.png" /></p></li>
 <li><p>基于滑动窗口检测器的定位策略：在输入图片上用特定大小和比例的滑动窗口进行滑动，对于滑动到的区域用<strong>浅层的CNN</strong>进行检测，适用于人脸、行人这类<strong>特定比例的任务</strong>。（有人试了，效果不好）</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYows.png" alt="OKYows.png"></p>
-</li>
-<li><p><strong>基于区域的定位策略（本文√）</strong>：输入一张图片，用某种方法产生一定数量的候选区域（Region proposal），然后用一个深层的CNN提取特征，最后输入分类器种进行分类</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKVIk6.png" alt="OKVIk6.png"></p>
-</li>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYows.png" alt="OKYows.png" />
+<figcaption aria-hidden="true">OKYows.png</figcaption>
+</figure></li>
+<li><p><strong>基于区域的定位策略（本文√）</strong>：输入一张图片，用某种方法产生一定数量的候选区域（Region
+proposal），然后用一个深层的CNN提取特征，最后输入分类器种进行分类</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKVIk6.png" alt="OKVIk6.png" />
+<figcaption aria-hidden="true">OKVIk6.png</figcaption>
+</figure></li>
 </ol>
-<h3 id="问题2：标注数据太少"><a href="#问题2：标注数据太少" class="headerlink" title="问题2：标注数据太少"></a>问题2：标注数据太少</h3><h4 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h4><p>图像分类领域ImageNet数据集，标注数据丰富，而当时目标检测领域只有PASCAL VOC数据集，标注数据很少</p>
-<h4 id="解决思路-1"><a href="#解决思路-1" class="headerlink" title="解决思路"></a>解决思路</h4><ol>
+<h3 id="问题2标注数据太少">问题2：标注数据太少</h3>
+<h4 id="问题-1">问题</h4>
+<p>图像分类领域ImageNet数据集，标注数据丰富，而当时目标检测领域只有PASCAL
+VOC数据集，标注数据很少</p>
+<h4 id="解决思路-1">解决思路</h4>
+<ol type="1">
 <li>传统思路：无监督预训练+有监督微调</li>
-<li>本文思路：迁移学习。在ImageNet大数据集上有监督预训练+在PASCAL VOC小数据集上微调</li>
+<li>本文思路：迁移学习。在ImageNet大数据集上有监督预训练+在PASCAL
+VOC小数据集上微调</li>
 </ol>
-<h2 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h2><p><img src="https://ooo.0x0.ooo/2023/12/29/OKY51K.png" alt="OKY51K.png"></p>
-<h3 id="三个模块"><a href="#三个模块" class="headerlink" title="三个模块"></a>三个模块</h3><ol>
-<li><p>产生候选区域：selective search</p>
-</li>
-<li><p>抽取图像特征：  利用deep CNN从每个候选区域(region proposal )抽取出一个固定长度(4096-dim)的特征向量(feature vector)</p>
-<ol>
-<li><p>5个卷积层 + 2个全连接层前向传播，删除了源网络最后的1000种分类层（AlexNet）</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKVX8F.png" alt="OKVX8F.png"></p>
-</li>
-<li><p>deep CNN要求输入的图片固定大小，因此需要对不同大小的候选区域进行缩放至(227 x 227 RGB)</p>
+<h2 id="模型结构">模型结构</h2>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKY51K.png" alt="OKY51K.png" />
+<figcaption aria-hidden="true">OKY51K.png</figcaption>
+</figure>
+<h3 id="三个模块">三个模块</h3>
+<ol type="1">
+<li><p>产生候选区域：selective search</p></li>
+<li><p>抽取图像特征： 利用deep CNN从每个候选区域(region proposal
+)抽取出一个固定长度(4096-dim)的特征向量(feature vector)</p>
+<ol type="1">
+<li><p>5个卷积层 +
+2个全连接层前向传播，删除了源网络最后的1000种分类层（AlexNet）</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKVX8F.png" alt="OKVX8F.png" />
+<figcaption aria-hidden="true">OKVX8F.png</figcaption>
+</figure></li>
+<li><p>deep
+CNN要求输入的图片固定大小，因此需要对不同大小的候选区域进行缩放至(227 x
+227 RGB)</p>
 <p>缩放方法：</p>
-<ol>
-<li>tightest square with context：把整张图片的长边缩放到227，短边按照此比例缩放</li>
-<li>tightest square without context：只把候选区域的长边缩放到227，短边按照此比例缩放</li>
+<ol type="1">
+<li>tightest square with
+context：把整张图片的长边缩放到227，短边按照此比例缩放</li>
+<li>tightest square without
+context：只把候选区域的长边缩放到227，短边按照此比例缩放</li>
 <li>warp：把候选区域的长短边都直接缩放到227（有形变）（本文√）</li>
+</ol></li>
+</ol></li>
+<li><p>用特定类的SVM来对候选区域进行分类：多个二分类构成的SVMs</p></li>
 </ol>
-</li>
-</ol>
-</li>
-<li><p>用特定类的SVM来对候选区域进行分类：多个二分类构成的SVMs</p>
-</li>
-</ol>
-<h3 id="训练思路"><a href="#训练思路" class="headerlink" title="训练思路"></a>训练思路</h3><h4 id="训练特征提取网络"><a href="#训练特征提取网络" class="headerlink" title="训练特征提取网络"></a>训练特征提取网络</h4><ol>
+<h3 id="训练思路">训练思路</h3>
+<h4 id="训练特征提取网络">训练特征提取网络</h4>
+<ol type="1">
 <li>有监督预训练：在ImageNet上预训练</li>
-<li>针对特定领域微调（在VOC数据集上微调出21类的分类模型-softmax层实现分类）<ol>
-<li>网络结构：把ImageNet上训练的CNN(AlexNet)最后一层的1000种分类改成 (N+1) 类的分类层，N为微调的数据集的对象类别数，+1为背景</li>
-<li>构建数据集：候选区域和ground-truth box的iou &gt; 0.5，为正样本；否则为负样本</li>
-<li>SGD：<ol>
+<li>针对特定领域微调（在VOC数据集上微调出21类的分类模型-softmax层实现分类）
+<ol type="1">
+<li>网络结构：把ImageNet上训练的CNN(AlexNet)最后一层的1000种分类改成
+(N+1) 类的分类层，N为微调的数据集的对象类别数，+1为背景</li>
+<li>构建数据集：候选区域和ground-truth box的iou &gt;
+0.5，为正样本；否则为负样本</li>
+<li>SGD：
+<ol type="1">
 <li>初始学习率0.001</li>
 <li>每个iteration，统一采样32个正样本和96个负样本组成128的mini-batch</li>
-</ol>
-</li>
-</ol>
-</li>
+</ol></li>
+</ol></li>
 </ol>
 <p>训练好了分类网络后，就可以在VOC数据集上较好地提取图像特征；在提取特征后，可以训练一个SVM模型，来对候选区域进行分类。</p>
-<h4 id="训练SVMs分类器"><a href="#训练SVMs分类器" class="headerlink" title="训练SVMs分类器"></a>训练SVMs分类器</h4><p>SVMs是由N个linear SVM构成的，我们需要为每个对象类优化一个linear SVM分类器</p>
-<ol>
-<li>构建数据集：只把ground truth box作为每个类的正样本；把和ground-truth box的iou &lt; 0.3的候选区域，作为负样本（因为负样本很多，这里采用难负例挖掘策略（hard negative mining method）来进一步挑选）</li>
+<h4 id="训练svms分类器">训练SVMs分类器</h4>
+<p>SVMs是由N个linear SVM构成的，我们需要为每个对象类优化一个linear
+SVM分类器</p>
+<ol type="1">
+<li>构建数据集：只把ground truth box作为每个类的正样本；把和ground-truth
+box的iou &lt;
+0.3的候选区域，作为负样本（因为负样本很多，这里采用难负例挖掘策略（hard
+negative mining method）来进一步挑选）</li>
 <li>训练分类器：为每个类训练一个linear SVM分类器</li>
 </ol>
-<h3 id="测试思路"><a href="#测试思路" class="headerlink" title="测试思路"></a>测试思路</h3><p> 输入一张图片&#x3D;&#x3D;》运行selective search产生2000个候选区域（Region proposals）&#x3D;&#x3D;》缩放成固定大小的proposal&#x3D;&#x3D;》利用CNN从每个proposal抽取出一个固定长度的feature vector&#x3D;&#x3D;》用针对特定类的linear SVM分类每一个region proposal&#x3D;&#x3D;》对每一个类的proposals进行非极大值抑制</p>
-<h2 id="可视化"><a href="#可视化" class="headerlink" title="可视化"></a>可视化</h2><p>如何可视化高层特征？</p>
-<p>在第五个卷积层conv5后跟了一个池化层pool5，经过该于池化层后得到6 x 6 x 256的特征图。提取出一个数据集的所有图像对应的所有候选区域在某一通道某一特定位置的数据进行可视化，实验规律如下：</p>
-<ol>
+<h3 id="测试思路">测试思路</h3>
+<p>输入一张图片==》运行selective search产生2000个候选区域（Region
+proposals）==》缩放成固定大小的proposal==》利用CNN从每个proposal抽取出一个固定长度的feature
+vector==》用针对特定类的linear SVM分类每一个region
+proposal==》对每一个类的proposals进行非极大值抑制</p>
+<h2 id="可视化">可视化</h2>
+<p>如何可视化高层特征？</p>
+<p>在第五个卷积层conv5后跟了一个池化层pool5，经过该于池化层后得到6 x 6 x
+256的特征图。提取出一个数据集的所有图像对应的所有候选区域在某一通道某一特定位置的数据进行可视化，实验规律如下：</p>
+<ol type="1">
 <li>对于高层特征来说，每一个不同的通道，学习到一种高层特征</li>
 <li>对于同一个通道的不同位置，它表示的特征是相同的，只是边界框的位置有偏移</li>
 </ol>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYM5l.png" alt="OKYM5l.png"></p>
-<h2 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h2><ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYM5l.png" alt="OKYM5l.png" />
+<figcaption aria-hidden="true">OKYM5l.png</figcaption>
+</figure>
+<h2 id="消融实验">消融实验</h2>
+<ol type="1">
 <li>在训练CNN的时候，我们使用的是fc7的4096维的输出作为图片的特征，那能不能使用fc6的输出，或pool5的输出作为提取到的特征呢？</li>
 </ol>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYOKg.png" alt="OKYOKg.png"></p>
-<ol start="2">
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYOKg.png" alt="OKYOKg.png" />
+<figcaption aria-hidden="true">OKYOKg.png</figcaption>
+</figure>
+<ol start="2" type="1">
 <li><p>使用微调和不使用微调对最终的精度有没有影响？</p>
 <p>在1中选取不同层的输出作为图片的特征的基础上，测试微调后的精度如何改变。实验结果发现：</p>
 <p>（1）微调后精度提高，说明微调重要；</p>
-<p>（2）在使用全连接层特征、不同层的卷积特征分别进行微调的基础上，发现使用全连接层特征微调后的精度改善更明显，说明微调更多改善的是全连接层的特征提取能力</p>
-</li>
+<p>（2）在使用全连接层特征、不同层的卷积特征分别进行微调的基础上，发现使用全连接层特征微调后的精度改善更明显，说明微调更多改善的是全连接层的特征提取能力</p></li>
 <li><p>不同的CNN结构对特征提取效果有什么影响？</p>
 <p>对比了AlexNet（本文）、VGG（更复杂）两种CNN结构提取特征的效果，实验结果发现：</p>
-<p>VGG更复杂，提取到的特征更好，检测的准确率也更高</p>
-</li>
+<p>VGG更复杂，提取到的特征更好，检测的准确率也更高</p></li>
 </ol>
-<h2 id="边界框回归"><a href="#边界框回归" class="headerlink" title="边界框回归"></a>边界框回归</h2><p>因为我们在进行目标检测，所以不仅要实现分类，还要对目标的边界框进行回归。因此，在提取出CNN特征（这里用的pool5层的特征）后又训练了一个SVM模型，用于回归出目标的边界框，即原始的候选区域到真实框的偏移量。而在实际实验中发现，分类的预测精度较高，但目标的位置预测并不准确。也就是说，我们希望预测框（黄框）尽可能接近真实框（绿框），即损失函数尽可能小</p>
+<h2 id="边界框回归">边界框回归</h2>
+<p>因为我们在进行目标检测，所以不仅要实现分类，还要对目标的边界框进行回归。因此，在提取出CNN特征（这里用的pool5层的特征）后又训练了一个SVM模型，用于回归出目标的边界框，即原始的候选区域到真实框的偏移量。而在实际实验中发现，分类的预测精度较高，但目标的位置预测并不准确。也就是说，我们希望预测框（黄框）尽可能接近真实框（绿框），即损失函数尽可能小</p>
 <p>因此要解决的问题变成了：已知一个不准确的位置，要预测出一个准确的位置（从黄框变成绿框）。</p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKVCfb.png" alt="OKVCfb.png"></p>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKV3pP.png" alt="OKV3pP.png"></p>
-<h2 id="错检情况分析"><a href="#错检情况分析" class="headerlink" title="错检情况分析"></a>错检情况分析</h2><p>分析以下四类错误的占比情况</p>
-<ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKVCfb.png" alt="OKVCfb.png" />
+<figcaption aria-hidden="true">OKVCfb.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKV3pP.png" alt="OKV3pP.png" />
+<figcaption aria-hidden="true">OKV3pP.png</figcaption>
+</figure>
+<h2 id="错检情况分析">错检情况分析</h2>
+<p>分析以下四类错误的占比情况</p>
+<ol type="1">
 <li>类别正确，但位置不准确</li>
 <li>类别识别为相似类</li>
 <li>类别识别明显错误</li>
 <li>目标误识别为类别</li>
 </ol>
-<p><img src="https://ooo.0x0.ooo/2023/12/29/OKYBHa.png" alt="OKYBHa.png"></p>
-<h2 id="检测不同因素对算法的敏感度影响（看不懂）"><a href="#检测不同因素对算法的敏感度影响（看不懂）" class="headerlink" title="检测不同因素对算法的敏感度影响（看不懂）"></a>检测不同因素对算法的敏感度影响（看不懂）</h2><h2 id="实验设置的一些问题解释"><a href="#实验设置的一些问题解释" class="headerlink" title="实验设置的一些问题解释"></a>实验设置的一些问题解释</h2><ol>
-<li>为什么CNN和SVM的正负例定义的方法不同<ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYBHa.png" alt="OKYBHa.png" />
+<figcaption aria-hidden="true">OKYBHa.png</figcaption>
+</figure>
+<h2
+id="检测不同因素对算法的敏感度影响看不懂">检测不同因素对算法的敏感度影响（看不懂）</h2>
+<h2 id="实验设置的一些问题解释">实验设置的一些问题解释</h2>
+<ol type="1">
+<li>为什么CNN和SVM的正负例定义的方法不同
+<ol type="1">
 <li>实验观察：通过实验先确定了SVM的划分方法，然后才确定了CNN的正负样本的划分方法</li>
-<li>理论解释：训练CNN要求的参数很多，需要大量的训练样本。如果也采用训练SVM时采用的正负样本策略，即只把ground truth的标注框作为每个类的正样本，iou &lt; 0.3的候选区域为负样本，这样训练样本就太少了；而采用另外的方法，即iou &gt; 0.5的候选区域为正样本，否则为负样本，能够在标注框附近引入大量的抖动样本，丰富的数据量可以避免CNN过拟合</li>
-</ol>
-</li>
-<li>在微调之后明明已经能够对候选区域进行多分类了，后面训练SVMs的部分能不能去掉？<ol>
+<li>理论解释：训练CNN要求的参数很多，需要大量的训练样本。如果也采用训练SVM时采用的正负样本策略，即只把ground
+truth的标注框作为每个类的正样本，iou &lt;
+0.3的候选区域为负样本，这样训练样本就太少了；而采用另外的方法，即iou
+&gt;
+0.5的候选区域为正样本，否则为负样本，能够在标注框附近引入大量的抖动样本，丰富的数据量可以避免CNN过拟合</li>
+</ol></li>
+<li>在微调之后明明已经能够对候选区域进行多分类了，后面训练SVMs的部分能不能去掉？
+<ol type="1">
 <li>实验观察：直接用CNN的softmax层分类会让精度降低</li>
-<li>解释：<ol>
-<li>CNN在训练时使用的正样本（抖动样本）并不是每个目标的精确位置，可能会导致误差<br>富的数据量可以避免CNN过拟合</li>
-</ol>
-</li>
-</ol>
-</li>
-<li>在微调之后明明已经能够对候选区域进行多分类了，后面训练SVMs的部分能不能去掉？<ol>
+<li>解释：
+<ol type="1">
+<li>CNN在训练时使用的正样本（抖动样本）并不是每个目标的精确位置，可能会导致误差
+富的数据量可以避免CNN过拟合</li>
+</ol></li>
+</ol></li>
+<li>在微调之后明明已经能够对候选区域进行多分类了，后面训练SVMs的部分能不能去掉？
+<ol type="1">
 <li>实验观察：直接用CNN的softmax层分类会让精度降低</li>
-<li>解释：<ol>
+<li>解释：
+<ol type="1">
 <li>CNN在训练时使用的正样本（抖动样本）并不是每个目标的精确位置，可能会导致误差</li>
 <li>在训练CNN时的负样本是被随机挑选的，而我们可以从CNN分类错误的样本中去挑选那些难负样本，让SVM训练，这样也让增加SVMs分类器后的训练效果更好</li>
+</ol></li>
+</ol></li>
 </ol>
-</li>
-</ol>
-</li>
-</ol>
-<p><strong>参考资料：</strong><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1CZ4y1a7NP/?spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=66a72b15abe9693bd8b4f738f5a67ee7">https://www.bilibili.com/video/BV1CZ4y1a7NP/?spm_id_from=333.1007.top_right_bar_window_history.content.click&amp;vd_source=66a72b15abe9693bd8b4f738f5a67ee7</a></p>
+<p><strong>参考资料：</strong>
+https://www.bilibili.com/video/BV1CZ4y1a7NP/?spm_id_from=333.1007.top_right_bar_window_history.content.click&amp;vd_source=66a72b15abe9693bd8b4f738f5a67ee7</p>
 
     </div>
 
@@ -510,6 +575,12 @@
   
 
 
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
 
 
 

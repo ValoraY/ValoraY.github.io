@@ -264,7 +264,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-01-11 16:31:03 / 修改时间：16:32:43" itemprop="dateCreated datePublished" datetime="2024-01-11T16:31:03+08:00">2024-01-11</time>
+      <time title="创建时间：2024-01-11 16:31:03 / 修改时间：19:18:25" itemprop="dateCreated datePublished" datetime="2024-01-11T16:31:03+08:00">2024-01-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -286,7 +286,9 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="《动手学深度学习2-0》学习笔记（一）"><a href="#《动手学深度学习2-0》学习笔记（一）" class="headerlink" title="《动手学深度学习2.0》学习笔记（一）"></a>《动手学深度学习2.0》学习笔记（一）</h1><p>《动手学深度学习2.0》电子书的链接地址为<a target="_blank" rel="noopener" href="https://zh.d2l.ai/index.html">https://zh.d2l.ai/index.html</a></p>
+          <h1
+id="动手学深度学习2.0学习笔记一">《动手学深度学习2.0》学习笔记（一）</h1>
+<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
 <p>本文记录了我在学习本书前4章节（包括引言、预备知识、线性神经网络、多层感知机）过程中的理解和收获。</p>
           <!--noindex-->
             <div class="post-button">
@@ -373,11 +375,12 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="Coze使用教程"><a href="#Coze使用教程" class="headerlink" title="Coze使用教程"></a>Coze使用教程</h1><p>目前能免费使用GPT4的网站有以下几个：</p>
+          <h1 id="coze使用教程">Coze使用教程</h1>
+<p>目前能免费使用GPT4的网站有以下几个：</p>
 <blockquote>
-<p>YesChat：一个聚合搜索网站，地址为<a target="_blank" rel="noopener" href="https://www.yeschat.ai/zh-CN">https://www.yeschat.ai/zh-CN</a></p>
-<p>codeium：需要申请内测资格，地址为<a target="_blank" rel="noopener" href="https://codeium.com/waitlist/gpt-4">https://codeium.com/waitlist/gpt-4</a></p>
-<p>Coze：本身仅是构建平台，需要部署到cic&#x2F;discord&#x2F;telegram等平台使用，地址为<a target="_blank" rel="noopener" href="https://www.coze.com./">https://www.coze.com。</a></p>
+<p>YesChat：一个聚合搜索网站，地址为https://www.yeschat.ai/zh-CN</p>
+<p>codeium：需要申请内测资格，地址为https://codeium.com/waitlist/gpt-4</p>
+<p>Coze：本身仅是构建平台，需要部署到cic/discord/telegram等平台使用，地址为https://www.coze.com。</p>
 <p>目前Coze平台使用GPT4免费无限制。有人测试每小时问答二三十次，连续几个小时使用，均没有触发限制。</p>
 </blockquote>
 <p>本文介绍基于Coze平台的chatGPT4如何使用。</p>
@@ -466,7 +469,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="项目需求"><a href="#项目需求" class="headerlink" title="项目需求"></a>项目需求</h1><p>目前，我已经实现了一个函数<code>detect_sensitive(img_path)</code></p>
+          <h1 id="项目需求">项目需求</h1>
+<p>目前，我已经实现了一个函数<code>detect_sensitive(img_path)</code></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def detect_sensitive(img_path):</span><br><span class="line">	# 1.加载训练好的检测和识别模型，获取图片中的文字，保存在sentence中，并设置初始敏感概率为0.12</span><br><span class="line">	# 2.初始化trie树，检查sentence中是否包含敏感词，若包含，将敏感概率设置为0.4592</span><br><span class="line">	# 3.加载TextCNN模型，获取textCNN模型得出的sentence的预测结果，若预测为敏感信息，将敏感概率增加0.3</span><br><span class="line">	# 3.1加载 word_2_index 字典和词嵌入层</span><br><span class="line">	# 3.2加载 TextCNN 模型</span><br><span class="line">	# 3.3对文本进行预处理，并使用 TextCNN 模型进行预测</span><br><span class="line">	# 4.最终判断该图片包含的文本是否为敏感信息isSensitive</span><br><span class="line">	# 5.返回sentence，isSensitive</span><br><span class="line">	return sentence, isSensitive</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
@@ -553,12 +557,12 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h1><ol>
+          <h1 id="创建项目">创建项目</h1>
+<ol type="1">
 <li>创建虚拟环境</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda create -n testDjango python=3.8</span><br><span class="line">conda activate testDjango</span><br><span class="line">pip install Django # 注意这里Django首字母大写</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
+<ol start="2" type="1">
 <li>创建项目</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd D:\PythonCode</span><br><span class="line">django-admin startproject mysite</span><br></pre></td></tr></table></figure>
@@ -653,9 +657,11 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h4 id="在AutoDL租用实例"><a href="#在AutoDL租用实例" class="headerlink" title="在AutoDL租用实例"></a>在AutoDL租用实例</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
-
-<h4 id="点击-Tools，点击-部署Deployment，点击Configuration"><a href="#点击-Tools，点击-部署Deployment，点击Configuration" class="headerlink" title="点击 Tools，点击 部署Deployment，点击Configuration"></a>点击 <code>Tools</code>，点击 部署<code>Deployment</code>，点击<code>Configuration</code></h4>
+          <h4 id="在autodl租用实例">在AutoDL租用实例</h4>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
+<h4 id="点击-tools点击-部署deployment点击configuration">点击
+<code>Tools</code>，点击
+部署<code>Deployment</code>，点击<code>Configuration</code></h4>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/#more" rel="contents">
@@ -727,6 +733,12 @@
   
 
 
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
 
 
 

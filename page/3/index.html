@@ -292,16 +292,11 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>本代码最初在colab中实现，以下为全部代码及运行输出结果</p>
-<h1 id="挂载谷歌云盘，解压数据集"><a href="#挂载谷歌云盘，解压数据集" class="headerlink" title="挂载谷歌云盘，解压数据集"></a>挂载谷歌云盘，解压数据集</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%pwd</span><br></pre></td></tr></table></figure>
-
-
-
-
-<p>‘&#x2F;content’</p>
+          <p>本代码最初在colab中实现，以下为全部代码及运行输出结果 #
+挂载谷歌云盘，解压数据集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%pwd</span><br></pre></td></tr></table></figure>
+<p>'/content'</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!unzip <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Images.zip&#x27;</span> -d <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!unzip <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN/Airplanes_Annotations.zip&#x27;</span> -d <span class="string">&#x27;/content/drive/MyDrive/AI_content/RCNN&#x27;</span></span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
@@ -394,7 +389,9 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="RCNN"><a href="#RCNN" class="headerlink" title="RCNN"></a>RCNN</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>过去主流的目标检测思路：输入一张图片&#x3D;&#x3D;》获取一系列区域&#x3D;&#x3D;》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,…xn）&#x3D;&#x3D;》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
+          <h1 id="rcnn">RCNN</h1>
+<h2 id="背景">背景</h2>
+<p>过去主流的目标检测思路：输入一张图片==》获取一系列区域==》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,...xn）==》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
 <p>本文创新：用CNN代替传统的特征提取方法来提取图像特征</p>
           <!--noindex-->
             <div class="post-button">
@@ -467,6 +464,12 @@
   
 
 
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
 
 
 
