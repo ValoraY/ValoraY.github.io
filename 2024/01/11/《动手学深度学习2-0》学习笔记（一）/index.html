@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="《动手学深度学习2.0》学习笔记（一）《动手学深度学习2.0》电子书的链接地址为https:&#x2F;&#x2F;zh.d2l.ai&#x2F;index.html 本文记录了我在学习本书前4章节（包括引言、预备知识、线性神经网络、多层感知机）过程中的理解和收获。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《动手学深度学习2.0》学习笔记（一）">
+<meta property="og:url" content="https://valoray.github.io/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="DeepRookie">
+<meta property="og:description" content="《动手学深度学习2.0》学习笔记（一）《动手学深度学习2.0》电子书的链接地址为https:&#x2F;&#x2F;zh.d2l.ai&#x2F;index.html 本文记录了我在学习本书前4章节（包括引言、预备知识、线性神经网络、多层感知机）过程中的理解和收获。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/11/OZVFua.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/11/OZVizS.png">
+<meta property="article:published_time" content="2024-01-11T08:31:03.000Z">
+<meta property="article:modified_time" content="2024-01-11T08:32:43.025Z">
+<meta property="article:author" content="deeprookie">
+<meta property="article:tag" content="动手学深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ooo.0x0.ooo/2024/01/11/OZVFua.png">
+
+
+<link rel="canonical" href="https://valoray.github.io/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/","path":"2024/01/11/《动手学深度学习2-0》学习笔记（一）/","title":"《动手学深度学习2.0》学习笔记（一）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《动手学深度学习2.0》学习笔记（一） | DeepRookie</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">DeepRookie</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">想到，就去做，无非一朝还是一生</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">《动手学深度学习2.0》学习笔记（一）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%AD%E5%85%B3%E9%94%AE%E7%BB%84%E4%BB%B6"><span class="nav-number">1.1.1.</span> <span class="nav-text">机器学习中关键组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E9%97%AE%E9%A2%98%E5%88%86%E7%B1%BB"><span class="nav-number">1.1.2.</span> <span class="nav-text">机器学习问题分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">监督学习</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">无监督学习</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8E%E7%8E%AF%E5%A2%83%E4%BA%92%E5%8A%A8"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">与环境互动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">强化学习</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.2.</span> <span class="nav-text">预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">线性代数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E7%A7%AF%E5%88%86"><span class="nav-number">1.2.2.</span> <span class="nav-text">微积分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86"><span class="nav-number">1.2.3.</span> <span class="nav-text">自动微分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E7%8E%87"><span class="nav-number">1.2.4.</span> <span class="nav-text">概率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.3.</span> <span class="nav-text">线性神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><span class="nav-number">1.3.1.</span> <span class="nav-text">线性回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#softmax%E5%9B%9E%E5%BD%92"><span class="nav-number">1.3.2.</span> <span class="nav-text">softmax回归</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%B1%82%E6%84%9F%E7%9F%A5%E6%9C%BA"><span class="nav-number">1.4.</span> <span class="nav-text">多层感知机</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="deeprookie"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">deeprookie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ValoraY" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ValoraY" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1432843916@qq.com" title="E-Mail → mailto:1432843916@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/m0_51619560/category_12535222.html" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_51619560&#x2F;category_12535222.html" rel="noopener me" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+    <div class="links-of-blogroll motion-element links-of-blogroll-block">
+      <div class="links-of-blogroll-title">
+        <!-- modify icon to fire by szw -->
+        <i class="fa fa-history fa-" aria-hidden="true"></i>
+        近期文章
+      </div>
+      <ul class="links-of-blogroll-list">
+        
+        
+          <li>
+            <a href="/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（一）" target="_blank">《动手学深度学习2.0》学习笔记（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/04/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8Coze%E6%95%99%E7%A8%8B%EF%BC%88GPT4%EF%BC%89/" title="字节跳动Coze教程（GPT4）" target="_blank">字节跳动Coze教程（GPT4）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Django搭建敏感图片检测系统（二）" target="_blank">Django搭建敏感图片检测系统（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/03/Django%E5%88%9D%E5%AD%A6%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" title="Django初学教程（一）" target="_blank">Django初学教程（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/" title="Pycharm连接云服务器训练" target="_blank">Pycharm连接云服务器训练</a>
+          </li>
+        
+      </ul>
+    </div>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《动手学深度学习2.0》学习笔记（一） | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《动手学深度学习2.0》学习笔记（一）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-01-11 16:31:03 / 修改时间：16:32:43" itemprop="dateCreated datePublished" datetime="2024-01-11T16:31:03+08:00">2024-01-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="《动手学深度学习2-0》学习笔记（一）"><a href="#《动手学深度学习2-0》学习笔记（一）" class="headerlink" title="《动手学深度学习2.0》学习笔记（一）"></a>《动手学深度学习2.0》学习笔记（一）</h1><p>《动手学深度学习2.0》电子书的链接地址为<a target="_blank" rel="noopener" href="https://zh.d2l.ai/index.html">https://zh.d2l.ai/index.html</a></p>
+<p>本文记录了我在学习本书前4章节（包括引言、预备知识、线性神经网络、多层感知机）过程中的理解和收获。</p>
+<span id="more"></span>
+
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><h3 id="机器学习中关键组件"><a href="#机器学习中关键组件" class="headerlink" title="机器学习中关键组件"></a>机器学习中关键组件</h3><ol>
+<li>可以用来学习的<em>数据</em>（data）；</li>
+<li>如何转换数据的<em>模型</em>（model）；</li>
+<li>一个<em>目标函数</em>（objective function），有时被称为<em>损失函数</em>（loss function，或cost function），用来量化模型的有效性；</li>
+<li>调整模型参数以优化目标函数的<em>算法</em>（algorithm）</li>
+</ol>
+<h3 id="机器学习问题分类"><a href="#机器学习问题分类" class="headerlink" title="机器学习问题分类"></a>机器学习问题分类</h3><h4 id="监督学习"><a href="#监督学习" class="headerlink" title="监督学习"></a>监督学习</h4><p>通过一组已经标注好的训练数据学习预测结果&#x3D;》需要向模型提供巨大数据集：每个样本包含特征和相应标签值。</p>
+<ol>
+<li><p>回归</p>
+<p>当标签取任意数值时，就是回归问题，旨在解决“有多少”的问题。</p>
+</li>
+<li><p>分类</p>
+<p>当标签取离散数值时，就是分类问题，旨在解决“哪一个”的问题。</p>
+</li>
+<li><p>标记</p>
+<p>又叫<em>多标签分类</em>（multi-label classification），旨在通过学习预测不相互排斥的类别</p>
+</li>
+<li><p>搜索</p>
+<p>对一组项目进行排序。如谷歌最初的评分系统PageRank，对搜索结果根据相关性分数进行排序。</p>
+</li>
+<li><p>推荐系统</p>
+<p>推荐系统会为“给定用户和物品”的匹配性打分，从而将匹配性得分最高的对象集推荐给对应的用户。</p>
+</li>
+<li><p>序列学习</p>
+<blockquote>
+<p>以上大多数问题都具有固定大小的输入和产生固定大小的输出。 例如，在预测房价的问题中，我们考虑从一组固定的特征：房屋面积、卧室数量、浴室数量、步行到市中心的时间； 图像分类问题中，输入为固定尺寸的图像，输出则为固定数量（有关每一个类别）的预测概率； 在这些情况下，模型只会将输入作为生成输出的“原料”，而不会“记住”输入的具体内容。</p>
+<p>如果输入的样本之间没有任何关系，以上模型可能完美无缺。 但是如果输入是连续的，模型可能就需要拥有“记忆”功能。</p>
+</blockquote>
+<p>序列学习需要摄取输入序列和预测输出序列，其中输入和输出都是可变长度的序列。常见的应用有：</p>
+<ul>
+<li><p>标记和解析：用属性注释文本序列。输入和输出的数量基本相同</p>
+<blockquote>
+<p>下面是一个非常简单的示例，它使用“标记”来注释一个句子，该标记指示哪些单词引用命名实体。 标记为“Ent”，是<em>实体</em>（entity）的简写。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Tom has dinner in Washington with Sally</span><br><span class="line">Ent  -    -    -     Ent      -    Ent</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>语音识别：输出比输入短得多</p>
+</li>
+<li><p>文本到语音：输出比输入长得多</p>
+</li>
+<li><p>机器翻译：输入和输出的顺序需要颠倒</p>
+</li>
+</ul>
+</li>
+</ol>
+<h4 id="无监督学习"><a href="#无监督学习" class="headerlink" title="无监督学习"></a>无监督学习</h4><ol>
+<li><em>聚类</em>（clustering）问题</li>
+<li><em>主成分分析</em>（principal component analysis）问题</li>
+<li><em>因果关系</em>（causality）和<em>概率图模型</em>（probabilistic graphical models）问题</li>
+<li><em>生成对抗性网络</em>（generative adversarial networks）：为我们提供一种合成数据的方法，甚至像图像和音频这样复杂的非结构化数据。</li>
+</ol>
+<h4 id="与环境互动"><a href="#与环境互动" class="headerlink" title="与环境互动"></a>与环境互动</h4><blockquote>
+<p>我们可能会期望人工智能不仅能够做出预测，而且能够与真实环境互动。 与预测不同，“与真实环境互动”实际上会影响环境。 这里的人工智能是“智能代理”，而不仅是“预测模型”。 因此，我们必须考虑到它的行为可能会影响未来的观察结果。</p>
+</blockquote>
+<h4 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h4><blockquote>
+<p>在强化学习问题中，智能体（agent）在一系列的时间步骤上与环境交互。 在每个特定时间点，智能体从环境接收一些<em>观察</em>（observation），并且必须选择一个<em>动作</em>（action），然后通过某种机制（有时称为执行器）将其传输回环境，最后智能体从环境中获得<em>奖励</em>（reward）。 此后新一轮循环开始，智能体接收后续观察，并选择后续操作，依此类推。 强化学习的过程在 图1中进行了说明。 请注意，强化学习的目标是产生一个好的<em>策略</em>（policy）。 强化学习智能体选择的“动作”受策略控制，即一个从环境观察映射到行动的功能。</p>
+</blockquote>
+<p><img src="https://ooo.0x0.ooo/2024/01/11/OZVFua.png" alt="OZVFua.png"></p>
+<p>图1 强化学习和环境之间的相互作用</p>
+<blockquote>
+<p>强化学习框架的通用性十分强大。 例如，我们可以将任何监督学习问题转化为强化学习问题。 假设我们有一个分类问题，可以创建一个强化学习智能体，每个分类对应一个“动作”。 然后，我们可以创建一个环境，该环境给予智能体的奖励。 这个奖励与原始监督学习问题的损失函数是一致的。</p>
+<p>当然，强化学习还可以解决许多监督学习无法解决的问题。 例如，在监督学习中，我们总是希望输入与正确的标签相关联。 但在强化学习中，我们并不假设环境告诉智能体每个观测的最优动作。 一般来说，智能体只是得到一些奖励。 此外，环境甚至可能不会告诉是哪些行为导致了奖励。</p>
+<p>最后，在任何时间点上，强化学习智能体可能知道一个好的策略，但可能有许多更好的策略从未尝试过的。 强化学习智能体必须不断地做出选择：是应该利用当前最好的策略，还是探索新的策略空间（放弃一些短期回报来换取知识）。</p>
+</blockquote>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><h3 id="线性代数"><a href="#线性代数" class="headerlink" title="线性代数"></a>线性代数</h3><ol>
+<li><p>范数（norm）：深度学习的<strong>目标</strong></p>
+<ol>
+<li><p>向量的范数表示一个向量有多大（指的是分量的大小）</p>
+<ul>
+<li><p>L1范数：向量元素的绝对值之和。<br>$$<br>||x||_ {1}  &#x3D;  \sum _ {i&#x3D;1}^ {n}   |x_ {i} |<br>$$</p>
+</li>
+<li><p>L2范数：向量元素平方和的平方根。（欧几里得距离L2范数）<br>$$<br>||x||&#x3D;||x||_ {2}  &#x3D;  \sqrt {\sum _ {i&#x3D;1}^ {n}x}<br>$$</p>
+</li>
+</ul>
+</li>
+<li><p>矩阵X∈R^(mxn)^</p>
+<ul>
+<li><p><em>Frobenius范数</em>（Frobenius norm）：矩阵元素平方和的平方根（类似于向量的L2范数）</p>
+<p>$||x||<em>F&#x3D;  \sqrt {\sum _ {i&#x3D;1}^ {m}\sum _ {i&#x3D;1}^ {n}x</em> {i}^ {2}} $</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>Hadamard积 v.s. 矩阵乘法</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Hadamard积</th>
+<th>矩阵乘法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>含义</td>
+<td>对应元素相乘</td>
+<td>左行乘右列</td>
+</tr>
+<tr>
+<td>pytorch符号</td>
+<td>A*B</td>
+<td>A@B</td>
+</tr>
+<tr>
+<td>pytorch函数</td>
+<td>torch.mul(A, B)</td>
+<td>torch.matmul(A, B)或torch.mm(A, B)</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>@</code> 符号其实是调用了 <code>torch.matmul()</code> 函数</li>
+<li><code>torch.mm()</code>：这个函数用于两个二维矩阵的相乘。它不支持广播（Broadcasting）操作（即对不同形状的张量进行的自动扩充），并且输入必须都是二维张量。比如你有两个形状为 <code>(n, m)</code> 和 <code>(m, p)</code> 的矩阵，使用 <code>torch.mm()</code> 可以得到一个形状为 <code>(n, p)</code> 的矩阵。</li>
+<li><code>torch.matmul()</code>：这个函数更加通用，它支持两个张量进行相乘，这两个张量可以是不同的维度，也支持广播操作。对于二维张量，它的行为与 <code>torch.mm()</code> 相同。对于高维张量，它会进行规定的广播操作后再乘。</li>
+<li><code>A * B</code>和<code>torch.mul(A, B)</code>的操作效果一致，都支持广播机制。</li>
+</ul>
+</li>
+<li><p>降维</p>
+<p>张量可以通过sum()和mean()函数沿指定的轴降维</p>
+</li>
+</ol>
+<h3 id="微积分"><a href="#微积分" class="headerlink" title="微积分"></a>微积分</h3><ol>
+<li><p>损失函数：衡量”模型有多糟糕”的分数</p>
+</li>
+<li><p>优化：拟合现有的数据</p>
+<p>泛化：超出现有的数据，模型在未知数据也表现良好</p>
+</li>
+<li><p>梯度：</p>
+<ol>
+<li>梯度是一个向量</li>
+<li>其中的各个元素是函数y对其所有变量的偏导数</li>
+</ol>
+</li>
+</ol>
+<h3 id="自动微分"><a href="#自动微分" class="headerlink" title="自动微分"></a>自动微分</h3><ol>
+<li>backward()函数：默认只对标量执行反向传播，因此在深度学习最小化一个batch的损失函数时常常要通过<code>.sum()</code>或<code>.mean()</code>将向量转化为标量，然后才能执行反向传播</li>
+</ol>
+<h3 id="概率"><a href="#概率" class="headerlink" title="概率"></a>概率</h3><ol>
+<li><p>机器学习等价于做出预测</p>
+</li>
+<li><p>强化学习</p>
+<ul>
+<li>做错了：得到负反馈</li>
+<li>做对了：得到正反馈</li>
+</ul>
+</li>
+<li><p>可能性</p>
+<ul>
+<li>离散（discrete）随机变量的可能性叫做概率</li>
+<li>连续（continuous）随机变量的可能性叫做<strong>密度（density）</strong></li>
+<li>分布（distribution）：随机变量各种取值及其对应的可能性</li>
+</ul>
+</li>
+<li><p>Bayes定理<br>$$<br>P(A\mid B)&#x3D;\frac{P(A,B)}{P(B)}&#x3D;\frac{P(B\mid A)P(A)}{P(B)}.<br>$$</p>
+</li>
+<li><p>独立性</p>
+<p>如果两个随机变量A和B是独立的，意味着事件A的发生跟B事件的发生无关。即$A\perp B$，此时根据Bayes定理可以推出：<br>$$<br>P(A,B)&#x3D;P(A)P(B)<br>$$</p>
+</li>
+</ol>
+<h2 id="线性神经网络"><a href="#线性神经网络" class="headerlink" title="线性神经网络"></a>线性神经网络</h2><h3 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h3><ol>
+<li><p><em>小批量随机梯度下降</em>（minibatch stochastic gradient descent）</p>
+<blockquote>
+<p>在每次迭代中，我们首先随机抽样一个小批量$\beta $， 它是由固定数量的训练样本组成的。 然后，我们计算小批量的平均损失关于模型参数的导数（也可以称为梯度）。 最后，我们将梯度乘以一个预先确定的正数$\eta $，并从当前参数的值中减掉。</p>
+</blockquote>
+<p>之所以沿着负梯度方向更新权重参数，是因为梯度本身表示了函数的局部上升方向，也就是说，如果顺着梯度的方向走，函数值会变大。但在训练神经网络和其他机器学习模型时，我们的目标并不是让损失函数变大，而是让它尽可能小。</p>
+<p>我们用下面的数学公式来表示这一更新过程（$\partial $表示偏导数）：<br>$$<br>(\mathbf{w},b)\leftarrow(\mathbf{w},b)-\frac\eta{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\partial_{(\mathbf{w},b)}l^{(i)}(\mathbf{w},b).<br>$$</p>
+<p>在多元线性回归中，对于平方损失和仿射变换，这一更新过程的形式如下:<br>$$<br>$$\begin{gathered}<br>\mathbf{w}\leftarrow\mathbf{w}-\frac\eta{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\partial_\mathbf{w}l^{(i)}(\mathbf{w},b)&#x3D;\mathbf{w}-\frac\eta{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\mathbf{x}^{(i)}\left(\mathbf{w}^\top\mathbf{x}^{(i)}+b-y^{(i)}\right), \<br>b\leftarrow b-\frac\eta{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\partial_bl^{(i)}(\mathbf{w},b)&#x3D;b-\frac\eta{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\left(\mathbf{w}^\top\mathbf{x}^{(i)}+b-y^{(i)}\right).<br>\end{gathered}<br>$$</p>
+<p>在这里，$\partial_\mathbf{w}l^{(i)}(\mathbf{w},b)$表示：一个小批量$\beta $中的一个样本x^{i}^的损失函数对权重w求偏导；</p>
+<p>对于平方损失和仿射变换，这个偏导具体为：$\mathbf{x}^{(i)}\left(\mathbf{w}^\top\mathbf{x}^{(i)}+b-y^{(i)}\right)$</p>
+</li>
+<li><p>训练流程</p>
+<ol>
+<li><p>读取数据集</p>
+</li>
+<li><p>定义模型（Sequential）</p>
+</li>
+<li><p>初始化模型参数</p>
+</li>
+<li><p>定义损失函数</p>
+</li>
+<li><p>定义优化算法</p>
+</li>
+<li><p>训练</p>
+<p>在每个迭代周期里，我们将完整遍历一次数据集（<code>train_data</code>）， 不停地从中获取一个小批量的输入和相应的标签。 对于每一个小批量，我们会进行以下步骤:</p>
+<ul>
+<li>通过调用<code>net(X)</code>生成预测并计算损失<code>l</code>（前向传播）。</li>
+<li>通过进行反向传播来计算梯度。</li>
+<li>通过调用优化器来更新模型参数。</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>全连接层的参数开销</p>
+<p>如果全连接层又d个输入，q个输出，那么共有dq个参数</p>
+</li>
+<li><p>全连接层的偏置项的维度为（1, q），q为该层的输出维度。（习惯写法）</p>
+</li>
+</ol>
+<h3 id="softmax回归"><a href="#softmax回归" class="headerlink" title="softmax回归"></a>softmax回归</h3><ol>
+<li><p>softmax函数：<br>$$<br>$\hat{y}&#x3D;\mathrm{softmax}(\mathbf{o})\quad\text{其中}\quad\hat{y}_j&#x3D;\frac{\exp(o_j)}{\sum_k\exp(o_k)}<br>$$</p>
+<p>softmax函数能够将未规范化的预测变换为非负数并且总和为1，同时让模型保持可导的性质。</p>
+</li>
+<li><p>softmax回归</p>
+<p>与线性回归一样，softmax回归也是一个单层神经网络。由于计算每个输出$o_1$、$o_2$和$o_3$取决于 所有输入$x_1$、$x_2$、$x_3$和$x_4$, 所以softmax回归的输出层也是全连接层。计算过程如图：</p>
+<p><img src="https://ooo.0x0.ooo/2024/01/11/OZVizS.png" alt="OZVizS.png"></p>
+<p>图2 softmax回归是一种单层神经网络</p>
+<p>为了提高计算效率并且充分利用GPU，我们通常会对小批量样本的数据执行矢量计算。假设我们读取了一个批量的样本$\mathbf{X}$, 其中特征维度 (输入数量) 为$d$,批量大小为$n$。此外，假设我们在输出中有$q$个类别。那么小批量样本的特征为$\mathbf{X}\in\mathbb{R}^{n\times d}$, 权重为$\mathbf{W}\in\mathbb{R}^{d\times q}$, 偏置为$\mathbf{b}\in\mathbb{R}^{1\times q}$。</p>
+<p>softmax回归的矢量计算表达式为：<br>$$<br>\begin{gathered}\mathbf{O}&#x3D;\mathbf{X}\mathbf{W}+\mathbf{b},\\hat{\mathbf{Y}}&#x3D;\mathrm{softmax}(\mathbf{O}).\end{gathered}<br>$$</p>
+</li>
+</ol>
+<h2 id="多层感知机"><a href="#多层感知机" class="headerlink" title="多层感知机"></a>多层感知机</h2><ol>
+<li><p>多层感知机</p>
+<ol>
+<li><p>含义：在网络中加入一个或多个隐藏层来克服线性模型的限制， 使模型具有更强的表达能力</p>
+</li>
+<li><p>关键要素：在仿射变换之后对每个隐藏单元应用非线性的激活函数(activation function) $\sigma$。一般来说，有了激活函数，就不可能再将我们的多层感知机退化成线性模型<br>$$<br>\mathbf{H}&#x3D;\sigma(\mathbf{X}\mathbf{W}^{(1)}+\mathbf{b}^{(1)}),<br>$$</p>
+<p>$$<br>\mathbf{O}&#x3D;\mathbf{H}\mathbf{W}^{(2)}+\mathbf{b}^{(2)}.<br>$$</p>
+</li>
+</ol>
+</li>
+<li><p>通用近似定理：通过使用更深（而不是更广）的网络，我们可以更容易地逼近许多函数</p>
+</li>
+<li><p>过拟合</p>
+<ul>
+<li>训练数据精度 &gt;&gt; 测试数据精度(代表着潜在分布)</li>
+<li>过拟合更像死记硬背标签，<strong>泛化则要求模型找到更通用的规律，学会如何判断标签</strong></li>
+<li>更可能过拟合？<ul>
+<li>可调整参数越多，模型越容易过拟合</li>
+<li>可调整参数的取值范围越大，模型越容易过拟合</li>
+<li>训练样本数量越少，模型越容易过拟合</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>欠拟合：模型连训练数据都无法很好地拟合，无法继续减少训练误差</p>
+</li>
+<li><p>什么样的模型更复杂？——训练迭代周期更长的模型更复杂，需要早停（early stopping）的模型更简单</p>
+</li>
+<li><p>模型选择</p>
+<ol>
+<li>不同类模型的选择（比如决策树or线性回归模型）</li>
+<li>同类模型的选择（比如都是多层感知机，但是隐藏层的数量、同一隐藏层隐藏单元的数量不同）</li>
+<li>此时需要用到<strong>验证集</strong>——故数据集划分为训练集、验证集、测试集（严格来说测试集只用一次）</li>
+</ol>
+</li>
+<li><p>正则化</p>
+<p>减少过拟合，通过在训练集的损失函数上加入权重向量W的惩罚项，从而降低学习到的模型的复杂度。</p>
+<ul>
+<li>法1：权重衰减（weight decay）<ul>
+<li>岭回归：通过L<del>2</del>正则化的线性回归（通过惩罚权重向量W中的大分量来均匀分布权重）</li>
+<li>套索回归：通过L<del>1</del>正则化的线性回归（通过直接去掉一部分权重来实现特征选择，减少特征的数量，从而降低模型复杂度，减少过拟合的风险）</li>
+</ul>
+</li>
+<li>法2：dropout<ul>
+<li>一般只在<strong>训练集</strong>上使用</li>
+<li>应用于每个隐藏层的输出H（在激活函数之后使用）：$\mathbf{H}&#x3D;\sigma(\mathbf{X}\mathbf{W}^{(1)}+\mathbf{b}^{(1)}),$</li>
+<li>可以各层分别设置dropout概率，靠近输入的地方设置较低的dropout概率</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>前向传播 and 反向传播</p>
+<p>反向传播计算各可调整参数的梯度时，需要使用<strong>前向传播过程中产生的中间值（即隐藏层的输出值H）</strong>，这也是训练阶段的显存大于测试阶段的原因（因为训练阶段需要存储前向传播的中间值，以备反向传播使用，而测试阶段不需要这样）</p>
+</li>
+<li><p>梯度爆炸</p>
+<ul>
+<li>含义：可调整参数（如权重W）更新过大，<u>破坏了模型的稳定收敛</u></li>
+<li>与初始化模型参数有关，不合适的初始化会导致我们没有机会让梯度下降优化器收敛</li>
+</ul>
+</li>
+<li><p>梯度消失</p>
+<ul>
+<li>含义：可调整参数（如权重W）更新过小，每次几乎不会移动，<u>导致模型无法学习</u></li>
+<li>激活函数选择sigmoid容易导致梯度消失，所以现在都用ReLu</li>
+</ul>
+</li>
+<li><p>随机初始化可以打破对称性（正态分布、Xavier初始化）</p>
+</li>
+<li><p>分布偏移</p>
+<ul>
+<li><p>含义：训练集和测试集不来自同一个分布</p>
+</li>
+<li><p>分类：协变量（特征）偏移、标签偏移</p>
+</li>
+<li><p>协变量偏移：</p>
+<ul>
+<li><p>含义：训练数据和测试数据中特征（即协变量）的分布有所不同，但目标变量在给定特征的条件下的分布是不变的情况。</p>
+</li>
+<li><pre><code>假设我们正在构建一个预测电邮是否为垃圾邮件（&quot;是垃圾邮件&quot;或&quot;不是垃圾邮件&quot;）的模型，我们使用包含文本内容等特征的电邮收集的历史数据进行模型训练。特定的单词出现的频率（例如&quot;deal&quot;, &quot;free&quot;, &quot;win&quot;等）可能被用作特征。
+
+起初，我们的训练数据主要是家庭用户的电邮，我们的垃圾邮件主要是广告和一些诱导性电邮。然后，我们打算在一个公司类的环境中去部署和测试这个模型，这个环境中垃圾邮件主要是包含恶意链接和病毒的电邮。
+
+在这个情况下，特征（电邮内容，或者更具体一点，特定词汇的出现频率）的分布在训练数据和测试数据（家庭用户电邮和公司电邮）之间发生了改变，因为公司电邮中出现恶意链接和病毒电邮的比例会更高，而广告邮件的比例会更低。然而，无论是在家庭环境还是在公司环境，条件概率P(y|x)（给定电邮内容，这封邮件是垃圾邮件的概率）是不变的。
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 标签偏移：</span><br><span class="line"></span><br><span class="line">  - 含义：训练数据和测试数据中标签（即y，或者说目标变量）的分布有所不同，但在给定标签的情况下，特征（即x，或者说输入变量）的条件分布保持不变的现象</span><br><span class="line"></span><br><span class="line">  - ```</span><br><span class="line">    假如我们在建立一个预测一个人是否会感冒的模型，模型的特征有&quot;打喷嚏&quot;，&quot;头疼&quot;，&quot;喉咙痛&quot;等症状。我们在冬天收集了一些数据作为训练数据，然后到了夏天我们拿这个模型去预测是否会感冒。</span><br><span class="line">    </span><br><span class="line">    在这个场景中，我们可以看出，冬天和夏天人们感冒的概率（即标签y的边缘分布）是不同的，通常冬天感冒的概率会比夏天高。这就产生了标签偏移。然而，无论是冬天还是夏天，如果一个人感冒了，他出现打喷嚏，头疼，喉咙痛等症状的概率通常是一样的，也就是说在给定感冒的情况下，症状（即特征x）的条件分布是不变的。</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p>标签偏移和协变量偏移：</p>
+<ul>
+<li><p>可以同时成立</p>
+</li>
+<li><pre><code>比如，在从冬季到夏季的过程中，不仅感冒的比例发生了变化（标签偏移），与此同时由于气候的变化，导致人打喷嚏的比例也发生了变化（协变量偏移）。
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p>测试时可在一定假设下纠正协变量偏移、标签偏移</p>
+</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 动手学深度学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/04/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8Coze%E6%95%99%E7%A8%8B%EF%BC%88GPT4%EF%BC%89/" rel="prev" title="字节跳动Coze教程（GPT4）">
+                  <i class="fa fa-angle-left"></i> 字节跳动Coze教程（GPT4）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+<!--
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">deeprookie</span>
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
