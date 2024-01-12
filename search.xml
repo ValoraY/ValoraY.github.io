@@ -2240,10 +2240,8 @@ invariance）：不管检测对象出现在图像中的哪个位置，神经网�
 </ul>
 <h3 id="图像卷积">图像卷积</h3>
 <figure>
-<img
-src="../../../../OtherAssignments/Public_Documents/typora_img/OZlnPD-170506386900825.png"
-alt="图1 卷积运算" />
-<figcaption aria-hidden="true">图1 卷积运算</figcaption>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlnPD.png" alt="卷积运算" />
+<figcaption aria-hidden="true">卷积运算</figcaption>
 </figure>
 <ol type="1">
 <li><p>卷积相关概念</p>
@@ -2302,8 +2300,7 @@ class="math display">\[
 <h3 id="多输入多输出通道">多输入多输出通道</h3>
 <h4 id="多输入通道">多输入通道</h4>
 <figure>
-<img
-src="../../../../OtherAssignments/Public_Documents/typora_img/OZlizI-170506387813628.png"
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlizI.png"
 alt="两个输入通道的互相关计算" />
 <figcaption aria-hidden="true">两个输入通道的互相关计算</figcaption>
 </figure>
