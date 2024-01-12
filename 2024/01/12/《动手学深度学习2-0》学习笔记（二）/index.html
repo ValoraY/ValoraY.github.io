@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="《动手学深度学习2.0》学习笔记（二） 《动手学深度学习2.0》电子书的链接地址为https:&#x2F;&#x2F;zh.d2l.ai&#x2F;index.html 本文记录了我在学习本书5-7章节（包括深度学习计算、卷积神经网络、现代卷积神经网络）过程中的理解和收获。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《动手学深度学习2.0》学习笔记（二）">
+<meta property="og:url" content="https://valoray.github.io/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="DeepRookie">
+<meta property="og:description" content="《动手学深度学习2.0》学习笔记（二） 《动手学深度学习2.0》电子书的链接地址为https:&#x2F;&#x2F;zh.d2l.ai&#x2F;index.html 本文记录了我在学习本书5-7章节（包括深度学习计算、卷积神经网络、现代卷积神经网络）过程中的理解和收获。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlFu1.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZl19F.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlNT6.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlevP.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlrdb.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlKOl.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlvEB.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlZNg.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlyus.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/01/12/OZlmFK.png">
+<meta property="article:published_time" content="2024-01-12T12:55:28.000Z">
+<meta property="article:modified_time" content="2024-01-12T12:57:21.794Z">
+<meta property="article:author" content="deeprookie">
+<meta property="article:tag" content="动手学深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ooo.0x0.ooo/2024/01/12/OZlFu1.png">
+
+
+<link rel="canonical" href="https://valoray.github.io/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/","path":"2024/01/12/《动手学深度学习2-0》学习笔记（二）/","title":"《动手学深度学习2.0》学习笔记（二）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《动手学深度学习2.0》学习笔记（二） | DeepRookie</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">DeepRookie</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">想到，就去做，无非一朝还是一生</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02.0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C"><span class="nav-number">1.</span> <span class="nav-text">《动手学深度学习2.0》学习笔记（二）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AE%A1%E7%AE%97"><span class="nav-number">1.1.</span> <span class="nav-text">深度学习计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.2.</span> <span class="nav-text">卷积神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%E5%88%B0%E5%8D%B7%E7%A7%AF"><span class="nav-number">1.2.1.</span> <span class="nav-text">从全连接层到卷积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">图像卷积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%BE%93%E5%85%A5%E5%A4%9A%E8%BE%93%E5%87%BA%E9%80%9A%E9%81%93"><span class="nav-number">1.2.3.</span> <span class="nav-text">多输入多输出通道</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E8%BE%93%E5%85%A5%E9%80%9A%E9%81%93"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">多输入通道</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E8%BE%93%E5%87%BA%E9%80%9A%E9%81%93"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">多输出通道</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#x1%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">1x1卷积层</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%87%E8%81%9A%E5%B1%82pooling"><span class="nav-number">1.2.4.</span> <span class="nav-text">汇聚层pooling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lenet"><span class="nav-number">1.2.5.</span> <span class="nav-text">LeNet</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E4%BB%A3%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.3.</span> <span class="nav-text">现代卷积神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#alexnet"><span class="nav-number">1.3.1.</span> <span class="nav-text">AlexNet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9D%97%E7%9A%84%E7%BD%91%E7%BB%9Cvgg"><span class="nav-number">1.3.2.</span> <span class="nav-text">使用块的网络VGG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E4%B8%AD%E7%9A%84%E7%BD%91%E7%BB%9Cnin"><span class="nav-number">1.3.3.</span> <span class="nav-text">网络中的网络NiN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AB%E5%B9%B6%E8%A1%8C%E8%BF%9E%E7%BB%93%E7%9A%84%E7%BD%91%E7%BB%9Cgooglenet"><span class="nav-number">1.3.4.</span> <span class="nav-text">含并行连结的网络GoogLeNet</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#inception%E5%9D%97"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">Inception块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#googlenet%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">GoogLeNet模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E8%A7%84%E8%8C%83%E5%8C%96"><span class="nav-number">1.3.5.</span> <span class="nav-text">批量规范化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E8%A7%84%E8%8C%83%E5%8C%96-1"><span class="nav-number">1.3.5.1.</span> <span class="nav-text">批量规范化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E8%A7%84%E8%8C%83%E5%8C%96%E5%B1%82"><span class="nav-number">1.3.5.2.</span> <span class="nav-text">批量规范化层</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="nav-number">1.3.5.2.1.</span> <span class="nav-text">全连接层</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="nav-number">1.3.5.2.2.</span> <span class="nav-text">卷积层</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%A2%84%E6%B5%8B%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E6%89%B9%E9%87%8F%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">1.3.5.2.3.</span> <span class="nav-text">预测过程中的批量归一化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%8B%E5%B7%AE%E7%BD%91%E7%BB%9Cresnet"><span class="nav-number">1.3.6.</span> <span class="nav-text">残差网络ResNet</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AE%8B%E5%B7%AE%E5%9D%97"><span class="nav-number">1.3.6.1.</span> <span class="nav-text">残差块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#resnet%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.6.2.</span> <span class="nav-text">ResNet模型</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="deeprookie"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">deeprookie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ValoraY" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ValoraY" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1432843916@qq.com" title="E-Mail → mailto:1432843916@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/m0_51619560/category_12535222.html" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_51619560&#x2F;category_12535222.html" rel="noopener me" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+    <div class="links-of-blogroll motion-element links-of-blogroll-block">
+      <div class="links-of-blogroll-title">
+        <!-- modify icon to fire by szw -->
+        <i class="fa fa-history fa-" aria-hidden="true"></i>
+        近期文章
+      </div>
+      <ul class="links-of-blogroll-list">
+        
+        
+          <li>
+            <a href="/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（二）" target="_blank">《动手学深度学习2.0》学习笔记（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（一）" target="_blank">《动手学深度学习2.0》学习笔记（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/04/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8Coze%E6%95%99%E7%A8%8B%EF%BC%88GPT4%EF%BC%89/" title="字节跳动Coze教程（GPT4）" target="_blank">字节跳动Coze教程（GPT4）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Django搭建敏感图片检测系统（二）" target="_blank">Django搭建敏感图片检测系统（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/03/Django%E5%88%9D%E5%AD%A6%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" title="Django初学教程（一）" target="_blank">Django初学教程（一）</a>
+          </li>
+        
+      </ul>
+    </div>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《动手学深度学习2.0》学习笔记（二） | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《动手学深度学习2.0》学习笔记（二）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-01-12 20:55:28 / 修改时间：20:57:21" itemprop="dateCreated datePublished" datetime="2024-01-12T20:55:28+08:00">2024-01-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1
+id="动手学深度学习2.0学习笔记二">《动手学深度学习2.0》学习笔记（二）</h1>
+<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
+<p>本文记录了我在学习本书5-7章节（包括深度学习计算、卷积神经网络、现代卷积神经网络）过程中的理解和收获。</p>
+<span id="more"></span>
+<h2 id="深度学习计算">深度学习计算</h2>
+<ol type="1">
+<li><p>块（block）</p>
+<ul>
+<li>一个块可以由许多层组成；一个块可以由许多块组成。</li>
+<li>从编程的角度来看，块由<em>类</em>（class）表示。
+每个块都必须定义一个将其输入转换为输出的前向传播函数，
+并且必须存储任何必需的参数。</li>
+</ul></li>
+<li><p><code>Sequential</code>类：用于把多个模块顺序地串起来</p></li>
+<li><p>参数是复合的对象，包含值、梯度和额外信息。如何访问参数参考https://zh.d2l.ai/chapter_deep-learning-computation/parameters.html</p></li>
+<li><p>参数初始化</p></li>
+<li><p>加载和保存张量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = torch.arange(4)</span><br><span class="line">torch.save(x,&quot;x-file&quot;)</span><br><span class="line">load_x = torch.load(&quot;x-file&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>加载和保存模型参数</p>
+<blockquote>
+<p>这里保存的是模型的参数而不是保存整个模型。
+因为模型本身可以包含任意代码，所以模型本身难以序列化。
+因此，要想恢复模型，我们需要用代码生成架构， 然后从磁盘加载参数。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 保存模型参数</span><br><span class="line">torch.save(net.state_dict(), &#x27;mlp.params&#x27;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 恢复模型</span><br><span class="line">clone = MLP() # 先生成模型的架构</span><br><span class="line">clone.load_state_dict(torch.load(&#x27;mlp.params&#x27;)) #再恢复模型的参数</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="卷积神经网络">卷积神经网络</h2>
+<h3 id="从全连接层到卷积">从全连接层到卷积</h3>
+<p>空间不变性</p>
+<ul>
+<li><em>平移不变性</em>（translation
+invariance）：不管检测对象出现在图像中的哪个位置，神经网络的前面几层应该对相同的图像区域具有相似的反应，即为“平移不变性”。<strong>图像的平移不变性使我们以相同的方式处理局部图像，而不在乎它的位置。</strong></li>
+<li><em>局部性</em>（locality）：神经网络的前面几层应该只探索输入图像中的局部区域，而不过度在意图像中相隔较远区域的关系，这就是“局部性”原则。最终，可以聚合这些局部特征，以在整个图像级别进行预测。<strong>局部性意味着计算相应的隐藏表示只需一小部分局部图像像素。</strong></li>
+</ul>
+<h3 id="图像卷积">图像卷积</h3>
+<figure>
+<img
+src="../../../../OtherAssignments/Public_Documents/typora_img/OZlnPD-170506386900825.png"
+alt="图1 卷积运算" />
+<figcaption aria-hidden="true">图1 卷积运算</figcaption>
+</figure>
+<ol type="1">
+<li><p>卷积相关概念</p>
+<ul>
+<li><strong>卷积核</strong>（convolution
+kernel），又叫滤波器（filter）、该卷积层的权重，作用是：<strong>通过仅查看“输入-输出对”来学习由X生成Y</strong></li>
+<li><strong>卷积层</strong>：
+<ul>
+<li>可以指代应用卷积核的网络层</li>
+<li>也可以指代图像经过卷积核计算后的输出（即“<strong>输出的卷积层</strong>”），此时等价于<strong>特征映射（feature
+map）</strong>，或<strong>特征图</strong></li>
+</ul></li>
+<li>卷积层被训练的参数包括：卷积核权重、标量权重</li>
+</ul></li>
+<li><p>神经网络中的卷积运算实际对应数学上的互相关运算（cross-correlation）</p></li>
+<li><p>感受野（receptive field）</p>
+<p>以图1为例来解释感受野：给定<span
+class="math inline">\(2\times2\)</span>卷积核，阴影输出元素值19的感受野是输入阴影部分的四个元素。假设之前输出为<span
+class="math inline">\(\mathbf{Y}\)</span>, 其大小为<span
+class="math inline">\(2\times2\)</span>，现在我们在其后附加一个卷积层，该卷积层以<span
+class="math inline">\(\mathbf{Y}\)</span>为输入，输出单个元素<span
+class="math inline">\(z\)</span>。在这种情况下，<span
+class="math inline">\(\mathbf{Y}\)</span>上的<span
+class="math inline">\(z\)</span>的感受野包括<span
+class="math inline">\(\mathbf{Y}\)</span>的所有四个元素，而输入的感受野包括最初所有九个输入元素。因此，当一个特征图中的任意元素需要检测更广区域的输入特征时，我们可以构建一个更深的网络。</p></li>
+<li><p>填充（padding）：旨在保留边界信息</p></li>
+<li><p>步幅（stride）：当原始分辨率十分冗余时，加大步幅可以缩减采样次数，加快计算</p></li>
+<li><p>怎么确定卷积操作相关的各种值？</p>
+<ol type="1">
+<li><p>设置卷积核大小（kernel size）——(k<sub>h</sub>,k<sub>w</sub>)</p>
+<ul>
+<li>通常选奇数1，3，5，7...，目的是：padding通常按照如下规则设置p<sub>h</sub>=k<sub>h</sub>-1，p<sub>w</sub>=k<sub>w</sub>-1，kernel
+size选择奇数，p<sub>h</sub>，p<sub>w</sub>就能成为偶数，就能使填充时上下填充同样的行数、左右填充同样的列数，比较对称</li>
+</ul></li>
+<li><p>设置填充（padding）</p>
+<ul>
+<li>目的：通常是为了使输入和输出具有相同的高度和宽度，从而更易预测每个图层的输出形状</li>
+<li>一般设置：p<sub>h</sub>=k<sub>h</sub>-1，p<sub>w</sub>=k<sub>w</sub>-1，这里p<sub>h</sub>代表上下填充的<strong>总行数</strong>，p<sub>w</sub>代表左右填充的<strong>总列数</strong></li>
+<li>在Python编程中，参数padding通常指的是上或下填充的行数（or
+左或右填充的列数），也就是说p<sub>h</sub>=2xpadding</li>
+</ul></li>
+<li><p>设置步长（stride）</p>
+<ul>
+<li>stride=2，高/宽步长都设置为2，则输入高/宽都减半（输出时）</li>
+</ul></li>
+<li><p>求解输出形状 <span class="math display">\[
+\lfloor(n_h-k_h+p_h+s_h)/s_h\rfloor\times\lfloor(n_w-k_w+p_w+s_w)/s_w\rfloor.
+\]</span> 如果设置了<span
+class="math inline">\(p_h=k_h-1\)</span>和<span
+class="math inline">\(p_w=k_w-1\)</span>，则输出形状将简化为 <span
+class="math display">\[
+\lfloor(n_h+s_h-1)/s_h\rfloor\times\lfloor(n_w+s_w-1)/s_w\rfloor
+\]</span></p></li>
+</ol></li>
+</ol>
+<h3 id="多输入多输出通道">多输入多输出通道</h3>
+<h4 id="多输入通道">多输入通道</h4>
+<figure>
+<img
+src="../../../../OtherAssignments/Public_Documents/typora_img/OZlizI-170506387813628.png"
+alt="两个输入通道的互相关计算" />
+<figcaption aria-hidden="true">两个输入通道的互相关计算</figcaption>
+</figure>
+<p>假设输入的通道数为<span
+class="math inline">\(c_i\)</span>，那么卷积核的输入通道数也需要为<span
+class="math inline">\(c_i\)</span>，因此卷积核的窗口形状是<span
+class="math inline">\(c_i\times k_h\times k_w\)</span></p>
+<p>当输入通道&gt;1，输出通道=1时，进 行互相关运算包括两个步骤：</p>
+<ol type="1">
+<li>每个通道输入的二维张量和卷积核的二维张量进行互相关运算</li>
+<li>对通道求和（将<span
+class="math inline">\(c_i\)</span>的结果相加）得到二维张量</li>
+</ol>
+<h4 id="多输出通道">多输出通道</h4>
+<p>在最流行的神经网络架构中，随着神经网络层数的加深，我们常会<strong>增加输出通道的维数，通过减少空间分辨率以获得更大的通道深度</strong>。直观地说，我们可以<u><strong>将每个通道看作对不同特征的响应</strong></u>。而现实可能更为复杂一些，因为每个通道不是独立学习的，而是为了共同使用而优化的。因此，多输出通道并不仅是学习多个单通道的检测器。</p>
+<p>用<span class="math inline">\(c_i\)</span>和<span
+class="math inline">\(c_o\)</span>分别表示输入和输出通道的数目，并让<span
+class="math inline">\(k_h\)</span>和<span
+class="math inline">\(k_w\)</span>为卷积核的高度和宽度。为了获得多个通道的输出，我们可以为每个输出通道创建一个形状为<span
+class="math inline">\(c_i\times k_h\times
+k_w\)</span>的卷积核张量，这样卷积核的形状<span
+class="math inline">\(c_o\times c_i\times k_h\times
+k_w\)</span>。在互相关运算中，每个输出通道先获取所有输入通道，再以对应该输出通道的卷积核
+计算出结果。</p>
+<ul>
+<li>卷积核的形状是 <span class="math inline">\(c_o\times c_i\times
+k_h\times k_w\)</span>，可以理解为有<span
+class="math inline">\(c_o\)</span>套卷积核，每个卷积核的维度为<span
+class="math inline">\(c_i\times k_h\times
+k_w\)</span>，因此每个卷积核的输出为一个二维张量，<span
+class="math inline">\(c_o\)</span>套卷积核的输出就为<span
+class="math inline">\(c_o\)</span>套二维张量，堆叠起来就是“多个”输出通道<span
+class="math inline">\(c_o\)</span></li>
+</ul>
+<h4 id="x1卷积层">1x1卷积层</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlFu1.png"
+alt="互相关计算使用了具有3个输入通道和2个输出通道的1×1卷积核。其中，输入和输出具有相同的高度和宽度。" />
+<figcaption
+aria-hidden="true">互相关计算使用了具有3个输入通道和2个输出通道的1×1卷积核。其中，输入和输出具有相同的高度和宽度。</figcaption>
+</figure>
+<ol type="1">
+<li><p>特点：失去了在高度和宽度维度上，识别相邻元素间相互作用的能力（卷积层的特有能力）</p></li>
+<li><p>用途：调整通道数量，用来将<span
+class="math inline">\(c_i\)</span>个输入值转换为<span
+class="math inline">\(c_o\)</span>个输出值，可看作在每个像素位置应用的全连接层</p></li>
+<li><p>1x1卷积层的权重维度为<span class="math inline">\(c_o\times
+c_i\)</span>，再额外加上一个偏置。</p>
+<p>这里的<span class="math inline">\(c_o\)</span>表示有<span
+class="math inline">\(c_o\)</span>套1x1卷积核，<span
+class="math inline">\(c_i\)</span>代表卷积核自身的通道数要和输入的通道数相同。（换句话说，这里等价于说卷积核的形状是<span
+class="math inline">\(c_o\times c_i\times 1\times 1\)</span>）</p></li>
+</ol>
+<h3 id="汇聚层pooling">汇聚层pooling</h3>
+<ol type="1">
+<li>目的：降低卷积层对位置的敏感性，同时降低对空间下采样表示的敏感性。</li>
+<li>特点：
+<ul>
+<li>不包含参数，运算是确定的（maximum or average pooling）</li>
+<li>pooling层的输出通道数与输入通道数相同</li>
+</ul></li>
+<li>使用注意：默认情况下，pooling窗口的大小与步幅相同</li>
+</ol>
+<h3 id="lenet">LeNet</h3>
+<p>LeNet是最早发布的卷积神经网络之一（1989年）</p>
+<ol type="1">
+<li><p>LeNet（LeNet-5）由两个部分组成：</p>
+<ul>
+<li><p>卷积编码器：由两个卷积层组成;</p></li>
+<li><p>全连接层密集块：由三个全连接层组成。</p></li>
+</ul></li>
+<li><p>LeNet使用了sigmoid激活函数</p></li>
+<li><p>LeNet使用了权重衰减来控制全连接层的模型复杂度</p></li>
+</ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZl19F.png"
+alt="LeNet架构图" />
+<figcaption aria-hidden="true">LeNet架构图</figcaption>
+</figure>
+<h2 id="现代卷积神经网络">现代卷积神经网络</h2>
+<p>2012年前后，如何表征图像特征的观点发生了进化。2012年前，图像特征都是机械计算出来的，2012年后新的观点涌动起来——<strong>特征本身应该是被学习的</strong>。</p>
+<p>现代卷积神经网络：</p>
+<ul>
+<li>AlexNet。它是第一个在大规模视觉竞赛中击败传统计算机视觉模型的大型神经网络；</li>
+<li>使用重复块的网络（VGG）。它利用许多重复的神经网络块；</li>
+<li>网络中的网络（NiN）。它重复使用由卷积层和1×1卷积层（用来代替全连接层）来构建深层网络;</li>
+<li>含并行连结的网络（GoogLeNet）。它使用并行连结的网络，通过不同窗口大小的卷积层和最大汇聚层来并行抽取信息；</li>
+<li>残差网络（ResNet）。它通过残差块构建跨层的数据通道，是计算机视觉中最流行的体系架构；</li>
+<li>稠密连接网络（DenseNet）。它的计算成本很高，但给我们带来了更好的效果。</li>
+</ul>
+<h3 id="alexnet">AlexNet</h3>
+<ol type="1">
+<li>AlexNet由八层组成：五个卷积层、两个全连接隐藏层和一个全连接输出层。</li>
+<li>AlexNet使用ReLU作为其激活函数。</li>
+<li>AlexNet通过dropout控制全连接层的模型复杂度</li>
+</ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlNT6.png"
+alt="AlexNet架构图" />
+<figcaption aria-hidden="true">AlexNet架构图</figcaption>
+</figure>
+<h3 id="使用块的网络vgg">使用块的网络VGG</h3>
+<ol type="1">
+<li>VGG网络可以分为两部分：第一部分主要由卷积层和汇聚层组成，第二部分由全连接层组成。</li>
+<li>原始VGG网络有5个卷积块，其中前两个块各有一个卷积层，后三个块各包含两个卷积层。</li>
+</ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlevP.png" alt="VGG架构" />
+<figcaption aria-hidden="true">VGG架构</figcaption>
+</figure>
+<p>LeNet、AlexNet和VGG都有一个共同的设计模式：通过一系列的卷积层与汇聚层来提取空间结构特征；然后通过全连接层对特征的表征进行处理。
+AlexNet和VGG对LeNet的改进主要在于如何扩大和加深这两个模块。</p>
+<h3 id="网络中的网络nin">网络中的网络NiN</h3>
+<p>卷积层的输入和输出由四维张量组成，张量的每个轴分别对应样本、通道、高度和宽度。另外，全连接层的输入和输出通常是分别对应于样本和特征的二维张量。NiN的想法是在每个像素位置
+(针对每个高度和宽度)
+应用一个全连接层。如果我们将权重连接到每个空间位置，我们可以将其视为<span
+class="math inline">\(1\times1\)</span>卷积层 ,
+或作为在每个像素位置上独立作用的全连接层。从另一个角度看，即将空间维度中的每个像素视为单个样本，将通道维度视为不同特征
+(feature) 。</p>
+<p>NiN块以一个普通卷积层开始，后面是两个<span
+class="math inline">\(1\times1\)</span>的卷积层。这两个<span
+class="math inline">\(1\times1\)</span>卷积层充当带有ReLU激活函数的逐像素全连接层。第一层的卷积窗口形状通常由用户设置。随后的卷积窗口形状固定为<span
+class="math inline">\(1\times1\)</span>。</p>
+<p>NiN和AlexNet之间的一个显著区别是NiN完全取消了全连接层。
+相反，NiN使用一个NiN块，其输出通道数等于标签类别的数量。最后放一个<em>全局平均汇聚层</em>（global
+average pooling layer），生成一个对数几率
+（logits）。NiN设计的一个优点是，它显著减少了模型所需参数的数量。然而，在实践中，这种设计有时会增加训练模型的时间。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlrdb.png" alt="NiN的架构" />
+<figcaption aria-hidden="true">NiN的架构</figcaption>
+</figure>
+<h3 id="含并行连结的网络googlenet">含并行连结的网络GoogLeNet</h3>
+<h4 id="inception块">Inception块</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlKOl.png"
+alt="Inception块的架构" />
+<figcaption aria-hidden="true">Inception块的架构</figcaption>
+</figure>
+<p>如图所示，Inception块由四条并行路径组成。前三条路径使用窗口大小为<span
+class="math inline">\(1\times1\times3\times3\)</span>和<span
+class="math inline">\(5\times5\)</span>的卷积层，从不同空间大小中提取信息。中间的两条路径在输入上执行<span
+class="math inline">\(1\times1\)</span>卷积，以减少通道数，从而降低模型的复杂性。第四条路径使用<span
+class="math inline">\(3\times3\)</span>最大汇聚层，然后使用<span
+class="math inline">\(1\times1\)</span>卷积层来改变通道数。这四条路径都使用合适的填充来使输入与输出的高和宽一致，最后我们将每条线路的输出在通道维度上连结，并构成Inception块的输出。在Inception块中，通常调整的超参数是每层输出通道数。</p>
+<h4 id="googlenet模型">GoogLeNet模型</h4>
+<p>GoogLeNet一共使用9个Inception块和全局平均汇聚层的堆叠来生成其估计值。Inception块之间的最大汇聚层可降低维度。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlvEB.png"
+alt="GoogLeNet架构" />
+<figcaption aria-hidden="true">GoogLeNet架构</figcaption>
+</figure>
+<h3 id="批量规范化">批量规范化</h3>
+<h4 id="批量规范化-1">批量规范化</h4>
+<p>批量规范化应用于单个可选层（也可以应用到所有层），其原理如下：在每次训练迭代中，我们首先规范化输入，即通过减去其均值并除以其标准差，其中两者均基于当前小批量处理。
+接下来，我们应用比例系数和比例偏移。</p>
+<p>从形式上来说，用<span
+class="math inline">\(\mathbf{x}\in\mathcal{B}\)</span>表示一个来自小批量<span
+class="math inline">\(\mathcal{B}\)</span>的输入，批量规范化BN根据以下表达式转换<span
+class="math inline">\(\mathbf{x}:\)</span> <span class="math display">\[
+\mathrm{BN}(\mathbf{x})=\boldsymbol{\gamma}\odot\frac{\mathbf{x}-\hat{\boldsymbol{\mu}}_{\mathcal{B}}}{\hat{\boldsymbol{\sigma}}_{\mathcal{B}}}+\boldsymbol{\beta}.
+\]</span> <span
+class="math inline">\(\hat{\mu}_{B}\)</span>是小批量<span
+class="math inline">\(\mathcal{B}\)</span>的样本均值，<span
+class="math inline">\(\hat{\sigma}_{B}\)</span>是小批量<span
+class="math inline">\(\mathcal{B}\)</span>的样本标准差。应用标准化后，生成的小批量的平均值为0和单位方差为1。由于单位方差
+(与其他一些魔法数) 是一个主观的选择，因此我们通常包含拉伸参数(scale)
+<span class="math inline">\(\gamma\)</span>和偏移参数(shift) <span
+class="math inline">\(\beta\)</span>，它们的形状与x相同。<span
+class="math inline">\(\gamma\)</span>和<span
+class="math inline">\(\beta\)</span>是需要与其他模型参数一起学习的参数。</p>
+<ul>
+<li>批量规范化层和dropout层一样，在训练模式和预测模式下计算不同。</li>
+</ul>
+<p>批量规范化层在”训练模式“（通过小批量统计数据规范化）和“预测模式”（通过数据集统计规范化）中的功能不同。
+在训练过程中，我们无法得知使用整个数据集来估计平均值和方差，所以只能根据每个小批次的平均值和方差不断训练模型。
+而在预测模式下，可以根据整个数据集精确计算批量规范化所需的平均值和方差。</p>
+<h4 id="批量规范化层">批量规范化层</h4>
+<p>批量规范化和其他层之间的一个关键区别是，由于批量规范化在完整的小批量上运行，因此我们不能像以前在引入其他层时那样忽略批量大小。
+我们在下面讨论这两种情况：全连接层和卷积层，他们的批量规范化实现略有不同。</p>
+<h5 id="全连接层">全连接层</h5>
+<p>将批量规范化层置于全连接层中的仿射变换和激活函数之间。设全连接层的输入为x，权重参数和偏置参数分别为<span
+class="math inline">\(\mathbf{W}\)</span>和b，激活函数为<span
+class="math inline">\(\phi\)</span>,批量规范化的运算符为BN。那么，使用批量规范化的全连接层的输出的计算详情如下：
+<span class="math display">\[
+\mathbf{h}=\phi(\mathrm{BN}(\mathbf{W}\mathbf{x}+\mathbf{b})).
+\]</span></p>
+<h5 id="卷积层">卷积层</h5>
+<p>对于卷积层，在卷积层之后和非线性激活函数之前应用批量规范化。</p>
+<p>当卷积有多个输出通道时，我们需要对这些通道的“每个”输出执行批量规范化，每个通道都有自己的拉伸
+(scale) 和偏移(shift)
+参数，这两个参数都是标量。假设我们的小批量包含<span
+class="math inline">\(m\)</span>个样本，并且对于每个通道，卷积的输出具有高度<span
+class="math inline">\(p\)</span>和宽度<span
+class="math inline">\(q\)</span>。那么对于卷积层，我们在每个输出通道的<span
+class="math inline">\(m\cdot p\cdot
+q\)</span>个元素上同时执行每个批量规范化。因此，在计算平均值和方差时，我们会收集所有空间位置的值，然后在给定通道内应用相同的均值和方差，以便在每个空间位置对值进行规范化。</p>
+<h5 id="预测过程中的批量归一化">预测过程中的批量归一化</h5>
+<p>通过移动平均估算整个训练数据集的样本均值和方差，并在预测时使用它们得到确定的输出。</p>
+<h3 id="残差网络resnet">残差网络ResNet</h3>
+<h4 id="残差块">残差块</h4>
+<p>在残差块中，输入可通过跨层数据线路更快地向前传播。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlZNg.png"
+alt="一个正常块（左图）和一个残差块（右图）" />
+<figcaption
+aria-hidden="true">一个正常块（左图）和一个残差块（右图）</figcaption>
+</figure>
+<p>ResNet的残差块里：</p>
+<ol type="1">
+<li>首先有2个有相同输出通道数的<span
+class="math inline">\(3\times3\)</span>卷积层。每个卷积层后接一个批量规范化层和ReLU激活函数。</li>
+<li>然后我们通过跨层数据通路，跳过这2个卷积运算，将输入直接加在最后的ReLU激活函数前。这样要求2个卷积层的输出与输入形状一样，从而使它们可以相加。</li>
+<li>如果想改变通道数，就需要引入一个额外的<span
+class="math inline">\(1\times1\)</span>卷积层来将输入变换成需要的形状后再做相加运算。</li>
+</ol>
+<p>残差块的实现如下：</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlyus.png"
+alt="包含以及不包含 1×1 卷积层的残差块" />
+<figcaption aria-hidden="true">包含以及不包含 1×1
+卷积层的残差块</figcaption>
+</figure>
+<h4 id="resnet模型">ResNet模型</h4>
+<ol type="1">
+<li>ResNet使用了4个大模块，每个大模块使用了若干相同输出通道数的残差块。</li>
+<li>第一个模块的输出通道数同输入通道数一致。
+由于之前已经使用了步幅为2的最大汇聚层，所以无须减小高和宽。</li>
+<li>之后的每个模块在第一个残差块里将上一个模块的通道数翻倍，并将高和宽减半。</li>
+</ol>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/12/OZlmFK.png"
+alt="ResNet-18 架构" />
+<figcaption aria-hidden="true">ResNet-18 架构</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 动手学深度学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/11/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="《动手学深度学习2.0》学习笔记（一）">
+                  <i class="fa fa-angle-left"></i> 《动手学深度学习2.0》学习笔记（一）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+<!--
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">deeprookie</span>
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
