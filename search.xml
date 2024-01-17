@@ -3538,4 +3538,698 @@ Normalization）是一种对神经网络中的隐藏层进行规范化的方法�
         <tag>动手学深度学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>《动手学深度学习2.0》学习笔记（四）</title>
+    <url>/2024/01/17/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1
+id="动手学深度学习2.0学习笔记三">《动手学深度学习2.0》学习笔记（三）</h1>
+<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
+<p>本文记录了我在学习本书第13章节（计算机视觉）过程中的理解和收获。</p>
+<span id="more"></span>
+<h1 id="计算机视觉">计算机视觉</h1>
+<p>计算机视觉任务包括<em>图像分类</em>（Image
+classification）、<em>目标检测</em>（object
+detection）、<em>语义分割</em>（semantic
+segmentation）和<em>样式迁移</em>（style transfer）等。</p>
+<h2 id="改进泛化的方法">改进泛化的方法</h2>
+<p>改进模型泛化的方法包括<strong>图像增广</strong>和<strong>微调</strong></p>
+<h3 id="图像增广">图像增广</h3>
+<p><strong>为什么要进行图像增广？</strong></p>
+<ul>
+<li><strong>扩大训练集的规模：</strong>大型数据集是成功应用深度神经网络的先决条件。
+图像增广在对训练图像进行一系列的随机变化之后，生成相似但不同的训练样本，从而扩大了训练集的规模。</li>
+<li><strong>提高模型的泛化能力</strong>：随机改变训练样本可以减少模型对某些属性的依赖，从而提高模型的泛化能力。</li>
+</ul>
+<p><strong>如何进行图像增广？</strong></p>
+<ol type="1">
+<li>翻转和裁剪</li>
+<li>改变颜色</li>
+<li>混合应用1和2</li>
+</ol>
+<h3 id="微调">微调</h3>
+<p>迁移学习（transfer
+learning）指<u>将从<em>源数据集</em>学到的知识迁移到<em>目标数据集</em></u>，其中的常见技巧：<strong>微调（fine-tuning）</strong>。</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172127188.png"
+alt="微调" />
+<figcaption aria-hidden="true">微调</figcaption>
+</figure>
+<p><strong>应用条件：</strong>当<u><strong>目标数据集比源数据集小得多</strong></u>时，微调有助于提高模型的泛化能力。</p>
+<p><strong>实现步骤：</strong></p>
+<ol type="1">
+<li>在源数据集（例如ImageNet数据集）上<u>预训练</u>神经网络模型，即<strong><em>源模型</em></strong>。</li>
+<li>创建一个新的神经网络模型，即<strong><em>目标模型</em></strong>。<strong><u>它将复制源模型上的所有模型设计及其参数（输出层除外）</u></strong>。
+<ul>
+<li>假设1：这些模型参数包含从源数据集中学到的<u>知识</u>，这些知识也将适用于目标数据集。</li>
+<li>假设2：源模型的输出层与源数据集的<u>标签</u>密切相关，因此不在目标模型中使用该层。</li>
+</ul></li>
+<li><u>向目标模型添加输出层</u>，其输出数是目标数据集中的类别数。然后随机初始化该层的模型参数。</li>
+<li><u>在目标数据集（如椅子数据集）上训练目标模型</u>。
+<ul>
+<li><u>输出层</u>将<strong>从头</strong>开始进行训练</li>
+<li><u>所有其他层</u>的参数将根据源模型的参数进行<strong>微调</strong></li>
+</ul></li>
+</ol>
+<p><strong>特点：</strong></p>
+<ol type="1">
+<li>除输出层外，目标模型从源模型中复制所有模型设计及其参数，并根据目标数据集对这些参数进行微调。但是，<strong><u>目标模型的输出层需要从头开始训练</u></strong>。</li>
+<li>通常，<strong><u>微调参数使用较小的学习率，而从头开始训练输出层可以使用更大的学习率</u></strong>。</li>
+</ol>
+<h2 id="目标检测和边界框">目标检测和边界框</h2>
+<h3 id="目标检测">目标检测</h3>
+<p><strong>图像分类和目标检测的区别</strong></p>
+<ol type="1">
+<li>在<strong>图像分类</strong>任务中：我们假设图像中只有<strong>一个主要物体对象</strong>，我们只关注如何识别其<strong>类别</strong>。</li>
+<li>在<strong>目标检测</strong>任务中：图像里有<strong>多个我们感兴趣的目标</strong>，我们不仅想知道它们的<strong>类别</strong>，还想得到它们在图像中的<strong>具体位置</strong>。</li>
+</ol>
+<h3 id="边界框">边界框</h3>
+<blockquote>
+<p>在目标检测中，我们通常使用边界框 (bounding box)
+来描述对象的空间位置。边界框是矩形的。表示方式有2种：</p>
+<ol type="1">
+<li><p>由矩形左上角的以及右下角的<span
+class="math inline">\(x\)</span>和<span
+class="math inline">\(y\)</span>坐标</p></li>
+<li><p>边界框中心的<span
+class="math inline">\((x,y)\)</span>轴坐标以及框的宽度和高度</p></li>
+</ol>
+</blockquote>
+<h2 id="锚框">锚框</h2>
+<blockquote>
+<p>目标检测算法通常会在输入图像中采样大量的区域，然后判断这些区域中是否包含我们感兴趣的目标，并调整区域边界从而更准确地预测目标的<em>真实边界框</em>（ground-truth
+bounding box）。 不同的模型使用的区域采样方法可能不同。</p>
+</blockquote>
+<p>这里介绍其中一种方法：以每个像素为中心，生成多个缩放比和宽高比（aspect
+ratio）不同的边界框。 这些边界框被称为<em>锚框</em>（anchor box）。</p>
+<p><strong>！！！这里介绍的锚框是在原始的输入图像上生成的，然而到了后面的【多尺度目标检测】，我们的锚框就是在特征图上生成的。！！！</strong></p>
+<h3 id="生成多个锚框">生成多个锚框</h3>
+<p>假设<strong>输入图像</strong>的高度为<span
+class="math inline">\(h\)</span>, 宽度为<span
+class="math inline">\(w\)</span>。我们以图像的每个像素为中心生成不同形状的锚框：缩放比为<span
+class="math inline">\(s\in(0,1]\)</span>，宽高比为<span
+class="math inline">\(r&gt;0\)</span>。那么锚框的宽度和高度分别是<span
+class="math inline">\(ws\sqrt{r}\)</span>和<span
+class="math inline">\(hs/\sqrt{r}\)</span>。</p>
+<blockquote>
+<p>缩放比 (Scale)
+在这里是指生成锚框的大小与原始图像大小的比例。例如，如果图像的高度为<span
+class="math inline">\(h\)</span>, 缩放比为<span
+class="math inline">\(s\)</span>,那么生成的锚框的高度就是<span
+class="math inline">\(hs\)</span>, 在这里<span
+class="math inline">\(s\in(0,1]\)</span>。这样可以确保生成的锚框的大小都在图像的范围内。</p>
+</blockquote>
+<blockquote>
+<p>锚框的宽度和高度是怎么计算的？</p>
+<ol type="1">
+<li><p>尺度（即宽度和高度）有预设的缩放比s（<span
+class="math inline">\(s=锚框高度/图像高度h\)</span> or <span
+class="math inline">\(s=锚框宽度/图像宽度w\)</span>） =》
+因此锚框高度变为hs，宽度变为ws</p></li>
+<li><p>宽高比<span class="math inline">\(r\)</span>
+定义为宽度和高度的比值<span
+class="math inline">\(r=\frac{width}{height}\)</span>​，要想按照特定的宽高比来调整锚框的尺寸，需要分别对原始宽度和高度进行适当的调整。</p>
+<p>为何宽度需要乘以 <span class="math inline">\(\sqrt{r}\)</span>
+呢？</p>
+<ul>
+<li>因为如果按照宽高比 <span class="math inline">\(r\)</span>
+(宽度/高度)
+直接调整锚框可能会导致宽度或高度的变化过大或过小，而影响到目标检测的精度。</li>
+<li>通过使用<span class="math inline">\(\sqrt{r}\)</span>和<span
+class="math inline">\(1/\sqrt{r}\)</span>来分别调整宽度和高度，我们可以更平稳地改变宽度和高度，同时保持宽高比为<span
+class="math inline">\(r\)</span> 。</li>
+</ul></li>
+<li><p>因此，锚框的宽度和高度分别是<span
+class="math inline">\(ws\sqrt{r}\)</span>和<span
+class="math inline">\(hs/\sqrt{r}\)</span>。</p></li>
+</ol>
+</blockquote>
+<p>要生成多个不同形状的锚框，让我们设置许多缩放比 (scale) 取值<span
+class="math inline">\(s_1,\ldots,s_n\)</span>和许多宽高比 (aspect ratio)
+取值 <span
+class="math inline">\(r_1,\ldots,r_m\)</span>。当使用这些比例和长宽比的所有组合以每个像素为中心时，输入图像将总共有<span
+class="math inline">\(whnm\)</span>个锚框。</p>
+<p>尽管这些锚框可能会覆盖所有真实边界框，但计算复杂性很容易过高。在实践中，我们只考虑包含<span
+class="math inline">\(s_{1}\)</span>或<span
+class="math inline">\(r_{1}\)</span>的组合： <span
+class="math display">\[
+(s_1,r_1),(s_1,r_2),\ldots,(s_1,r_m),(s_2,r_1),(s_3,r_1),\ldots,(s_n,r_1).
+\]</span> 也就是说，以同一像素为中心的锚框的数量是<span
+class="math inline">\(n+m-1\)</span>。对于整个输入图像，将共生成<span
+class="math inline">\(wh(n+m-1)\)</span>个锚框。</p>
+<h3 id="交并比">交并比</h3>
+<h3 id="在训练数据中标注锚框">在训练数据中标注锚框</h3>
+<blockquote>
+<ul>
+<li>在训练集中，我们将每个锚框视为一个训练样本。
+为了训练目标检测模型，我们需要每个锚框的<em>类别</em>（class）和<em>偏移量</em>（offset）标签，其中前者是与锚框相关的对象的类别，后者是真实边界框相对于锚框的偏移量。</li>
+<li>在预测时，我们为每个图像生成多个锚框，预测所有锚框的类别和偏移量，根据预测的偏移量调整它们的位置以获得预测的边界框，最后只输出符合特定条件的预测边界框。</li>
+</ul>
+</blockquote>
+<p>现有条件：目标检测训练集有<u>真实边界框的位置</u>及其包围<u>物体类别</u>的标签。</p>
+<p>目的：为生成的每个锚框标注其类别（class）和偏移量（offset），其中前者是与锚框相关的对象的类别，后者是真实边界框相对于锚框的偏移量。</p>
+<p>思路：为锚框分配最接近它的真实边界框的位置和类别标签</p>
+<p><strong>（1）将真实边界框分配给锚框</strong></p>
+<p>给定图像，假设锚框是<span
+class="math inline">\(A_1,A_2,\ldots,A_{n_a}\)</span>, 真实边界框是<span
+class="math inline">\(B_1,B_2,\ldots,B_{n_b}\)</span>,其中<span
+class="math inline">\(n_a\geq n_b\)</span>。让我们定义一个矩阵<span
+class="math inline">\(\mathbf{X}\in\mathbb{R}^{n_a\times
+n_b}\)</span>,其中第<span class="math inline">\(i\)</span>行、第<span
+class="math inline">\(j\)</span>列的元素<span
+class="math inline">\(x_{ij}\)</span>是锚框<span
+class="math inline">\(A_i\)</span>和真实边界框<span
+class="math inline">\(B_j\)</span>的loU。该算法包含以下步骤。</p>
+<ol type="1">
+<li><p>在矩阵<span
+class="math inline">\(\mathbf{X}\)</span>中找到最大的元素，并将它的行索引和列索引分别表示为<span
+class="math inline">\(i_{1}\)</span>和<span
+class="math inline">\(j_{1}\)</span>。然后将真实边界框<span
+class="math inline">\(B_{j_1}\)</span>分配给锚框<span
+class="math inline">\(A_{i_1}\)</span>。这很直观，因为<span
+class="math inline">\(A_{i_1}\)</span>和<span
+class="math inline">\(B_{j_1}\)</span>是所有锚框和真实边界框配对中最相近的。在第一个分配完成后，丢弃矩阵中<span
+class="math inline">\(i_{1}^\mathrm{th}\)</span>行和<span
+class="math inline">\(j_{1}^\mathrm{th}\)</span>列中的所有元素<span
+class="math inline">\(_{\mathrm{o}}\)</span></p></li>
+<li><p>在矩阵<span
+class="math inline">\(\mathbf{X}\)</span>中找到剩余元素中最大的元素，并将它的行索引和列索引分别表示为<span
+class="math inline">\(i_{2}\)</span>和<span
+class="math inline">\(j_{2}\)</span>。我们将真实边界框<span
+class="math inline">\(B_{j_2}\)</span>分配给锚框<span
+class="math inline">\(A_{i_2}\)</span>,并丢弃矩阵中<span
+class="math inline">\(i_2^\mathrm{th}\)</span>行和<span
+class="math inline">\(j_2^\mathrm{th}\)</span>列中的所有元素。</p></li>
+<li><p>此时，矩阵<span
+class="math inline">\(\mathbf{X}\)</span>中两行和两列中的元素已被丢弃。我们继续，直到丢弃掉矩阵<span
+class="math inline">\(\mathbf{X}\)</span>中<span
+class="math inline">\(n_b\)</span>列中的所有元素。此时已经为这<span
+class="math inline">\(n_b\)</span>个锚框各自分配了一个真实边界框。</p></li>
+<li><p>只遍历剩下的<span
+class="math inline">\(n_a-n_b\)</span>个锚框。例如，给定任何锚框<span
+class="math inline">\(A_i\)</span>, 在矩阵<span
+class="math inline">\(\mathbf{X}\)</span>的第<span
+class="math inline">\(i^\mathrm{th}\)</span>行中找到与<span
+class="math inline">\(A_i\)</span>的IoU 最大的真实边界框<span
+class="math inline">\(B_j\)</span>,只有当此loU大于预定义的阈值时，才将<span
+class="math inline">\(B_j\)</span>分配给<span
+class="math inline">\(A_{i}\)</span></p></li>
+</ol>
+<blockquote>
+<p>下面举例说明上述算法。如下图(左)所示，假设矩阵<span
+class="math inline">\(\mathbf{X}\)</span>中的最大值为<span
+class="math inline">\(x_{23}\)</span>,我们将真实边界框<span
+class="math inline">\(B_{3}\)</span>分配给锚框<span
+class="math inline">\(A_{2}\)</span>。
+然后，我们丢弃矩阵第2行和第3列中的所有元素，在剩余元素(阴影区域)
+中找到最大的<span
+class="math inline">\(x_{71}\)</span>,然后将真实边界框<span
+class="math inline">\(B_{1}\)</span>分配给锚框<span
+class="math inline">\(A_{7}\)</span>。接下来，如下图中)
+所示，丢弃矩阵第7行和第1列中的所有元素，在剩余元素 (阴影区域)
+中找到最大的<span
+class="math inline">\(x_{54}\)</span>,然后将真实边界框<span
+class="math inline">\(B_{4}\)</span>分配给锚框<span
+class="math inline">\(A_{5}\)</span>。
+最后，如下图(右)所示，丢弃矩阵第5行和第4列中的所有元素，在剩余元素
+(阴影区域) 中找到最大的<span
+class="math inline">\(x_{92}\)</span>,然后将真实边界框<span
+class="math inline">\(B_{2}\)</span>分配给锚框<span
+class="math inline">\(A_{9}\)</span>。之后，我们只需要遍历剩余的锚框<span
+class="math inline">\(A_1,A_3,A_4,A_6,A_8\)</span>,然后根据阈值确定是否为它们分配真实边界框。</p>
+</blockquote>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172127321.png"
+alt="将真实边界框分配给锚框" />
+<figcaption aria-hidden="true">将真实边界框分配给锚框</figcaption>
+</figure>
+<p><strong>（2）标记类别和偏移量</strong></p>
+<p>现在我们可以为每个锚框标记类别和偏移量了。假设一个锚框<span
+class="math inline">\(A\)</span>被分配了一个真实边界框<span
+class="math inline">\(B\)</span>。</p>
+<ul>
+<li>锚框<span class="math inline">\(A\)</span>的类别将被标记为与<span
+class="math inline">\(B\)</span>相同</li>
+<li>锚框<span class="math inline">\(A\)</span>的偏移量将根据<span
+class="math inline">\(B\)</span>和<span
+class="math inline">\(A\)</span>中心坐标的相对位置以及这两个框的相对大小进行标记</li>
+</ul>
+<p>鉴于数据集内不同的框的位置和大小不同，我们可以<strong><u>对这些相对位置和大小应用变换，使其获得分布更均匀且易于拟合的偏移量。</u></strong></p>
+<p>这里介绍一种常见的变换。</p>
+<blockquote>
+<p>给定框<span class="math inline">\(A\)</span>和<span
+class="math inline">\(B\)</span>,中心坐标分别为<span
+class="math inline">\((x_a,y_a)\)</span>和<span
+class="math inline">\((x_b,y_b)\)</span>,宽度分别为<span
+class="math inline">\(w_a\)</span>和<span
+class="math inline">\(w_b\)</span>, 高度分别为<span
+class="math inline">\(h_a\)</span>和<span
+class="math inline">\(h_b\)</span>, 可以将<span
+class="math inline">\(A\)</span>的偏移量标记为：</p>
+</blockquote>
+<p><span class="math display">\[
+\left(\frac{\frac{x_b-x_a}{w_a}-\mu_x}{\sigma_x},\frac{\frac{y_b-y_a}{h_a}-\mu_y}{\sigma_y},\frac{\log\frac{w_b}{w_a}-\mu_w}{\sigma_w},\frac{\log\frac{h_b}{h_a}-\mu_h}{\sigma_h}\right),
+\]</span></p>
+<blockquote>
+<p>其中常量的默认值为 <span
+class="math inline">\(\mu_x=\mu_y=\mu_w=\mu_h=0,\sigma_x=\sigma_y=0.1,\quad\sigma_w=\sigma_h=0.2\)</span>。</p>
+</blockquote>
+<p>如果一个锚框没有被分配真实边界框，我们只需将锚框的类别标记为背景
+(background)。背景类别的锚框通常被称为负类锚框，其余的被称为正类锚框。</p>
+<h3 id="使用非极大值抑制预测边界框">使用非极大值抑制预测边界框</h3>
+<blockquote>
+<p>当有许多锚框时，可能会围绕着同一目标、输出许多相似的具有明显重叠的预测边界框。为了简化输出，我们可以使用非极大值抑制
+(non-maximum suppression, NMS)
+<strong>合并</strong>属于<strong>同一目标</strong>的类似的<strong>预测</strong>边界框。</p>
+</blockquote>
+<p><strong>工作原理：</strong></p>
+<p>对于一个预测边界框<span class="math inline">\(B\)</span>,
+目标检测模型会计算每个类别的预测概率。假设最大的预测概率为<span
+class="math inline">\(p\)</span>, 则该概率所对应的类别<span
+class="math inline">\(B\)</span>即为预测的类别。具体来说，我们将<span
+class="math inline">\(p\)</span>称为预测边界框<span
+class="math inline">\(B\)</span>的置信度(confidence)。<u>在同一张图像中，所有预测的非背景边界框都按置信度降序排序，以生成列表<span
+class="math inline">\(L\)</span>。然后我们通过以下步骤操作排序列表<span
+class="math inline">\(L\)</span>。</u></p>
+<ol type="1">
+<li><p>从<span
+class="math inline">\(L\)</span>中选取置信度最高的预测边界框<span
+class="math inline">\(B_{1}\)</span>作为基准，然后将所有与<span
+class="math inline">\(B_{1}\)</span>的loU超过预定阈值<span
+class="math inline">\(\epsilon\)</span>的非基准预测边界框从<span
+class="math inline">\(L\)</span>中移除。这时，<span
+class="math inline">\(L\)</span>保留了置信度最高的预测边界框，去除了与其太过相似的其他预测边界框。简而言之，那些具有
+非极大值置信度的边界框被抑制了。</p></li>
+<li><p>从<span
+class="math inline">\(L\)</span>中选取置信度第二高的预测边界框<span
+class="math inline">\(B_{2}\)</span>作为又一个基准，然后将所有与<span
+class="math inline">\(B_{2}\)</span>的loU大于<span
+class="math inline">\(\epsilon\)</span>的非基准预测边界框从<span
+class="math inline">\(L\)</span>中移除。</p></li>
+<li><p>重复上述过程，直到<span
+class="math inline">\(L\)</span>中的所有预测边界框都曾被用作基准。此时，<span
+class="math inline">\(L\)</span>中任意一对预测边界框的loU都小于阈值<span
+class="math inline">\(\epsilon\)</span>，因此，没有一对边界框过于相似。</p></li>
+<li><p>输出列表<span
+class="math inline">\(L\)</span>中的所有预测边界框。</p></li>
+</ol>
+<h2 id="多尺度目标检测">多尺度目标检测</h2>
+<p>注意这里的尺度有两种不同的含义</p>
+<ol type="1">
+<li>对于每个中心点要生成的锚框来说，它有不同的缩放比（scales），<strong>不同的缩放比意味着不同尺度的锚框</strong>。</li>
+<li>对于不同层次的特征图来说，特征图上的一个空间位置在输入图像上分别拥有大小不同的感受野，即时对于相同缩放比的锚框来说，它在不同层的特征图上也具有不同大小的感受野，可以用于检测不同大小的目标。因此我们可以认为<strong>特征图也是多尺度的</strong>。</li>
+</ol>
+<h3 id="多尺度锚框">多尺度锚框</h3>
+<p><strong>（1）思路</strong></p>
+<p>在上一节【锚框】中，我们以输入图像的每个像素为中心，生成了多个锚框，这些锚框代表了图像不同区域的样本。
+然而，如果为每个像素都生成的锚框，我们最终可能会得到太多需要计算的锚框。
+因此接下来的思路就是要减少图像上的锚框数量=》我们可以在输入图像中均匀采样一小部分像素，并以它们为中心生成锚框.</p>
+<p><strong>（2）具体操作</strong></p>
+<p><strong>我们在特征图 (fmap) 上生成锚框 (anchors) ，每个单位(像素)
+作为锚框的中心。</strong></p>
+<ul>
+<li>由于锚框中的<span class="math inline">\((x,y)\)</span>轴坐标值
+(anchors) 已经被除以特征图 (fmap)
+的宽度和高度，因此这些值介于0和1之间，表示特征图中锚框的相对位置。</li>
+<li>给定特征图的宽度和高度fmap_w和fmap_h,
+我们将均匀地对任何输入图像中fmap_h行和fmap_w列中的像素进行采样。以这些均匀采样的像素为中心，将会生成尺度为s
+且宽高比 (ratios) 不同的锚框。</li>
+</ul>
+<h3 id="多尺度检测">多尺度检测</h3>
+<p><strong>（1）内容</strong></p>
+<p>假设CNN基于输入图像的正向传播算法获得<strong>有c张形状为ℎ×w的特征图</strong>的中间输出，既然每张特征图上都有ℎw个不同的空间位置，那么相同空间位置可以看作含有c个单元。</p>
+<p>我们可以将特征图在同一空间位置的c个单元变换为使用此空间位置生成的a个锚框类别和偏移量。
+本质上，我们用输入图像在某个感受野区域内的信息，来预测输入图像上与该区域位置相近的锚框类别和偏移量。</p>
+<p><strong>（2）特点</strong></p>
+<ul>
+<li>不同层的特征图在输入图像上分别拥有不同大小的感受野，可以用于检测不同大小的目标。简言之，我们可以利用深层神经网络在多个层次上对图像进行分层表示，从而实现多尺度目标检测。</li>
+</ul>
+<h2 id="单发多框检测ssd">单发多框检测（SSD）</h2>
+<p>单发多框检测（SSD）是一个多尺度目标检测模型。</p>
+<h3 id="模型">模型</h3>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172127660.png"
+alt="单发多框检测模型主要由一个基础网络块和若干多尺度特征块串联而成" />
+<figcaption
+aria-hidden="true">单发多框检测模型主要由一个基础网络块和若干多尺度特征块串联而成</figcaption>
+</figure>
+<p>单发多框检测模型的结构如上图所示，主要由基础网络块+几个多尺度特征块（也叫高宽减半块）组成。</p>
+<ul>
+<li>基础网络块：用于从输入图像中提取特征，如在分类层之前截断的VGG或ResNet。</li>
+<li>多尺度特征块：将上一层提供的特征图的高和宽缩小 (如减半) ,
+使得特征图中每个单元在输入图像上的感受野变得更广阔。</li>
+</ul>
+<p>设计思路：</p>
+<ol type="1">
+<li>首先要让基础网络块输出的高和宽较大，这样基于该特征图生成的锚框数量较多，可以用来检测尺寸较小的目标。</li>
+<li>之后的每个多尺度特征块将上一层提供的特征图的高和宽缩小 (如减半) ,
+使得特征图中每个单元在输入图像上的感受野变得更广阔。</li>
+<li>通过多尺度特征块，单发多框检测模型可以生成不同大小的锚框，并通过预测边界框的类别和偏移量来检测大小不同的目标，因此这是一个多尺度目标检测模型。</li>
+<li>顶部的多尺度特征图较小，但具有较大的感受野，适合检测较少但较大的物体</li>
+</ol>
+<h3 id="类别预测层">类别预测层</h3>
+<p>设目标类别的数量为<span
+class="math inline">\(q\)</span>。这样一来，锚框有<span
+class="math inline">\(q+1\)</span>个类别，其中0类是背景。在某个尺度下，设特征图的高和宽分别为<span
+class="math inline">\(h\)</span>和<span
+class="math inline">\(w\)</span>。如果以其中每个单元为中心生成<span
+class="math inline">\(a\)</span>个锚框，那么我们需要对<span
+class="math inline">\(hwa\)</span>个锚框进行分类。如果使用全连接层作为输出，很容易导致模型参数过多。因此单发多框检测模型（SSD）使用卷积层的通道来输出类别预测，从而降低模型复杂度。</p>
+<p>具体来说，<strong>类别预测层使用一个保持输入高和宽的卷积层</strong>。这样，输出和输入在特征图宽和高上的空间坐标一一对应。也就是说，<strong>输出特征图上的（x、y）就包含了以输入特征图（x、y）为中心的所有锚框的类别预测，只不过这众多类别是通过增加通道数来保存的。</strong></p>
+<h3 id="边界框预测层">边界框预测层</h3>
+<p>边界框预测层的设计与类别预测层的设计类似。
+唯一不同的是，这里需要为每个锚框预测4个偏移量，而不是q+1个类别。</p>
+<h3 id="完整模型">完整模型</h3>
+<p>完整的单发多框检测模型（SSD）由五个模块组成。每个块生成的特征图既用于生成锚框，又用于预测这些锚框的类别和偏移量。</p>
+<ul>
+<li><p>模块一：基本网络块</p></li>
+<li><p>模块二~模块四：高和宽减半块</p></li>
+<li><p>模块五：使用全局最大池将高度和宽度都降到1</p>
+<p>其中，第二到第五个模块都是模型架构图中的多尺度特征块。</p></li>
+</ul>
+<p>与图像分类任务不同，此处的输出包括：CNN特征图<code>Y</code>；在当前尺度下根据<code>Y</code>生成的锚框；预测的这些锚框的类别和偏移量（基于<code>Y</code>）。</p>
+<h3 id="损失函数">损失函数</h3>
+<p>目标检测有两种类型的损失。</p>
+<ul>
+<li>有关锚框类别的损失：复用图像分类问题种的交叉熵损失函数；</li>
+<li>有关正类锚框偏移量的损失：预测偏移量是一个回归问题。
+但是，对于这个回归问题，我们在这里不使用平方损失（即L2范数），而是使用L1范数损失，即预测值和真实值之差的绝对值。
+掩码变量<code>bbox_masks</code>令负类锚框和填充锚框不参与损失的计算。</li>
+<li>最后，我们将锚框类别和偏移量的损失相加，以获得模型的最终损失函数。</li>
+</ul>
+<h3 id="评价函数">评价函数</h3>
+<p>预测锚框类别：沿用<strong>准确率</strong>来评价分类结果。</p>
+<p>预测边界框：由于偏移量使用了L1范数损失，我们使用<strong>平均绝对误差</strong>来评价边界框的预测结果。</p>
+<h2 id="区域卷积神经网络r-cnn系列">区域卷积神经网络（R-CNN系列）</h2>
+<h3 id="r-cnn">R-CNN</h3>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172128590.png"
+alt="R-CNN模型" />
+<figcaption aria-hidden="true">R-CNN模型</figcaption>
+</figure>
+<h4 id="步骤">步骤</h4>
+<ol type="1">
+<li>对输入图像使用<strong>选择性搜索</strong>来选取多个高质量的提议区域。
+<ul>
+<li>提议区域通常是在多个尺度下选取的，并具有不同的形状和大小</li>
+<li>每个提议区域都将被标注类别和真实边界框</li>
+</ul></li>
+<li>选择一个预训练的卷积神经网络，并将其在输出层之前截断。
+<ul>
+<li>将每个提议区域变形为网络需要的输入尺寸，并通过前向传播输出抽取的提议区域特征。</li>
+</ul></li>
+<li>将每个提议区域的特征连同其标注的类别作为一个样本。
+<ul>
+<li>训练多个支持向量机对目标分类，其中每个支持向量机用来判断样本是否属于某一个类别；</li>
+<li>训练线性回归模型来预测真实边界框。</li>
+</ul></li>
+</ol>
+<h4 id="优缺点">优缺点</h4>
+<p>优点：R-CNN模型通过预训练的卷积神经网络有效地抽取了图像特征</p>
+<p>缺点：速度很慢。
+网络需要从一张图像中选出上千个提议区域，对每个提议区域都要进行一次前向传播来执行目标检测，计算量庞大。</p>
+<h3 id="fast-r-cnn">Fast R-CNN</h3>
+<p><strong>R-CNN的主要性能瓶颈在于，对每个提议区域，卷积神经网络的前向传播是独立的，而没有共享计算。
+由于这些区域通常有重叠，独立的特征抽取会导致重复的计算。 <em>Fast
+R-CNN</em>对R-CNN的主要改进之一，是仅在整张图象上执行卷积神经网络的前向传播。</strong></p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172128394.png"
+alt="Fast R-CNN模型" />
+<figcaption aria-hidden="true">Fast R-CNN模型</figcaption>
+</figure>
+<h4 id="步骤-1">步骤</h4>
+<ol type="1">
+<li><p><strong>与R-CNN相比，Fast
+R-CNN用来提取特征的卷积神经网络的输入是整个图像，而不是各个提议区域。</strong>此外，这个网络通常会参与训练。设输入为一张图像，将卷积神经网络的输出的形状记为<span
+class="math inline">\(1\times c\times h_1\times w_1;\)</span></p></li>
+<li><p>假设选择性搜索生成了<span
+class="math inline">\(n\)</span>个<strong>提议区域</strong>。</p>
+<ul>
+<li>首先，这些形状各异的提议区域在<u>卷积神经网络的输出上</u>分别标出了形状各异的<strong>兴趣区域</strong>。</li>
+<li>然后，这些<strong>感兴趣的区域</strong>需要进一步抽取出<strong>形状相同的特征
+(比如指定高度<span class="math inline">\(h_{2}\)</span>和宽度<span
+class="math inline">\(w_{2})\)</span></strong>
+，以便于<u>连结后输出</u>。为了实现这一目标，Fast
+R-CNN引入了<strong>兴趣区域汇聚层 (Rol pooling)</strong> :
+将卷积神经网络的输出和提议区域作为输入，输出连结后的各个提议区域抽取的特征，形状为<span
+class="math inline">\(n\times c\times h_2\times w_2;\)</span></li>
+</ul></li>
+<li><p>通过全连接层将输出形状变换为<span class="math inline">\(n\times
+d\)</span>， 其中超参数<span
+class="math inline">\(d\)</span>取决于模型设计；</p></li>
+<li><p>预测<span
+class="math inline">\(n\)</span>个提议区域中每个区域的类别和边界框。</p>
+<ul>
+<li>在预测类别时，将全连接层的输出转换为形状为<span
+class="math inline">\(n\times q\)</span>(<span
+class="math inline">\(q\)</span>是类别的数量)
+的输出，然后使用softmax回归。</li>
+<li>在预测边界框时，将全连接层的输出转换为形状为<span
+class="math inline">\(n\times4\)</span>的输出。</li>
+</ul></li>
+</ol>
+<h4 id="主要特色">主要特色</h4>
+<p>在Fast R-CNN中提出的兴趣区域汇聚层与普通的汇聚层有所不同。</p>
+<ul>
+<li><p>在普通汇聚层中，我们通过设置汇聚窗口、填充和步幅的大小来间接控制输出形状。</p></li>
+<li><p><strong>而兴趣区域汇聚层对每个区域的输出形状是可以直接指定的。</strong></p>
+<blockquote>
+<p>例如，指定每个区域输出的高和宽分别为<span
+class="math inline">\(h_{2}\)</span>和<span
+class="math inline">\(w_{2}\)</span>。对于任何形状为<span
+class="math inline">\(h\times
+w\)</span>的兴趣区域窗口，该窗口将被划分为<span
+class="math inline">\(h_2\times
+w_2\)</span>子窗口网格，其中每个子窗口的大小约为<span
+class="math inline">\((h/h_2)\times(w/w_2)\)</span>。在实践中，任何子窗口的高度和宽度都应向上取整，其中的最大元素作为该子窗口的输出。因此，兴趣区域汇聚层可从形状各异的兴趣区域中均抽取出形状相同的特征。</p>
+<p>以下图为例，在<span
+class="math inline">\(4\times4\)</span>的输入中，我们选取了左上角<span
+class="math inline">\(3\times3\)</span>的兴趣区域。对于该兴趣区域，我们通过<span
+class="math inline">\(2\times2\)</span>的兴趣区域汇聚层得到一个<span
+class="math inline">\(2\times2\)</span>的输出。请注意，四个划分后的子窗口中分别含有元素0、1、4、5(5最大);2、6(6最大);8、9(9最大);以及10。</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172128479.png"
+alt="一个2×2的兴趣区域汇聚层" />
+<figcaption aria-hidden="true">一个2×2的兴趣区域汇聚层</figcaption>
+</figure>
+<ul>
+<li>兴趣区域窗口的形状<span
+class="math inline">\(h*w=(3*3)\)</span></li>
+<li>经兴趣区域汇聚后输出窗口的形状为<span
+class="math inline">\(h_2*w_2=(2*2)\)</span></li>
+<li>由上述两个形状推导出的池化窗口的形状（向上取整）为<span
+class="math inline">\((h/h_2)*(w/w_2)=(3/2)*(3/2)=(2*2)\)</span></li>
+</ul>
+</blockquote></li>
+</ul>
+<h3 id="faster-r-cnn">Faster R-CNN</h3>
+<p><strong>为了较精确地检测目标结果，Fast
+R-CNN模型通常需要在选择性搜索中生成大量的提议区域。 Faster R-CNN
+提出将选择性搜索替换为<em>区域提议网络</em>（region proposal
+network），从而减少提议区域的生成数量，并保证目标检测的精度。</strong></p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129446.png"
+alt="Faster R-CNN 模型" />
+<figcaption aria-hidden="true">Faster R-CNN 模型</figcaption>
+</figure>
+<h4 id="步骤-2">步骤</h4>
+<p><strong>与Fast R-CNN相比，Faster
+R-CNN只将生成提议区域的方法从选择性搜索改为了区域提议网络，模型的其余部分保持不变。</strong>模型步骤如下：</p>
+<ol type="1">
+<li>使用填充为1的<span
+class="math inline">\(3\times3\)</span>的卷积层变换卷积神经网络的输出，并将输出通道数记为<span
+class="math inline">\(c\)</span>。这样，卷积神经网络为图像抽取的特征图中的每个单元均得到一个长度为<span
+class="math inline">\(c\)</span>的新特征。</li>
+<li>以特征图的每个像素为中心，生成多个不同大小和宽高比的锚框并标注它们。</li>
+<li>使用锚框中心单元长度为<span
+class="math inline">\(c\)</span>的特征，分别预测该锚框的二元类别
+(含目标还是背景) 和边界框。</li>
+<li>使用非极大值抑制，从预测类别为目标的预测边界框中移除相似的结果。最终输出的预测边界框即是兴趣区域汇聚层所需的提议区域。</li>
+</ol>
+<h4 id="优点">优点</h4>
+<p>区域提议网络（region proposal network）作为Faster
+R-CNN模型的一部分，是和整个模型一起训练得到的。</p>
+<p>换句话说，Faster
+R-CNN的目标函数不仅包括目标检测中的类别和边界框预测，还包括区域提议网络中锚框的二元类别和边界框预测。</p>
+<p>作为端到端训练的结果，<strong>区域提议网络能够学习到如何生成高质量的提议区域，从而在减少了从数据中学习的提议区域的数量的情况下，仍保持目标检测的精度。</strong></p>
+<h3 id="mask-rcnn">Mask-RCNN</h3>
+<p><strong>如果在训练集中还标注了每个目标在图像上的像素级位置</strong>，那么<em>Mask
+R-CNN</em>
+能够有效地利用这些详尽的标注信息进一步提升目标检测的精度。</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129754.png"
+alt="Mask R-CNN模型" />
+<figcaption aria-hidden="true">Mask R-CNN模型</figcaption>
+</figure>
+<p>Mask R-CNN是基于Faster R-CNN修改而来的。</p>
+<p>具体来说，<strong>Mask R-CNN将兴趣区域汇聚层替换为了
+<em>兴趣区域对齐</em> 层</strong>，使用<em>双线性插值</em>（bilinear
+interpolation）来保留特征图上的空间信息，从而更适于像素级预测。</p>
+<ul>
+<li>兴趣区域对齐层的输出包含了所有与兴趣区域的形状相同的特征图。
+它们不仅被用于预测每个兴趣区域的类别和边界框，还通过额外的全卷积网络预测目标的像素级位置。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<ul>
+<li>R-CNN对图像选取若干提议区域，使用卷积神经网络对每个提议区域执行前向传播以抽取其特征，然后再用这些特征来预测提议区域的类别和边界框。</li>
+<li>Fast
+R-CNN对R-CNN的一个主要改进：只对整个图像做卷积神经网络的前向传播。
+<ul>
+<li>它还引入了兴趣区域汇聚层，从而为具有不同形状的兴趣区域抽取相同形状的特征。</li>
+</ul></li>
+<li>Faster R-CNN将Fast
+R-CNN中使用的选择性搜索替换为参与训练的区域提议网络，这样后者可以在减少提议区域数量的情况下仍保证目标检测的精度。</li>
+<li>Mask R-CNN在Faster
+R-CNN的基础上引入了一个全卷积网络，从而借助目标的像素级位置进一步提升目标检测的精度。</li>
+</ul>
+<h2 id="语义分割和数据集">语义分割和数据集</h2>
+<p><em>语义分割</em>（semantic
+segmentation）问题重点关注<strong>如何将图像分割成属于不同语义类别的区域</strong>。</p>
+<ul>
+<li>与目标检测不同，<strong>语义分割可以识别并理解图像中每一个像素的内容</strong>：其语义区域的标注和预测是像素级的。</li>
+<li>与目标检测相比，语义分割标注的像素级的边框显然更加精细。</li>
+</ul>
+<p>下图展示了语义分割中图像有关狗、猫和背景的标签。</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129974.png"
+alt="语义分割中图像有关狗、猫和背景的标签" />
+<figcaption
+aria-hidden="true">语义分割中图像有关狗、猫和背景的标签</figcaption>
+</figure>
+<h3 id="概念区分">概念区分</h3>
+<h4 id="图像分割">图像分割</h4>
+<blockquote>
+<p>将图像划分为若干组成区域，这类问题的方法通常利用图像中像素之间的相关性。它在训练时不需要有关图像像素的标签信息，在预测时也无法保证分割出的区域具有我们希望得到的语义。以上图中的图像作为输入，图像分割可能会将狗分为两个区域：一个覆盖以黑色为主的嘴和眼睛，另一个覆盖以黄色为主的其余部分身体。</p>
+</blockquote>
+<h4 id="语义分割">语义分割</h4>
+<h4 id="实例分割">实例分割</h4>
+<blockquote>
+<p><em>实例分割</em>也叫<em>同时检测并分割</em>（simultaneous detection
+and
+segmentation），它研究如何识别图像中各个目标实例的像素级区域。与语义分割不同，实例分割不仅需要区分语义，还要区分不同的目标实例。例如，如果图像中有两条狗，则实例分割需要区分像素属于的两条狗中的哪一条。</p>
+</blockquote>
+<p><strong>由图像分割、到语义分割，再到实例分割，对分割任务的要求越来越高。</strong></p>
+<h3 id="数据集">数据集</h3>
+<p>最重要的语义分割数据集之一是<strong>Pascal VOC2012</strong>。</p>
+<h4 id="预处理数据">预处理数据</h4>
+<p>为了使输入图像符合模型的输入形状，我们可以对原始图像做一些预处理——<strong>缩放图像
+or 裁剪图像</strong>。</p>
+<blockquote>
+<p>在语义分割任务中，如果采用缩放原始图像的方式，在预测时需要将预测的像素类别重新映射回原始尺寸的输入图像。这样的映射可能不够精确，尤其在不同语义的分割区域。</p>
+<p>为了避免这个问题，我们将图像裁剪为固定尺寸，而不是缩放。具体来说，我们使用图像增广中的随机裁剪，裁剪输入图像和标签的相同区域。</p>
+</blockquote>
+<h4 id="自定义语义分割数据集类">自定义语义分割数据集类</h4>
+<p>通过继承高级API提供的<code>Dataset</code>类，自定义了一个语义分割数据集类<code>VOCSegDataset</code>。
+通过实现<code>__getitem__</code>函数，我们可以任意访问数据集中索引为<code>idx</code>的输入图像及其每个像素的类别索引。
+由于数据集中有些图像的尺寸可能小于随机裁剪所指定的输出尺寸，这些样本可以通过自定义的<code>filter</code>函数移除掉。
+此外，我们还定义了<code>normalize_image</code>函数，从而对输入图像的RGB三个通道的值分别做标准化。</p>
+<h4 id="读取数据集">读取数据集</h4>
+<h2 id="转置卷积">转置卷积</h2>
+<blockquote>
+<p>补充一些基础：</p>
+<p>下采样：</p>
+<ul>
+<li>定义：指在进行一些操作时（如卷积操作或汇聚操作）降低图像的空间分辨率（高和宽）。</li>
+<li>目的：减少计算量和模型参数的数量，也有助于将低层细节特征抽象为高层语义特征。</li>
+<li>典型例子：卷积神经网络中的最大池化（Max pooling）。</li>
+</ul>
+<p>上采样：</p>
+<ul>
+<li>定义：指进行一些操作时（如转置卷积）增大图像的空间分辨率。</li>
+<li>目的：在一些需要更精细处理图像的任务中，对中间层或低层的特征图进行上采样操作，以获得更多的空间信息或恢复部分丢失的空间信息。</li>
+<li>主要用于语义分割、超分辨率等任务。</li>
+</ul>
+</blockquote>
+<h3 id="基本操作">基本操作</h3>
+<p>到目前为止，我们所见到的卷积神经网络层，例如卷积层和汇聚层，通常会减少下采样输入图像的空间维度（高和宽）。然而<strong>如果输入和输出图像的空间维度相同，在以像素级分类的语义分割中将会很方便。
+例如，输出像素所处的通道维可以保有输入像素在同一位置上的分类结果。</strong></p>
+<p>为了实现这一点，尤其是在空间维度被卷积神经网络层缩小后，我们可以使用另一种类型的卷积神经网络层，它可以增<u>加上采样中间层特征图的空间维度</u>。</p>
+<p><strong><em>转置卷积</em>（transposed
+convolution）可以将较小的特征图上采样为较大的尺寸，从而逆转下采样操作导致的空间尺寸减小。</strong></p>
+<p>下图解释了如何为2×2的输入张量计算卷积核为2×2的转置卷积，设步幅为1且没有填充。</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129640.png"
+alt="卷积核为2×2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素" />
+<figcaption
+aria-hidden="true">卷积核为2×2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素</figcaption>
+</figure>
+<blockquote>
+<p>与通过卷积核“减少”输入元素的常规卷积相比，转置卷积通过卷积核“广播”输入元素，从而产生大于输入的输出。</p>
+</blockquote>
+<h3 id="填充步幅和多通道">填充、步幅和多通道</h3>
+<h4 id="填充">填充</h4>
+<p>与常规卷积不同，在转置卷积中，填充被应用于的输出（常规卷积将填充应用于输入）。</p>
+<ul>
+<li>例如，当将高和宽两侧的填充数指定为1时，转置卷积的输出中将删除第一和最后的行与列。</li>
+</ul>
+<h4 id="步幅">步幅</h4>
+<p>在转置卷积中，步幅被指定为中间结果（输出），而不是输入。</p>
+<p>使用上图中相同输入和卷积核张量，将步幅从1更改为2会增加中间张量的高和权重，因此输出张量如下图所示</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172130816.png"
+alt="卷积核为2×2，步幅为2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素。" />
+<figcaption
+aria-hidden="true">卷积核为2×2，步幅为2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素。</figcaption>
+</figure>
+<h4 id="多通道">多通道</h4>
+<p>对于多个输入和输出通道，转置卷积与常规卷积以相同方式运作。假设输入有<span
+class="math inline">\(c_i\)</span>个通道，且转置卷积为每个输入通道分配了一个<span
+class="math inline">\(k_h\times
+k_w\)</span>的卷积核张量。当指定多个输出通道时，每个输出通道将有一个<span
+class="math inline">\(c_i\times k_h\times k_w\)</span>的卷积核。</p>
+<h2 id="全卷积网络">全卷积网络</h2>
+<p>语义分割是对图像中的每个像素分类。</p>
+<p><em>全卷积网络</em>（fully convolutional
+network，FCN）采用卷积神经网络实现了从图像像素到像素类别的变换。</p>
+<p>与我们之前在图像分类或目标检测部分介绍的卷积神经网络不同，<strong>全卷积网络将中间层特征图的高和宽变换回输入图像的尺寸：这是通过引入转置卷积（transposed
+convolution）实现的</strong>。</p>
+<p><strong>因此，输出的类别预测与输入图像在像素级别上具有一一对应关系：通道维的输出即该位置对应像素的类别预测。</strong></p>
+<p>全卷积网络模型如下图所示：</p>
+<ol type="1">
+<li><p>首先使用卷积神经网络抽取图像特征</p></li>
+<li><p>然后通过1×1卷积层将通道数变换为类别个数</p></li>
+<li><p>最后通过转置卷积层将特征图的高和宽变换为输入图像的尺寸</p>
+<p>因此，模型输出与输入图像的高和宽相同，且最终输出通道包含了该空间位置像素的类别预测。</p></li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172130094.png"
+alt="全卷积网络" />
+<figcaption aria-hidden="true">全卷积网络</figcaption>
+</figure>
+<h3 id="初始化转置卷积层">初始化转置卷积层</h3>
+<p>应用<em>双线性插值</em></p>
+<p>为了解释双线性插值，假设给定输入图像，我们想要计算上采样输出图像上的每个像素。</p>
+<ol type="1">
+<li><p>将输出图像的坐标<span
+class="math inline">\((x,y)\)</span>映射到输入图像的坐标<span
+class="math inline">\((x^{\prime},y^{\prime})\)</span>上。例如，根据输入与输出的尺寸之比来映射。请注意，映射后的<span
+class="math inline">\(x\prime\)</span>和<span
+class="math inline">\(y\prime\)</span>是实数。</p></li>
+<li><p>在输入图像上找到离坐标<span
+class="math inline">\((x^{\prime},y^{\prime})\)</span>最近的4个像素。</p></li>
+<li><p>输出图像在坐标<span
+class="math inline">\((x,y)\)</span>上的像素依据输入图像上这4个像素及其与<span
+class="math inline">\((x^{\prime},y^{\prime})\)</span>的相对距离来计算。</p></li>
+</ol>
+<h2 id="风格迁移">风格迁移</h2>
+<p>（需要用到再学习）</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>动手学深度学习</tag>
+      </tags>
+  </entry>
 </search>
