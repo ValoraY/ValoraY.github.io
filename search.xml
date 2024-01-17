@@ -3571,7 +3571,7 @@ segmentation）和<em>样式迁移</em>（style transfer）等。</p>
 learning）指<u>将从<em>源数据集</em>学到的知识迁移到<em>目标数据集</em></u>，其中的常见技巧：<strong>微调（fine-tuning）</strong>。</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172127188.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133866.png"
 alt="微调" />
 <figcaption aria-hidden="true">微调</figcaption>
 </figure>
@@ -3760,7 +3760,7 @@ class="math inline">\(A_1,A_3,A_4,A_6,A_8\)</span>,然后根据阈值确定是�
 </blockquote>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172127321.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133758.png"
 alt="将真实边界框分配给锚框" />
 <figcaption aria-hidden="true">将真实边界框分配给锚框</figcaption>
 </figure>
@@ -3870,7 +3870,7 @@ class="math inline">\(L\)</span>中的所有预测边界框。</p></li>
 <h3 id="模型">模型</h3>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172127660.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133548.png"
 alt="单发多框检测模型主要由一个基础网络块和若干多尺度特征块串联而成" />
 <figcaption
 aria-hidden="true">单发多框检测模型主要由一个基础网络块和若干多尺度特征块串联而成</figcaption>
@@ -3926,7 +3926,7 @@ class="math inline">\(hwa\)</span>个锚框进行分类。如果使用全连接�
 <h3 id="r-cnn">R-CNN</h3>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172128590.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133755.png"
 alt="R-CNN模型" />
 <figcaption aria-hidden="true">R-CNN模型</figcaption>
 </figure>
@@ -3957,7 +3957,7 @@ alt="R-CNN模型" />
 R-CNN</em>对R-CNN的主要改进之一，是仅在整张图象上执行卷积神经网络的前向传播。</strong></p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172128394.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133123.png"
 alt="Fast R-CNN模型" />
 <figcaption aria-hidden="true">Fast R-CNN模型</figcaption>
 </figure>
@@ -4013,7 +4013,7 @@ class="math inline">\(2\times2\)</span>的兴趣区域汇聚层得到一个<span
 class="math inline">\(2\times2\)</span>的输出。请注意，四个划分后的子窗口中分别含有元素0、1、4、5(5最大);2、6(6最大);8、9(9最大);以及10。</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172128479.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133000.png"
 alt="一个2×2的兴趣区域汇聚层" />
 <figcaption aria-hidden="true">一个2×2的兴趣区域汇聚层</figcaption>
 </figure>
@@ -4034,7 +4034,7 @@ R-CNN模型通常需要在选择性搜索中生成大量的提议区域。 Faste
 network），从而减少提议区域的生成数量，并保证目标检测的精度。</strong></p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129446.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133582.png"
 alt="Faster R-CNN 模型" />
 <figcaption aria-hidden="true">Faster R-CNN 模型</figcaption>
 </figure>
@@ -4064,7 +4064,7 @@ R-CNN</em>
 能够有效地利用这些详尽的标注信息进一步提升目标检测的精度。</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129754.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133205.png"
 alt="Mask R-CNN模型" />
 <figcaption aria-hidden="true">Mask R-CNN模型</figcaption>
 </figure>
@@ -4099,7 +4099,7 @@ segmentation）问题重点关注<strong>如何将图像分割成属于不同语
 <p>下图展示了语义分割中图像有关狗、猫和背景的标签。</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129974.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172133094.png"
 alt="语义分割中图像有关狗、猫和背景的标签" />
 <figcaption
 aria-hidden="true">语义分割中图像有关狗、猫和背景的标签</figcaption>
@@ -4157,7 +4157,7 @@ convolution）可以将较小的特征图上采样为较大的尺寸，从而逆
 <p>下图解释了如何为2×2的输入张量计算卷积核为2×2的转置卷积，设步幅为1且没有填充。</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172129640.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172134512.png"
 alt="卷积核为2×2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素" />
 <figcaption
 aria-hidden="true">卷积核为2×2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素</figcaption>
@@ -4176,7 +4176,7 @@ aria-hidden="true">卷积核为2×2的转置卷积。阴影部分是中间张量
 <p>使用上图中相同输入和卷积核张量，将步幅从1更改为2会增加中间张量的高和权重，因此输出张量如下图所示</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172130816.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172134447.png"
 alt="卷积核为2×2，步幅为2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素。" />
 <figcaption
 aria-hidden="true">卷积核为2×2，步幅为2的转置卷积。阴影部分是中间张量的一部分，也是用于计算的输入和卷积核张量元素。</figcaption>
@@ -4203,7 +4203,7 @@ convolution）实现的</strong>。</p>
 </ol>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172130094.png"
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401172134666.png"
 alt="全卷积网络" />
 <figcaption aria-hidden="true">全卷积网络</figcaption>
 </figure>
