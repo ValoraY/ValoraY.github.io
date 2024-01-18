@@ -2071,7 +2071,7 @@ q），q为该层的输出维度。（习惯写法）</p></li>
 <h3 id="softmax回归">softmax回归</h3>
 <ol type="1">
 <li><p>softmax函数： <span class="math display">\[
-$\hat{y}=\mathrm{softmax}(\mathbf{o})\quad\text{其中}\quad\hat{y}_j=\frac{\exp(o_j)}{\sum_k\exp(o_k)}
+\hat{y}=\mathrm{softmax}(\mathbf{o})\quad\text{其中}\quad\hat{y}_j=\frac{\exp(o_j)}{\sum_k\exp(o_k)}
 \]</span></p>
 <p>softmax函数能够将未规范化的预测变换为非负数并且总和为1，同时让模型保持可导的性质。</p></li>
 <li><p>softmax回归</p>
