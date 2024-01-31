@@ -4521,6 +4521,7 @@ alt="CLIP使用的方法总结" />
 </figure>
 <p>CLIP (<em>Contrastive Language–Image Pre-training</em>)
 使用的方法非常简单，主要分为2个部分：</p>
+<span id="more"></span>
 <ol type="1">
 <li><p><strong>使用图像和文本进行对比学习预训练</strong></p>
 <ol type="1">

@@ -264,7 +264,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-01-31 17:15:29 / 修改时间：20:15:39" itemprop="dateCreated datePublished" datetime="2024-01-31T17:15:29+08:00">2024-01-31</time>
+      <time title="创建时间：2024-01-31 17:15:29 / 修改时间：20:16:40" itemprop="dateCreated datePublished" datetime="2024-01-31T17:15:29+08:00">2024-01-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -286,7 +286,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><strong>在绝对的力量面前，技巧不值一提。</strong></p>
+          <p><strong>在绝对的力量面前，技巧不值一提。</strong></p>
 <h1 id="clip论文理解">CLIP论文理解</h1>
 <h2 id="方法总结">方法总结</h2>
 <figure>
@@ -297,175 +297,14 @@ alt="CLIP使用的方法总结" />
 </figure>
 <p>CLIP (<em>Contrastive Language–Image Pre-training</em>)
 使用的方法非常简单，主要分为2个部分：</p>
-<ol type="1">
-<li><p><strong>使用图像和文本进行对比学习预训练</strong></p>
-<ol type="1">
-<li><p>组件</p>
-<ul>
-<li><p>文本编码器：Transformer</p></li>
-<li><p>图像编码器：ResNet or Vision Transformer</p></li>
-<li><p>对比学习</p>
-<ul>
-<li><p>目标：通过最大化正样本对（图像和文本描述）的相似性，最小化负样本对（图像和不相关文本描述）的相似性来学习图像和文本的共享表示</p></li>
-<li><p>损失函数（InfoNCE loss）:</p>
-<p>论文MoCo提出，我们可以把对比学习看成是一个字典查询的任务，即训练一个编码器从而去做字典查询的任务。假设已经有一个编码好的query
-<span class="math inline">\(q\)</span> (一个特征),
-以及一系列编码好的样本 <span
-class="math inline">\(k0,k1,k2,\ldots\)</span>, 那么 <span
-class="math inline">\(k0,k1,k2,\ldots\)</span>
-可以看作是字典里的key。假设字典里只有一个key即 <span
-class="math inline">\(k+\)</span> (称为<span
-class="math inline">\(k\)</span> positive) 是跟<span
-class="math inline">\(q\)</span> 是匹配的，那么 <span
-class="math inline">\(q\)</span> 和 <span
-class="math inline">\(k+\)</span>
-就互为正样本对，其余的key为q的负样本。一旦定义好了正负样本对，就需要一个对比学习的损失函数来指导模型来进行学习。这个损失函数需要满足以下要求：</p>
-<ul>
-<li>当query <span class="math inline">\(q\)</span> 和唯一的正样本 <span
-class="math inline">\(k+\)</span>
-相似，并且和其他所有负样本key都不相似的时候，loss应该较小。</li>
-<li>反之，如果<span class="math inline">\(q\)</span>和<span
-class="math inline">\(k+\)</span>不相似，或者<span
-class="math inline">\(q\)</span> 和其他负样本的key相似了，那么loss
-应该较大，从而惩罚模型，促使模型进行参数更新。</li>
-</ul>
-<p>MoCo采用的对比学习损失函数是InfoNCE Ioss,
-以此来训练模型，公式如下：</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401311753672.gif"
-alt="InfoNCE loss" />
-<figcaption aria-hidden="true">InfoNCE loss</figcaption>
-</figure></li>
-<li><p>优点：</p>
-<p>相比于让模型直接预测和图像匹配的文本描述中的每一个具体的单词，使用对比学习让模型预测哪条文本描述整体上和图片是配对的，如果两种方式都实现了相当的效果，那么使用对比学习的模型收敛更快，需要的算力更少。</p></li>
-</ul></li>
-</ul></li>
-<li><p>训练过程</p>
-<ul>
-<li><p>代理任务：给定一张图片，从一个随机采样的batch的文本描述中预测，哪一个文本描述是和这张图片匹配的</p></li>
-<li><p>训练过程：</p>
-<ol type="1">
-<li>在模型训练过程中，我们取到的每个batch由 <span
-class="math inline">\(N\)</span> 个图像-文本对组成</li>
-<li>将这 <span class="math inline">\(N\)</span>
-个图像送入到图像编码器中会得到 <span class="math inline">\(N\)</span>
-个图像特征向量 <span class="math inline">\((I_1,I_2,\cdots,I_N)\)</span>
-,</li>
-<li>同理，将这 <span class="math inline">\(N\)</span>
-个文本送入到文本编码器中我们可以得到<span
-class="math inline">\(N\)</span> 个文本特征向量 <span
-class="math inline">\((T_1,T_2,\cdots,T_N)\)</span></li>
-<li>因为不同编码器的输出的特征向量长度不一样，所以CLIP
-使用了一个线性映射将两个编码器生成的特征向量映射到统一长度（这样就把图像和文本映射到了同一个特征空间）</li>
-<li>使用向量内积计算相似度：这 <span class="math inline">\(N\)</span>
-个图像特征向量和这 <span class="math inline">\(N\)</span>
-个文本特征向量的相似度</li>
-<li>因为只有在对角线上的图像和文本是一对，
-所以CLIP的训练目标是让正样本对（图像和文本描述）的特征向量相似度尽可能高，而负样本对（图像和不相关文本描述）的相似度尽可能低。通过这个方式，CLIP构建了一个由
-<span class="math inline">\(N\)</span> 个正样本和<span
-class="math inline">\(N^2-N\)</span>
-个负样本组成的损失函数。CLIP的计算过程伪代码如下。</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># image_encoder - 残差网络 或者 ViT</span><br><span class="line"># text_encoder - CBOW 或者 文本Transformer</span><br><span class="line"># I[n, h, w, c] - 训练图像</span><br><span class="line"># T[n, l] - 训练文本</span><br><span class="line"># W_i[d_i, d_e] - 训练图像生成的特征向量</span><br><span class="line"># W_t[d_t, d_e]  - 训练文本生成的特征向量</span><br><span class="line"># t - softmax的温度（temperature）参数</span><br><span class="line"></span><br><span class="line"># 提取多模态的特征</span><br><span class="line">I_f = image_encoder(I) #[n, d_i]</span><br><span class="line">T_f = text_encoder(T) #[n, d_t]</span><br><span class="line"></span><br><span class="line"># 多模态特征向特征空间的映射</span><br><span class="line">I_e = l2_normalize(np.dot(I_f, W_i), axis=1)</span><br><span class="line">T_e = l2_normalize(np.dot(T_f, W_t), axis=1)</span><br><span class="line"></span><br><span class="line"># 计算余弦相似度</span><br><span class="line">logits = np.dot(I_e, T_e.T) * np.exp(t)</span><br><span class="line"></span><br><span class="line"># 构建损失函数</span><br><span class="line">labels = np.arange(n)</span><br><span class="line">loss_i = cross_entropy_loss(logits, labels, axis=0)</span><br><span class="line">loss_t  = cross_entropy_loss(logits, labels, axis=1)</span><br><span class="line">loss = (loss_i + loss_t)/2</span><br></pre></td></tr></table></figure></li>
-<li><p>训练结果：当模型训练完成后，CLIP模型的效果就是——获得了把图像和文本映射到同一个特征空间的能力，此时得到的模型并没有显式的分类头。</p></li>
-</ul></li>
-</ol></li>
-<li><p>执行零样本预测（推理过程）</p>
-<ol type="1">
-<li>当进行图像分类时，我们把待识别的图像通过图像编码器映射成一个特征向量</li>
-<li>然后将所有可能的图像类别标签全部使用文本编码器进行编码，得到一组特征向量。（"多项选择题"）</li>
-<li>将图像特征向量和一组文本对应的特征向量逐一计算相似度，相似度最高的那一个图像-文本对所对应的文本就是图像预测出的类别</li>
-<li>为了提升性能，这里的文本描述不是简单地将标签 plane, car, dog, ...,
-bird 送入文本编码器，而是进行了 prompt工程，通过使用 A photo of a
-{object} 作为输入，大大提升了零样本预测结果的准确度。</li>
-</ol></li>
-</ol>
-<h2 id="方法核心">方法核心</h2>
-<p>把图像和文本映射到同一个特征空间（可以理解为将文本特征向量和图像特征向量的维度变成一致的）。</p>
-<blockquote>
-<p>这个特征空间是一个抽象的概念，例如当我们看到一条狗的图片的时候，我们心中想的是狗，当我们读到狗的时候我们想的也是狗，那么我们心中想象的狗，便是“特征空间”。</p>
-</blockquote>
-<h2 id="模型评估">模型评估</h2>
-<p>模型通过零样本迁移可以展示其<strong>学习各种各样任务的能力</strong>，是一个能够很好地评估模型整体能力的指标。</p>
-<h2 id="优势">优势</h2>
-<ol type="1">
-<li>训练高效，节省算力
-<ul>
-<li>采用了对比学习，优于直接预测学习</li>
-</ul></li>
-<li>灵活且泛化性好
-<ul>
-<li>零样本迁移能力强大，能够很方便地解决全新的任务（/全新数据集）
-<ul>
-<li>过去的模型要迁移到新任务：
-<ol type="1">
-<li>build a new dataset</li>
-<li>add an output head</li>
-<li>and fine-tune the model</li>
-</ol></li>
-<li>CLIP要迁移到新任务：
-<ul>
-<li>不需要额外的训练数据</li>
-<li>只需要"告诉"CLIP的文本编码器新任务涉及到的视觉概念的名字，然后直接使用预训练好的CLIP模型进行预测，模型就能给出相应的新视觉概念的分类。</li>
-<li>碎碎念：我觉得这不是严格的零样本，感觉CLIP之所以能够"通过仅修改预测时文本编码器的输入就迁移到新任务"，还是离不开它在预训练过程中已经通过庞大的数据集来尽可能的覆盖下游任务（也就是说，只不过是因为CLIP训练用的4亿的图片-文本对见过这些新视觉概念对应的图片）、</li>
-</ul></li>
-</ul></li>
-<li>表征学习效果很好（Representation
-Learning）：说明它提取出的特征很好</li>
-</ul></li>
-</ol>
-<h2 id="局限性">局限性</h2>
-<ol type="1">
-<li><p><strong>夸大的零样本：</strong>CLIP在它预训练阶段没有覆盖到的数据上的繁华谢谢很差。也就是说，CLIP还是通过庞大的数据集来尽可能的覆盖下游任务，搜易它在未见过的数据上表现非常不理想。比如在MNIST数据集上（1-9手写数字图片），CLIP
-只达到了88%的准确度，还不如一个作用在像素点上的逻辑回归。虽然 4
-亿数据集很大，但是很有可能没有包含这种不常见的手写数字的图片。这就引起了一些疑虑：<strong>CLIP
-的强大有多大程度上取决于这个高质量、大规模的数据集。</strong></p></li>
-<li><p>CLIP的零样本分类器（即文本编码器）对输入文本的提示工程很敏感（prompt
-engineering）</p>
-<ul>
-<li>提示工程：分类的时候不是直接把一个“dog”标签喂给文本编码器让它编码，而是设计一个prompt，变成“A
-photo of a dog.”再进行编码。原因有二：
-<ul>
-<li>多义词导致只用一个单词做标签很容易产生歧义，比如remote即可以是“远程的”又可以指遥控器，编码器难以确认是哪个意思，如果变成“A
-photo of a remote.”就很明显是遥控器的意思</li>
-<li>训练时文本编码器编的是句子，推理测试时如果只用单词会产生数据分布gap，可能会影响性能</li>
-</ul></li>
-</ul></li>
-<li><p>在一些任务上表现不好：</p>
-<ul>
-<li><p>更抽象和系统性的任务：如计数图像中目标的数量</p></li>
-<li><p>更复杂的任务：如预测照片中最近的车的距离（能不能注入领域知识，让模型学会思考这些？）</p></li>
-<li><p>极细粒度的分类任务：如说出不同汽车模型或者不同种类的花之间的区别</p></li>
-</ul></li>
-</ol>
-<h2 id="用途">用途</h2>
-<h3 id="根源用途">根源用途</h3>
-<p>​ 把图片和文字编码到同一空间，计算图像和文本的语义相似度</p>
-<h3 id="扩展用途">扩展用途</h3>
-<p>​ 1）图文搜索（根据图像搜索对应文本、或根据文本搜索对应图像） ​
-2）协助完成相关的多模态任务（例如在 Stable Diffusion 里作为文本编码器） ​
-3）作为评测工具（例如文生图任务中，计算生成图像与文本之间的相似度）</p>
-<h2 id="最大影响">最大影响</h2>
-<p><strong>允许人们设计自己的分类头，而不需要特定领域的训练数据。</strong></p>
-<p>怎么实现的呢？</p>
-<p><strong>在推理时，直接向文本编码器中输入所有可能的类别集合，这个类别集合里面就包括人们想要添加的新类别，这样模型在预测时就可能能够预测到这个新类别。</strong>（但是有个疑问：添加的新类别是否只能是WIT（WebImageText数据集）里面训练过的类别呢？）</p>
-<p>在推理过程中，通过自由设置“多项选择题”，我们就摆脱了事先定义好的分类标签，而实现了将模型扩展到自己专属的任务（因为可以定义自己模型需要预测的新类别），让下游任务的推理变得更灵活。</p>
-<ul>
-<li>过去的分类网络：
-<ul>
-<li>类别数量固定，一般时最后一层跟着 softmax 全连接层；</li>
-<li>如果要更改类别数量，就要更换最后一层</li>
-<li>并且预测的内容是固定的，不能超过训练集的类别范围。</li>
-</ul></li>
-<li>CLIP
-<ul>
-<li>提供给网络的分类标签不仅数量不固定，内容也是自由的</li>
-<li>如果提供两个标签，那就是一个二分类问题；如果提供1000个标签，那就是1000分类问题。</li>
-<li>标签内容可以是常规的分类标签，也可以是一些冷门的分类标签。</li>
-</ul></li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/31/CLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
