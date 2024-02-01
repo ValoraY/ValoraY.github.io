@@ -4757,8 +4757,9 @@ features 的点乘，来计算单词-区域对齐得分</li>
 <h2 id="模型结构">模型结构</h2>
 <h3 id="模型结构-1">模型结构</h3>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/02/01/OvtOTa.png" alt="OvtOTa.png" />
-<figcaption aria-hidden="true">OvtOTa.png</figcaption>
+<img src="https://ooo.0x0.ooo/2024/02/01/OvtOTa.png"
+alt="GLIP模型结构" />
+<figcaption aria-hidden="true">GLIP模型结构</figcaption>
 </figure>
 <h3 id="特点">特点</h3>
 <ol type="1">
