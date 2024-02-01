@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -187,6 +187,10 @@
         
         
           <li>
+            <a href="/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" title="GLIP论文理解" target="_blank">GLIP论文理解</a>
+          </li>
+        
+          <li>
             <a href="/2024/01/31/CLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" title="CLIP论文理解" target="_blank">CLIP论文理解</a>
           </li>
         
@@ -200,10 +204,6 @@
         
           <li>
             <a href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（三）" target="_blank">《动手学深度学习2.0》学习笔记（三）</a>
-          </li>
-        
-          <li>
-            <a href="/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（二）" target="_blank">《动手学深度学习2.0》学习笔记（二）</a>
           </li>
         
       </ul>
@@ -225,6 +225,103 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">GLIP论文理解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-02-01 14:55:37 / 修改时间：16:44:25" itemprop="dateCreated datePublished" datetime="2024-02-01T14:55:37+08:00">2024-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" itemprop="url" rel="index"><span itemprop="name">目标检测</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="glip论文理解">GLIP论文理解</h1>
+<p>GLIP(<em>Grounded Language-Image Pre-training)</em>
+是一个可扩展的（generalizable）目标检测模型（其实准确来说应该表述为短语定位模型，本句在这里将"目标检测"和"短语定位"任务混为一谈）</p>
+<p>在文章开头先解释一下GLIP论文中用到的一些"黑话"</p>
+<p>generalizable（可泛化）：侧重于描述模型<strong>在不同任务和数据集上的适应性</strong>，强调模型学到的特征能够泛化到新的情境。</p>
+<p>scalable（可扩展）：
+关注系统、算法、数据集的可扩展性，确保算法在面对更大规模、更复杂的情况时性能能够保持或提高。在本论文中用到的描述为"
+scalable and semantic-rich
+data"，侧重于强调数据集的可扩展性，论文通过自训练生成伪标注的方式提高数据集的可扩展性。</p>
+<p>language-aware（语言感知的）：模型能够理解和处理自然语言。本论文的模型接收文本描述prompt作为输入，自然是language
+aware的。</p>
+<p>semantic-rich（语义丰富的）：用于形容数据集包含了丰富的语义信息（包括对物体、场景或其他视觉元素的深层次、有意义的描述，能够捕捉图像中物体之间的关系等）</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -567,101 +664,6 @@ id="动手学深度学习2.0学习笔记三">《动手学深度学习2.0》学�
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="deeprookie">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">《动手学深度学习2.0》学习笔记（二）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-01-12 20:55:28" itemprop="dateCreated datePublished" datetime="2024-01-12T20:55:28+08:00">2024-01-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-01-16 16:58:57" itemprop="dateModified" datetime="2024-01-16T16:58:57+08:00">2024-01-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1
-id="动手学深度学习2.0学习笔记二">《动手学深度学习2.0》学习笔记（二）</h1>
-<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
-<p>本文记录了我在学习本书5-7章节（包括深度学习计算、卷积神经网络、现代卷积神经网络）过程中的理解和收获。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/12/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
