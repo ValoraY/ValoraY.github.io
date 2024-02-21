@@ -4946,7 +4946,13 @@ src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/20240221161304
 alt="image-20240221161342009" />
 <figcaption aria-hidden="true">image-20240221161342009</figcaption>
 </figure></li>
-<li><p>拉取测试用的镜像hello-world：<code>sudo docker pull hello-world</code></p></li>
+<li><p>拉取测试用的镜像hello-world：<code>sudo docker pull hello-world</code></p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402211615847.png"
+alt="image-20240221161532812" />
+<figcaption aria-hidden="true">image-20240221161532812</figcaption>
+</figure></li>
 </ol></li>
 </ol>
 <h2 id="docker基本操作">Docker基本操作</h2>
