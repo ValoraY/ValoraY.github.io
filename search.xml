@@ -4845,6 +4845,7 @@ Multi-modal Prompt Learning）</p></li>
 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的镜像中，然后发布到任何流行的
 Linux
 机器上。使用Docker可以让每个应用彼此相互隔离，在同一台机器上同时运行多个容器，他们彼此之间共享同一个操作系统。Docker的优势在于，它可以在更细的粒度上进行资源的管理，比虚拟化技术性能更高，更加节约资源。下面是普通虚拟化技术和Docker的对比。</p>
+<span id="more"></span>
 <figure>
 <img
 src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402201351269.png"
@@ -5025,6 +5026,12 @@ alt="image-20240220144219564" />
 <p>https://cr.console.aliyun.com/cn-shanghai/instances</p>
 <p>https://www.runoob.com/docker/docker-image-usage.html</p>
 <p>https://www.runoob.com/docker/docker-container-usage.html</p>
+<p>#修改自己镜像加速地址</p>
+<p>{ "registry-mirrors": [ "https://fzmbrlfd.mirror.aliyuncs.com" ],
+"exec-opts": ["native.cgroupdriver=systemd"],
+"max-concurrent-downloads": 10, "max-concurrent-uploads": 5, "log-opts":
+{ "max-size": "300m", "max-file": "2" }, "live-restore": true }</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>经验技巧</category>
