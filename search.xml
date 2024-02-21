@@ -5027,12 +5027,6 @@ alt="image-20240220144219564" />
 <p>https://cr.console.aliyun.com/cn-shanghai/instances</p>
 <p>https://www.runoob.com/docker/docker-image-usage.html</p>
 <p>https://www.runoob.com/docker/docker-container-usage.html</p>
-<p>#修改自己镜像加速地址</p>
-<p>{ "registry-mirrors": [ "https://fzmbrlfd.mirror.aliyuncs.com" ],
-"exec-opts": ["native.cgroupdriver=systemd"],
-"max-concurrent-downloads": 10, "max-concurrent-uploads": 5, "log-opts":
-{ "max-size": "300m", "max-file": "2" }, "live-restore": true }</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>经验技巧</category>
