@@ -4891,7 +4891,8 @@ Hub。Docker Hub
 <li><p>Set up Docker's <code>apt</code> repository.</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Add Docker&#x27;s official GPG key:</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install ca-certificates curl</span><br><span class="line">sudo install -m 0755 -d /etc/apt/keyrings</span><br><span class="line">sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc</span><br><span class="line">sudo chmod a+r /etc/apt/keyrings/docker.asc</span><br><span class="line"></span><br><span class="line"># Add the repository to Apt sources:</span><br><span class="line">echo \</span><br><span class="line">  &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \</span><br><span class="line">  $(. /etc/os-release &amp;&amp; echo &quot;$VERSION_CODENAME&quot;) stable&quot; | \</span><br><span class="line">  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null</span><br><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure></li>
 <li><p>Install the Docker packages.（碎碎念：这里下载好慢呀）</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 安装特定版本的docker</span><br><span class="line"># 首先列出 Docker 软件源中所有可用的版本</span><br><span class="line">sudo apt update</span><br><span class="line">apt list -a docker-ce</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 选择所需版本 - docker-ce/focal 5:24.0.7-1~ubuntu.20.04~focal amd64</span><br><span class="line"></span><br><span class="line"># 安装指定版本</span><br><span class="line"># 用5:24.0.7-1~ubuntu.20.04~focal替代&lt;version&gt;</span><br><span class="line"></span><br><span class="line">## 替换前</span><br><span class="line">sudo apt-get install docker-ce=&lt;version&gt;  docker-ce-cli=&lt;version&gt; containerd.io docker-buildx-plugin docker-compose-plugin</span><br><span class="line">## 替换后</span><br><span class="line">sudo apt-get install docker-ce=5:24.0.7-1~ubuntu.20.04~focal  docker-ce-cli=5:24.0.7-1~ubuntu.20.04~focal  containerd.io docker-buildx-plugin docker-compose-plugin</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
 <li><p>启动docker</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
 <p>运行上述命令，出现错误</p>
@@ -5039,6 +5040,58 @@ alt="image-20240220144219564" />
       <tags>
         <tag>docker</tag>
         <tag>项目部署</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vscode连接linux服务器</title>
+    <url>/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="vscode连接linux服务器">vscode连接linux服务器</h1>
+<p>前提：本地要使用蒲公英连接内网</p>
+<span id="more"></span>
+<h2 id="安装romote-ssh插件">安装Romote-SSH插件</h2>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyWM1g.png" alt="OyWM1g.png" />
+<figcaption aria-hidden="true">OyWM1g.png</figcaption>
+</figure>
+<h2 id="修改配置文件">修改配置文件</h2>
+<p>修改配置文件，更新要连接的服务器的信息</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyU30b.png" alt="OyU30b.png" />
+<figcaption aria-hidden="true">OyU30b.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyUIKP.png" alt="OyUIKP.png" />
+<figcaption aria-hidden="true">OyUIKP.png</figcaption>
+</figure>
+<h2 id="连接服务器">连接服务器</h2>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyUCwl.png" alt="OyUCwl.png" />
+<figcaption aria-hidden="true">OyUCwl.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyUu56.png" alt="OyUu56.png" />
+<figcaption aria-hidden="true">OyUu56.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyWOHB.png" alt="OyWOHB.png" />
+<figcaption aria-hidden="true">OyWOHB.png</figcaption>
+</figure>
+<h2 id="打开文件夹">打开文件夹</h2>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyWa8s.png" alt="OyWa8s.png" />
+<figcaption aria-hidden="true">OyWa8s.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyWqxK.png" alt="OyWqxK.png" />
+<figcaption aria-hidden="true">OyWqxK.png</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>经验技巧</category>
+      </categories>
+      <tags>
+        <tag>vscode</tag>
+        <tag>服务器</tag>
       </tags>
   </entry>
 </search>
