@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -187,6 +187,10 @@
         
         
           <li>
+            <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" title="服务器端使用docker部署项目" target="_blank">服务器端使用docker部署项目</a>
+          </li>
+        
+          <li>
             <a href="/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/" title="GLIP论文理解" target="_blank">GLIP论文理解</a>
           </li>
         
@@ -200,10 +204,6 @@
         
           <li>
             <a href="/2024/01/17/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（四）" target="_blank">《动手学深度学习2.0》学习笔记（四）</a>
-          </li>
-        
-          <li>
-            <a href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/" title="《动手学深度学习2.0》学习笔记（三）" target="_blank">《动手学深度学习2.0》学习笔记（三）</a>
           </li>
         
       </ul>
@@ -225,6 +225,271 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">服务器端使用docker部署项目</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-02-20 11:54:19 / 修改时间：20:10:51" itemprop="dateCreated datePublished" datetime="2024-02-20T11:54:19+08:00">2024-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C%E6%8A%80%E5%B7%A7/" itemprop="url" rel="index"><span itemprop="name">经验技巧</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="服务器端使用docker部署项目">服务器端使用docker部署项目</h1>
+<h2 id="docker介绍">Docker介绍</h2>
+<p>https://developer.aliyun.com/article/381989</p>
+<p>Docker
+是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的镜像中，然后发布到任何流行的
+Linux
+机器上。使用Docker可以让每个应用彼此相互隔离，在同一台机器上同时运行多个容器，他们彼此之间共享同一个操作系统。Docker的优势在于，它可以在更细的粒度上进行资源的管理，比虚拟化技术性能更高，更加节约资源。下面是普通虚拟化技术和Docker的对比。</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402201351269.png"
+alt="image-20240220135101153" />
+<figcaption aria-hidden="true">image-20240220135101153</figcaption>
+</figure>
+<p>Docker的三大核心概念：</p>
+<ul>
+<li>镜像 - Docker images</li>
+<li>容器 - Docker containers</li>
+<li>仓库 - Docker repository</li>
+</ul>
+<h3 id="image">Image</h3>
+<blockquote>
+<p>Docker 镜像是 Docker 容器运行时的只读模板，每一个镜像由一系列的层
+(layers) 组成。我们可以把Image理解成
+windows系统安装光盘，你不能对安装盘进行操作因为是只读的，只有安装好系统后才能保存和操作数据。</p>
+</blockquote>
+<h3 id="container">container</h3>
+<blockquote>
+<p>容器是Image的一个实例，有点像面向对象里new
+一个实例。容器类似于一个轻量级的沙盒，Docker利用容器来运行和隔离应用。容器从Image启动时，Docker会在镜像的最上层创建一个可写层，镜像本身保持不变。</p>
+</blockquote>
+<h3 id="repository">Repository</h3>
+<blockquote>
+<p>Docker
+仓库是存放镜像的地方。不要把Docker的仓库和注册服务器Registry混淆。注册服务器是存放仓库的地方，每个仓库存放某一类不同标签Tag的镜像。</p>
+</blockquote>
+<figure>
+<img
+src="https://images2015.cnblogs.com/blog/342595/201608/342595-20160831163646418-544758907.png"
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<blockquote>
+<p>Docker 仓库也有公有和私有的概念。公有的 Docker 仓库名字是 Docker
+Hub。Docker Hub
+提供了庞大的镜像集合供使用。这些镜像可以是自己创建，或者在别人的镜像基础上创建。如果你的镜像为私有镜像，不想发到公网上，可以自己在本地创建一个私有的镜像仓库</p>
+</blockquote>
+<h2 id="docker-engine安装">Docker engine安装</h2>
+<p>https://docs.docker.com/engine/install/ubuntu/</p>
+<ol type="1">
+<li><p>Set up Docker's <code>apt</code> repository.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># Add Docker&#x27;s official GPG key:</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install ca-certificates curl</span><br><span class="line">sudo install -m 0755 -d /etc/apt/keyrings</span><br><span class="line">sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc</span><br><span class="line">sudo chmod a+r /etc/apt/keyrings/docker.asc</span><br><span class="line"></span><br><span class="line"># Add the repository to Apt sources:</span><br><span class="line">echo \</span><br><span class="line">  &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \</span><br><span class="line">  $(. /etc/os-release &amp;&amp; echo &quot;$VERSION_CODENAME&quot;) stable&quot; | \</span><br><span class="line">  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null</span><br><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure></li>
+<li><p>Install the Docker packages.（碎碎念：这里下载好慢呀）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</span><br></pre></td></tr></table></figure></li>
+<li><p>启动docker</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+<p>运行上述命令，出现错误</p>
+<blockquote>
+<p>System has not been booted with systemd as init system (PID 1). Can't
+operate.</p>
+</blockquote></li>
+<li><p>检查安装好的docker版本/配置信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402201534156.png"
+alt="image-20240220153409114" />
+<figcaption aria-hidden="true">image-20240220153409114</figcaption>
+</figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker info</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="配置docker镜像源">配置Docker镜像源</h2>
+<p>Docker
+Hub（https://hub.docker.com/）是一个公开的镜像仓库，用于下载镜像，在国内下载速度很慢，所以我们通常需要配置阿里云镜像。</p>
+<ol type="1">
+<li><p>在阿里云容器镜像服务网页端操作https://cr.console.aliyun.com/cn-shanghai/instances</p>
+<ol type="1">
+<li>创建个人实例</li>
+<li>在镜像工具-镜像加速器获取镜像地址（https://fzmbrlfd.mirror.aliyuncs.com）</li>
+</ol></li>
+<li><p>在服务器端操作</p>
+<ol type="1">
+<li><p>生成默认配置文件：<code>docker-machine ssh default</code></p></li>
+<li><p>更改其中的镜像地址（用1中获得的镜像地址替换[加速器地址]）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sed -i &quot;s|EXTRA_ARGS=&#x27;|EXTRA_ARGS=&#x27;--registry-mirror=[加速器地址]|g&quot; /var/lib/boot2docker/profile</span><br></pre></td></tr></table></figure></li>
+<li><p>退出docker：<code>exit</code></p></li>
+<li><p>重启docker：<code>docker-machine restart default</code></p></li>
+</ol></li>
+<li><p>在服务器端检查配置是否成功</p>
+<ol type="1">
+<li>打印docker信息：<code>docker info</code></li>
+<li>拉取测试用的镜像hello-world：<code>docker pull hello-world</code></li>
+</ol></li>
+</ol>
+<h2 id="docker基本操作">Docker基本操作</h2>
+<h3 id="镜像">镜像</h3>
+<p>https://www.runoob.com/docker/docker-image-usage.html</p>
+<p><code>docker images</code>：查看当前的所有镜像</p>
+<p><code>docker rmi &lt;镜像名&gt;</code>：删除镜像</p>
+<h3 id="容器">容器</h3>
+<p>https://www.runoob.com/docker/docker-container-usage.html</p>
+<p><code>docker run -it hello-world /bin/bash</code>：启动容器</p>
+<blockquote>
+<p>-i: 交互式操作 -t: 终端 hello-world: hello-world 镜像
+/bin/bash：放在镜像名后的是命令，这里我们希望有个交互式
+Shell，因此用的是 /bin/bash。</p>
+</blockquote>
+<p><code>exit</code>：退出终端</p>
+<p><code>docker run -itd --name hello-world-test  hello-world /bin/bash</code>：后台运行docker容器</p>
+<blockquote>
+<p>-d：容器启动后会进入后台</p>
+</blockquote>
+<p><code>docker exec -it  &lt;容器 ID&gt; /bin/bash</code>：在运行的容器中运行命令</p>
+<blockquote>
+<p>docker exec 命令会退出容器终端，但不会导致容器的停止</p>
+</blockquote>
+<p><code>docker ps -a</code>：查看当前运行中的容器（多打开一个命令行）</p>
+<p><code>docker stop &lt;容器 ID&gt;</code>：停止运行该容器</p>
+<p><code>docker rm -f &lt;容器 ID&gt;</code>：删除容器</p>
+<p><code>docker rm &lt;容器名&gt;</code>：删除容器</p>
+<blockquote>
+<p>删除容器时，容器必须是停止状态，否则会报如下错误</p>
+</blockquote>
+<h2 id="实例测试">实例测试</h2>
+<p>下面创建一个基于pytorch环境的镜像实例，操作步骤如下</p>
+<ol type="1">
+<li><p>拉取镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull pytorch/pytorch</span><br></pre></td></tr></table></figure></li>
+<li><p>进入镜像/运行容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it pytorch/pytorch(it表示交互性展示)</span><br></pre></td></tr></table></figure></li>
+<li><p>查看现有文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br><span class="line">ls</span><br></pre></td></tr></table></figure></li>
+<li><p>测试现有依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 测试有无python</span><br><span class="line">python</span><br><span class="line">	# 测试有无pytorch</span><br><span class="line">	import torch</span><br><span class="line">	</span><br><span class="line">	exit()</span><br><span class="line"># 测试有无pip</span><br><span class="line">pip list</span><br></pre></td></tr></table></figure></li>
+<li><p>增加其他依赖：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install xxx -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure></li>
+<li><p>将本地的数据和代码复制到服务器端特定的docker容器中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 1.在本地数据和代码所在的文件夹内运行git bash</span><br><span class="line"># 2.docker cp ../xxx [docker容器id]:yyy （在特定docker容器新建yyy文件夹，将本地文件夹xxx内容复制到其中）</span><br><span class="line">docker cp [本地文件夹位置] [docker容器id]:yyy</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="提交自定义的镜像">提交自定义的镜像</h2>
+<ol type="1">
+<li>在阿里云新建镜像仓库</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402201440742.png"
+alt="image-20240220144034669" />
+<figcaption aria-hidden="true">image-20240220144034669</figcaption>
+</figure>
+<ol start="2" type="1">
+<li>选择本地仓库-创建镜像仓库</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402201441495.png"
+alt="image-20240220144114461" />
+<figcaption aria-hidden="true">image-20240220144114461</figcaption>
+</figure>
+<ol start="3" type="1">
+<li>仓库创建完成后，按照操作指南操作</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402201442645.png"
+alt="image-20240220144219564" />
+<figcaption aria-hidden="true">image-20240220144219564</figcaption>
+</figure>
+<ol type="1">
+<li>登录阿里云Docker Registry</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker login --username=aliyun4022671572 registry.cn-shanghai.aliyuncs.com</span><br></pre></td></tr></table></figure>
+<p>用于登录的用户名为阿里云账号全名，密码为开通服务时设置的密码vQ4bBe.3!!Vi269</p>
+<ol start="2" type="1">
+<li>从Registry中拉取镜像</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull registry.cn-shanghai.aliyuncs.com/xingjingyu/test_pytorch:[镜像版本号]</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>将镜像推送到Registry</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker login --username=aliyun4022671572 registry.cn-shanghai.aliyuncs.com</span><br><span class="line">docker tag [ImageId] registry.cn-shanghai.aliyuncs.com/xingjingyu/test_pytorch:[镜像版本号]</span><br><span class="line">docker push registry.cn-shanghai.aliyuncs.com/xingjingyu/test_pytorch:[镜像版本号]</span><br></pre></td></tr></table></figure>
+<p>请根据实际镜像信息替换示例中的[ImageId]和[镜像版本号]参数</p>
+<h2 id="参考资料">参考资料</h2>
+<p>https://developer.aliyun.com/article/381989</p>
+<p>https://docs.docker.com/engine/install/ubuntu/</p>
+<p>https://hub.docker.com/</p>
+<p>https://cr.console.aliyun.com/cn-shanghai/instances</p>
+<p>https://www.runoob.com/docker/docker-image-usage.html</p>
+<p>https://www.runoob.com/docker/docker-container-usage.html</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -359,9 +624,15 @@ aware的。</p>
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-01-31 17:15:29 / 修改时间：20:16:40" itemprop="dateCreated datePublished" datetime="2024-01-31T17:15:29+08:00">2024-01-31</time>
+      <time title="创建时间：2024-01-31 17:15:29" itemprop="dateCreated datePublished" datetime="2024-01-31T17:15:29+08:00">2024-01-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-02-21 09:22:43" itemprop="dateModified" datetime="2024-02-21T09:22:43+08:00">2024-02-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -575,95 +846,6 @@ id="动手学深度学习2.0学习笔记四">《动手学深度学习2.0》学�
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/01/17/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="deeprookie">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/" class="post-title-link" itemprop="url">《动手学深度学习2.0》学习笔记（三）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2024-01-16 16:26:50 / 修改时间：16:56:16" itemprop="dateCreated datePublished" datetime="2024-01-16T16:26:50+08:00">2024-01-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1
-id="动手学深度学习2.0学习笔记三">《动手学深度学习2.0》学习笔记（三）</h1>
-<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
-<p>本文记录了我在学习本书8-10章节（包括循环神经网络、现代循环神经网络、注意力机制）过程中的理解和收获。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
