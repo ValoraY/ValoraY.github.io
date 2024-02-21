@@ -27,8 +27,9 @@
 <meta property="og:description" content="GLIP论文理解 GLIP(Grounded Language-Image Pre-training) 是一个可扩展的（generalizable）目标检测模型（其实准确来说应该表述为短语定位模型，本句在这里将&quot;目标检测&quot;和&quot;短语定位&quot;任务混为一谈） 在文章开头先解释一下GLIP论文中用到的一些&quot;黑话&quot; generalizable（可泛化）：侧重于描述模型在不同任务和数据集上的适应性，强调">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://ooo.0x0.ooo/2024/02/01/OvtOTa.png">
+<meta property="og:image" content="https://ooo.0x0.ooo/2024/02/21/OyUVwr.png">
 <meta property="article:published_time" content="2024-02-01T06:55:37.000Z">
-<meta property="article:modified_time" content="2024-02-01T08:46:23.094Z">
+<meta property="article:modified_time" content="2024-02-21T01:28:39.484Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="论文理解">
 <meta property="article:tag" content="多模态">
@@ -273,9 +274,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-02-01 14:55:37 / 修改时间：16:46:23" itemprop="dateCreated datePublished" datetime="2024-02-01T14:55:37+08:00">2024-02-01</time>
+      <time title="创建时间：2024-02-01 14:55:37" itemprop="dateCreated datePublished" datetime="2024-02-01T14:55:37+08:00">2024-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-02-21 09:28:39" itemprop="dateModified" datetime="2024-02-21T09:28:39+08:00">2024-02-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -376,16 +383,16 @@ alt="GLIP模型结构" />
 </ol>
 <h2 id="训练过程">训练过程</h2>
 <ol type="1">
-<li>训练教师模型（train a teacher GLIP on a moderate amount of gold
-grounding data）
+<li><p>训练教师模型（train a teacher GLIP on a moderate amount of gold
+grounding data）</p>
 <ul>
 <li>模型结构：GLIP</li>
 <li>训练数据：<strong>适量的</strong>、人工标注的（gold
 data）、定位数据集</li>
 <li>训练结果：获得了一个良好的定位模型</li>
 </ul></li>
-<li><strong>利用教师模型生成伪标注边界框（generate grounding boxes for
-massive image-text-paired data）</strong>
+<li><p><strong>利用教师模型生成伪标注边界框（generate grounding boxes
+for massive image-text-paired data）</strong></p>
 <ul>
 <li>做法：利用教师模型在massive image-text-paired
 data上做预测，预测与<u>文本中的短语</u>对应的<u>图像中的目标</u>的边界框</li>
@@ -399,18 +406,23 @@ data（互联网爬取的、<strong>大量的</strong>、图像-文本对、没�
 "教师模型生成伪标注边界框"</strong>的方式，获得了一个<strong>语义丰富的定位数据集</strong>，从而极大地扩展了视觉概念，改善了下游任务的运行效果（尤其在一些罕见类别上）</li>
 </ul></li>
 </ul></li>
-<li>预训练学生模型
+<li><p>预训练学生模型</p>
 <ul>
 <li>数据集：2中大量的伪标注数据集+1中适量的人工标注数据集，构成了一个语义丰富的新数据集</li>
 <li>模型结构：GLIP</li>
 <li>训练结果：获得了一个语义丰富的目标检测模型</li>
 </ul></li>
-<li>微调上述学生模型，实现知识迁移
+<li><p>微调上述学生模型，实现知识迁移</p>
 <ul>
-<li>法一：直接在预测时输入特定任务的文本描述prompt（如增加的新类别），此时不需要额外标注数据，GLIP可以直接进行领域迁移</li>
-<li>法二：当有特定领域的标注数据时，不需要微调整个模型，我们可以<strong>在保持模型参数不变的情况下，只微调特定领域的提示嵌入向量（prompt
+<li><p>法一：直接在预测时输入特定任务的文本描述prompt（如增加的新类别、对属性特征的进一步描述等），此时不需要额外标注数据，GLIP可以直接进行领域迁移</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyUVwr.png"
+alt="手动提示微调" />
+<figcaption aria-hidden="true">手动提示微调</figcaption>
+</figure></li>
+<li><p>法二：当有特定领域的标注数据时，不需要微调整个模型，我们可以<strong>在保持模型参数不变的情况下，只微调特定领域的提示嵌入向量（prompt
 embedding）</strong>。通过提示学习，GLIP模型可以适应各种下游任务，减少了微调和部署的花费。（提示学习可以参考论文MaPLe：
-Multi-modal Prompt Learning）</li>
+Multi-modal Prompt Learning）</p></li>
 </ul></li>
 </ol>
 
