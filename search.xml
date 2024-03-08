@@ -5165,7 +5165,8 @@ alt="上传数据集" />
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="glip代码运行">GLIP代码运行</h1>
 <p>GLIP论文官方的github仓库地址为https://github.com/microsoft/GLIP，因其推荐使用Docker来安装环境，因此接下来将在此基础上运行官方代码。</p>
 <h2 id="上传项目代码">上传项目代码</h2>
-<p>首先把本地的项目文件夹传输到远程的Linux服务器端，利用VScode中的SFTP插件上传，具体可参考https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/</p>
+<p>首先把本地的项目文件夹传输到远程的Linux服务器端，利用VScode中的SFTP插件上传，具体可参考笔记<a
+href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/">vscode连接linux服务器</a></p>
 <span id="more"></span>
 <figure>
 <img
@@ -5279,9 +5280,11 @@ alt="image-20240305132651458" />
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/test_grounding_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --weight MODEL/glip_a_tiny_o365.pth \</span><br><span class="line">        TEST.IMS_PER_BATCH 1 \</span><br><span class="line">        MODEL.DYHEAD.SCORE_AGG &quot;MEAN&quot; \</span><br><span class="line">        TEST.EVAL_TASK detection \</span><br><span class="line">        MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False \</span><br><span class="line">        OUTPUT_DIR ./output_dir</span><br></pre></td></tr></table></figure></li>
 </ol>
 <h3 id="conda">Conda</h3>
-<p>安装Conda及创建虚拟环境的步骤参考《笔记01》</p>
+<p>安装Conda及创建虚拟环境的步骤参考笔记<a
+href="http://localhost:4000/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">服务器端安装conda并创建虚拟环境</a></p>
 <h4 id="安装conda">安装Conda</h4>
-<p>见《笔记01》</p>
+<p>见<a
+href="http://localhost:4000/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">服务器端安装conda并创建虚拟环境</a></p>
 <h4 id="创建虚拟环境">创建虚拟环境</h4>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 创建</span><br><span class="line">conda create -n glip_env python=3.8</span><br><span class="line"># 激活</span><br><span class="line">conda activate glip_env</span><br></pre></td></tr></table></figure>
 <h4 id="安装依赖">安装依赖</h4>
