@@ -1286,228 +1286,6 @@ Multi-modal Prompt Learning）</p></li>
       </tags>
   </entry>
   <entry>
-    <title>利用Docker容器部署GLIP项目</title>
-    <url>/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="利用docker容器部署glip项目">利用Docker容器部署GLIP项目</h1>
-<h2 id="下载文件">下载文件</h2>
-<p>下载包括把东西下载下来+组织成要求的格式+放到正确的位置。</p>
-<span id="more"></span>
-<h3 id="项目代码">项目代码</h3>
-<p>项目代码放置在<a
-href="https://github.com/microsoft/GLIP">GitHub仓库</a>，下载代码压缩包至本地。</p>
-<h3 id="数据集">数据集</h3>
-<p>数据集构建可以参考官方提供的<a
-href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>。</p>
-<p><strong>针对预训练任务</strong>，官方提供了3种数据集，我选择使用规模最小的<code>Flickr30k</code>数据集进行预训练。</p>
-<ol type="1">
-<li><p>首先，从官网（实际用的是csdn搜索到的国内下载链接）下载<code>Flickr30k</code>图像数据集<code>flickr30k-images</code>，并从<a
-href="https://github.com/microsoft/GLIP/blob/main/DATA.md">GLIP的Github仓库提供的注释文件地址</a>下载注释文件<code>mdetr_annotations</code>。</p></li>
-<li><p>其次，将图像数据集<code>flickr30k-images</code>依据注释文件划分为训练集、测试集和验证集。</p>
-<blockquote>
-<p>最初按照官方提供的<a
-href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>组织数据格式，没有进行数据集划分步骤。</p>
-<p>但在运行项目过程种发现：<code>paths_catalog.py</code>文件指示<code>Flickr30k</code>数据集要划分为训练集、测试集和验证集才能进行训练。</p>
-<p>于是这里先划分数据集，划分数据集的工具代码放置在本地<code>D:\04Code\GLIP-utils\splitFlickrDataset.py</code>。</p>
-<p>划分结束后，最终得到的图像分为训练集29783张，测试集999张，验证集1000张。</p>
-</blockquote></li>
-</ol>
-<p>注意事项：</p>
-<p>直接从官网/csdn链接下载的<code>Flickr30k</code>数据集的文件夹名称为<code>flickr30k-images</code>，而在<code>paths_catalog.py</code>文件中定义的数据集的文件名称为<code>flickr30k_images</code>。前者中间是短横线，而后者中间是下划线，注意修改为下划线<code>flickr30k_images</code>。</p>
-<p><strong>针对评估任务，</strong></p>
-<h3 id="配置文件及预训练权重">配置文件及预训练权重</h3>
-<p>模型的训练和评估过程均会用到相互对应的<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>，因服务器无法连接外网，所以二者都需要提前下载至本地，然后再上传至服务器。</p>
-<p>本项目需要下载的这种类型的文件可以分为两种：一种是GLIP模型的配置文件及预训练权重文件；另一种是由于GLIP模型结构中包含基于Bert的文本编码器，而该文本编码器需要一些预训练的相关文件。因此，针对这两类文件，都需要进行提前下载。</p>
-<ol type="1">
-<li><p>GLIP模型的配置文件及预训练权重文件</p>
-<p>关键：<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>要相互对应，具体可参考<a
-href="https://github.com/microsoft/GLIP">GitHub仓库</a>的<strong>Model
-Zoo</strong>表格。</p>
-<p>我选择了其中效果最差、文件大小最小的配置文件(.yaml)和预训练权重文件(.pth)，并将其分别组织到目录configs/pretrain和MODEL中。</p>
-<blockquote>
-<p>为什么组织到这两个目录呢？</p>
-<p>参考<a
-href="https://github.com/microsoft/GLIP">GitHub仓库</a>提供的<strong>预训练代码（其中涉及到使用的配置文件的位置）</strong>及<strong>预训练权重文件下载位置</strong>这两个提示，可以决定这两类文件具体放置到什么位置。</p>
-</blockquote></li>
-<li><p>GLIP基于Bert的文本编码器所需的配置文件<code>config.json</code></p>
-<blockquote>
-<p>我是怎么知道需要<code>config.json</code>这个文件的呢？</p>
-<p>在代码运行过程中，出现以下错误：</p>
-<p>MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443):
-Max retries exceeded with url:
-<code>/bert-base-uncased/resolve/main/config.json</code> (Caused by
-ConnectTimeoutError('Connection to huggingface.co timed out. ),
-'(Request ID: 7b33f5be-46a9-40b5-a198-d5ff7ef25c7c)')' thrown while
-requesting HEAD
-https://huggingface.co/bert-base-uncased/resolve/main/config.json</p>
-<p><strong>===似乎是说服务器访问huggingface官网连接超时，导致无法下载一个<code>config.json</code>文件。</strong></p>
-<p>然后看具体的报错信息：</p>
-<p>Traceback (most recent call last): File "tools/train_net.py", line
-260, in <module> main() File "tools/train_net.py", line 256, in main
-use_tensorboard=args.use_tensorboard) File "tools/train_net.py", line
-37, in train model = build_detection_model(cfg) File
-"/workspace/maskrcnn_benchmark/modeling/detector/<strong>init</strong>.py",
-line 11, in build_detection_model return meta_arch(cfg) File
-"/workspace/maskrcnn_benchmark/modeling/detector/generalized_vl_rcnn.py",
-line 96, in <strong>init</strong> self.language_backbone =
-build_language_backbone(cfg) File
-"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
-line 45, in build_backbone return registry.LANGUAGE_BACKBONES<a
-href="cfg">cfg.MODEL.LANGUAGE_BACKBONE.MODEL_TYPE</a> File
-"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
-line 14, in build_bert_backbone body = bert_model.BertEncoder(cfg) File
-"/workspace/maskrcnn_benchmark/modeling/language_backbone/bert_model.py",
-line 18, in <strong>init</strong> config =
-BertConfig.from_pretrained(self.bert_name)</p>
-<p><strong>===到这里为止，似乎是说language_backbone加载出现问题，且项目用的是基于Bert的backbone</strong></p>
-<p>File
-"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
-line 547, in from_pretrained config_dict, kwargs =
-cls.get_config_dict(pretrained_model_name_or_path, kwargs) File
-"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
-line 574, in get_config_dict config_dict, kwargs =
-cls._get_config_dict(pretrained_model_name_or_path, kwargs) File
-"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
-line 641, in _get_config_dict _commit_hash=commit_hash, File
-"/opt/conda/lib/python3.7/site-packages/transformers/utils/hub.py", line
-453, in cached_file f"We couldn't connect to
-'{HUGGINGFACE_CO_RESOLVE_ENDPOINT}' to load this file, couldn't find it
-in the"</p>
-<p><strong>OSError: We couldn't connect to 'https://huggingface.co' to
-load this file, couldn't find it in the cached files and it looks like
-bert-base-uncased is not the path to a directory containing a file named
-config.json.</strong></p>
-<p><strong>===总之就是在说：我们需要从huggingface官网下载这个<code>config.json</code>文件到本地</strong></p>
-<p>Checkout your internet connection or see how to run the library in
-offline mode at
-'https://huggingface.co/docs/transformers/installation#offline-mode'.</p>
-</blockquote>
-<p><strong>注意事项：</strong></p>
-<blockquote>
-<p>从huggingface官网下载到了config.json文件后，又该把它放在哪里呢？</p>
-<p>一开始我随便新建了一个文件夹<code>xxx/bert-base-uncased</code>放置该文件，结果项目运行时一直无法去这个目录中找到该文件。</p>
-<p><strong>最终尝试后直接将该文件放置在<code>bert-base-uncased</code>文件夹下，项目运行时就可以在本地找到这个文件夹</strong></p>
-</blockquote>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132204607.png"
-alt="image-20240313220440510" />
-<figcaption aria-hidden="true">image-20240313220440510</figcaption>
-</figure></li>
-</ol>
-<p>假设我们已经把docker安装好了（如果还没有安装docker可以参考<a
-href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">服务器端使用docker部署项目</a>），现在继续搭建docker容器。</p>
-<h2 id="上传服务器">上传服务器</h2>
-<p>在本地下载好上述代码/数据集/配置文件/预训练权重文件，并按照要求格式组织好结构之后，将其上传至Linux服务器端（上传步骤可以参考<a
-href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/#%E4%B8%8A%E4%BC%A0%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8">vscode连接linux服务器_上传代码至服务器/上传数据集</a>），接下来的所有操作就是在服务器端进行的了。</p>
-<h2 id="构建镜像">构建镜像</h2>
-<h3 id="dockerfile">Dockerfile</h3>
-<p>首先<code>cd</code>到项目所在文件夹<code>GLIP-main</code>，然后创建<code>Dockerfile</code>文件。</p>
-<p>文件内容为</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Choose the base image according to your server&#x27;s GPU</span><br><span class="line"></span><br><span class="line"># For newer GPUs:</span><br><span class="line">FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</span><br><span class="line"></span><br><span class="line"># Install additional dependencies</span><br><span class="line">RUN pip install einops shapely timm yacs tensorboardX ftfy prettytable pymongo transformers -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br><span class="line"># Copy your project files into the Docker container</span><br><span class="line">COPY . /workspace</span><br><span class="line"></span><br><span class="line"># Set the working directory to /workspace</span><br><span class="line">WORKDIR /workspace</span><br><span class="line"></span><br><span class="line"># Run the project setup script</span><br><span class="line">RUN python setup.py build develop --user</span><br><span class="line"></span><br><span class="line"># 运行上述代码发现缺少以下包，所以这里添加安装这些包的代码</span><br><span class="line">RUN pip install pycocotools scipy opencv-python-headless -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<p>注意事项：</p>
-<ol type="1">
-<li>这里在最开始下载docker镜像时踩了大坑：原本下载的是GLIP的Github仓库推荐的两种镜像</li>
-</ol>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403141008915.png"
-alt="image-20240314100814796" />
-<figcaption aria-hidden="true">image-20240314100814796</figcaption>
-</figure>
-<p>结果经过反复测试（真的是反复测试，，不断质疑是不是自己哪个小细节没注意到才导致安装失败），以及查看Issues，最终才确定<strong>GLIP项目支持的pytorch版本必须大于1.9.1且小于1.11.0</strong>；而官方仓库推荐的2个docker镜像中pytorch的版本都是1.9.0（真的好气喔。。我辣么相信官方。。甚至怀疑自己了。。不靠谱·官方），<strong>最终我选择了Dockerhub中的这一镜像pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</strong></p>
-<ol start="2" type="1">
-<li><p>在Dockerfile文件中有一行用于"运行项目安装脚本"的代码<code>RUN python setup.py build develop --user</code>，在这里构建镜像时并不会出现什么问题。</p>
-<p>但是，在后期<strong>开启训练时</strong>出现错误<code>RuntimeError: Not compiled with GPU support</code>，似乎跟它有关。</p>
-<p>因为解决方案如下：</p>
-<ol type="1">
-<li>首先删除项目文件夹下的<code>build</code>目录</li>
-<li>然后重新运行python setup.py build develop --user</li>
-<li>然后开启训练就没问题</li>
-</ol>
-<p>这可能意味着在创建Dockerfile文件时并不需要加这一行代码<code>RUN python setup.py build develop --user</code>，等后期<strong>开启训练前再提前运行这句代码</strong>就好了</p></li>
-</ol>
-<h3 id="构建镜像-1">构建镜像</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 注意这里还是cd到项目文件夹下，因为这句代码的意思是“基于该目录构建镜像”</span><br><span class="line">docker build -t my_glip_image .</span><br></pre></td></tr></table></figure>
-<h2 id="开启容器">开启容器</h2>
-<h3 id="分配共享内存">分配共享内存</h3>
-<p>为什么在开启容器前需要为docker容器分配共享内存？<del>因为我一开始没分配导致程序报错了。</del></p>
-<blockquote>
-<p>错误信息：DataLoader worker (pid 53617) is killed by signal: Bus
-error. It is possible that dataloader's workers are out of shared
-memory. Please try to raise your shared memory limit.</p>
-<p>错误原因：由于在docker镜像中默认限制了共享内存，然而数据处理时pytorch则需要使用共享内存，这就导致了在运行多线程时会将超出限制的DataLoader直接kill掉。</p>
-<p>解决方案：<strong>在开启容器前为容器分配足够多的共享内存</strong>，参考https://zhuanlan.zhihu.com/p/143914966</p>
-</blockquote>
-<p><strong>首先</strong>要查看宿主机系统可以为容器提供多少可用的内存</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#查看系统的总内存</span><br><span class="line">free -h</span><br><span class="line">#查看可分配的总共享内存</span><br><span class="line">df -h /dev/shm</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132116924.png"
-alt="image-20240313211631287" />
-<figcaption aria-hidden="true">image-20240313211631287</figcaption>
-</figure>
-<h3 id="开启容器-1">开启容器</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --gpus all --shm-size 48G --name my_glip_container my_glip_image  /bin/bash </span><br></pre></td></tr></table></figure>
-<p>到目前为止，我们都只是在Linux服务器端运行代码，在开启容器后，接下来我想<strong>直接操纵docker容器内的代码和数据。</strong></p>
-<blockquote>
-<p>可以通过vscode直接连接开启的远程docker容器，连接成功后，就可以通过vscode直接操控容器中的文件及目录。</p>
-<p>这一过程需要借助vscode的docker插件、并赋予插件相应的权重才能实现。</p>
-<p>具体过程如下：</p>
-<ol type="1">
-<li>首先在命令行运行下述命令，为<strong>docker插件</strong>设置权限，<strong>这样docker插件才能检测到开启的容器（即下图左侧的内容）</strong>
-sudo chmod 666 /var/run/docker.sock</li>
-<li>然后按照下图操作</li>
-</ol>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403111200841.png"
-alt="vscode连接docker容器" />
-<figcaption aria-hidden="true">vscode连接docker容器</figcaption>
-</figure>
-</blockquote>
-<h2 id="训练">训练</h2>
-<p>开始训练之前首先需要修改配置文件中的相关信息，如预训练权重文件、batch_size、数据集的名称等</p>
-<h3 id="修改配置文件">修改配置文件</h3>
-<h4 id="预训练权重">预训练权重</h4>
-<p>选择和配置文件(.yaml)匹配的预训练权重(.pth)【Model Zoo】</p>
-<h4 id="数据集-1">数据集</h4>
-<p><strong>为什么要更改数据集？</strong></p>
-<p>因为我们用的不是配置文件中默认的object365_dt_train，而是<code>flickr30k</code>数据集。</p>
-<p><strong>怎么更改数据集？</strong></p>
-<ol type="1">
-<li>首先，在当前使用的配置文件（即开启训练的代码<code>--config-file</code>对应的参数值）中找到<strong>默认的训练数据集</strong>的名称<code>object365_dt_train</code></li>
-<li>然后，在项目中全局搜索<code>object365_dt_train</code>，找到定义该名称的文件位置<code>paths_catalog.py</code></li>
-<li>然后，在<code>paths_catalog.py</code>中搜索<code>flickr30k</code>，找到<code>flickr30k</code>数据集对应的训练数据集及其名称<code>flickr30k_train</code></li>
-<li>最后，修改配置文件中训练数据集的名称，由<code>object365_dt_train</code>修改为<code>flickr30k_train</code></li>
-</ol>
-<h4 id="batch_size">batch_size</h4>
-<p>主要是因为显存不够，将训练时batch_size修改为2，测试时batch_size修改为1</p>
-<blockquote>
-<p>一开始无论怎么修改batch都无济于事（我把训练和测试时的batch_size都改为1了项目也运行不起来）。</p>
-<p>错误信息：</p>
-<p>RuntimeError: DataLoader worker (pid 53617) is killed by signal: Bus
-error. It is possible that dataloader's workers are out of shared
-memory. Please try to raise your shared memory limit.</p>
-<p>错误原因：</p>
-<p><strong>docker容器设置有问题，这就是前面在启动容器时要设置共享内存的原因</strong></p>
-<p>参考：https://zhuanlan.zhihu.com/p/143914966</p>
-</blockquote>
-<h3 id="开启训练">开启训练</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/train_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure>
-<h2 id="评估">评估</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/test_grounding_net.py \</span><br><span class="line">        --config-file configs/pretrain/glip_A_Swin_T_O365.yaml \</span><br><span class="line">        --task_config configs/flickr/test.yaml,configs/flickr/val.yaml \</span><br><span class="line">        --weight &#123;model_checkpoint&#125; \</span><br><span class="line">        OUTPUT_DIR output/evaluation/flickr30k TEST.IMS_PER_BATCH 1 SOLVER.IMS_PER_BATCH 1 TEST.MDETR_STYLE_AGGREGATE_CLASS_NUM 100 TEST.EVAL_TASK grounding MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False</span><br></pre></td></tr></table></figure>
-<h2 id="未完成">未完成</h2>
-<p>怎么将docker容器中的代码同步至github？</p>
-]]></content>
-      <categories>
-        <category>多模态</category>
-      </categories>
-      <tags>
-        <tag>代码复现</tag>
-        <tag>GLIP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Pycharm连接云服务器训练</title>
     <url>/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/</url>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="在autodl租用实例">在AutoDL租用实例</h4>
@@ -5481,6 +5259,234 @@ alt="image-20240220144219564" />
       <tags>
         <tag>docker</tag>
         <tag>项目部署</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>利用Docker容器部署GLIP项目</title>
+    <url>/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="利用docker容器部署glip项目">利用Docker容器部署GLIP项目</h1>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403141144203.png"
+alt="GLIP模型结构" />
+<figcaption aria-hidden="true">GLIP模型结构</figcaption>
+</figure>
+<h2 id="下载文件">下载文件</h2>
+<p>下载包括把东西下载下来+组织成要求的格式+放到正确的位置。</p>
+<span id="more"></span>
+<h3 id="项目代码">项目代码</h3>
+<p>项目代码放置在<a
+href="https://github.com/microsoft/GLIP">GitHub仓库</a>，下载代码压缩包至本地。</p>
+<h3 id="数据集">数据集</h3>
+<p>数据集构建可以参考官方提供的<a
+href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>。</p>
+<p><strong>针对预训练任务</strong>，官方提供了3种数据集，我选择使用规模最小的<code>Flickr30k</code>数据集进行预训练。</p>
+<ol type="1">
+<li><p>首先，从官网（实际用的是csdn搜索到的国内下载链接）下载<code>Flickr30k</code>图像数据集<code>flickr30k-images</code>，并从<a
+href="https://github.com/microsoft/GLIP/blob/main/DATA.md">GLIP的Github仓库提供的注释文件地址</a>下载注释文件<code>mdetr_annotations</code>。</p></li>
+<li><p>其次，将图像数据集<code>flickr30k-images</code>依据注释文件划分为训练集、测试集和验证集。</p>
+<blockquote>
+<p>最初按照官方提供的<a
+href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>组织数据格式，没有进行数据集划分步骤。</p>
+<p>但在运行项目过程种发现：<code>paths_catalog.py</code>文件指示<code>Flickr30k</code>数据集要划分为训练集、测试集和验证集才能进行训练。</p>
+<p>于是这里先划分数据集，划分数据集的工具代码放置在本地<code>D:\04Code\GLIP-utils\splitFlickrDataset.py</code>。</p>
+<p>划分结束后，最终得到的图像分为训练集29783张，测试集999张，验证集1000张。</p>
+</blockquote></li>
+</ol>
+<p>注意事项：</p>
+<p>直接从官网/csdn链接下载的<code>Flickr30k</code>数据集的文件夹名称为<code>flickr30k-images</code>，而在<code>paths_catalog.py</code>文件中定义的数据集的文件名称为<code>flickr30k_images</code>。前者中间是短横线，而后者中间是下划线，注意修改为下划线<code>flickr30k_images</code>。</p>
+<p><strong>针对评估任务，</strong></p>
+<h3 id="配置文件及预训练权重">配置文件及预训练权重</h3>
+<p>模型的训练和评估过程均会用到相互对应的<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>，因服务器无法连接外网，所以二者都需要提前下载至本地，然后再上传至服务器。</p>
+<p>本项目需要下载的这种类型的文件可以分为两种：一种是GLIP模型的配置文件及预训练权重文件；另一种是由于GLIP模型结构中包含基于Bert的文本编码器，而该文本编码器需要一些预训练的相关文件。因此，针对这两类文件，都需要进行提前下载。</p>
+<ol type="1">
+<li><p>GLIP模型的配置文件及预训练权重文件</p>
+<p>关键：<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>要相互对应，具体可参考<a
+href="https://github.com/microsoft/GLIP">GitHub仓库</a>的<strong>Model
+Zoo</strong>表格。</p>
+<p>我选择了其中效果最差、文件大小最小的配置文件(.yaml)和预训练权重文件(.pth)，并将其分别组织到目录configs/pretrain和MODEL中。</p>
+<blockquote>
+<p>为什么组织到这两个目录呢？</p>
+<p>参考<a
+href="https://github.com/microsoft/GLIP">GitHub仓库</a>提供的<strong>预训练代码（其中涉及到使用的配置文件的位置）</strong>及<strong>预训练权重文件下载位置</strong>这两个提示，可以决定这两类文件具体放置到什么位置。</p>
+</blockquote></li>
+<li><p>GLIP基于Bert的文本编码器所需的配置文件<code>config.json</code></p>
+<blockquote>
+<p>我是怎么知道需要<code>config.json</code>这个文件的呢？</p>
+<p>在代码运行过程中，出现以下错误：</p>
+<p>MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443):
+Max retries exceeded with url:
+<code>/bert-base-uncased/resolve/main/config.json</code> (Caused by
+ConnectTimeoutError('Connection to huggingface.co timed out. ),
+'(Request ID: 7b33f5be-46a9-40b5-a198-d5ff7ef25c7c)')' thrown while
+requesting HEAD
+https://huggingface.co/bert-base-uncased/resolve/main/config.json</p>
+<p><strong>===似乎是说服务器访问huggingface官网连接超时，导致无法下载一个<code>config.json</code>文件。</strong></p>
+<p>然后看具体的报错信息：</p>
+<p>Traceback (most recent call last): File "tools/train_net.py", line
+260, in <module> main() File "tools/train_net.py", line 256, in main
+use_tensorboard=args.use_tensorboard) File "tools/train_net.py", line
+37, in train model = build_detection_model(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/detector/<strong>init</strong>.py",
+line 11, in build_detection_model return meta_arch(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/detector/generalized_vl_rcnn.py",
+line 96, in <strong>init</strong> self.language_backbone =
+build_language_backbone(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
+line 45, in build_backbone return registry.LANGUAGE_BACKBONES<a
+href="cfg">cfg.MODEL.LANGUAGE_BACKBONE.MODEL_TYPE</a> File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
+line 14, in build_bert_backbone body = bert_model.BertEncoder(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/bert_model.py",
+line 18, in <strong>init</strong> config =
+BertConfig.from_pretrained(self.bert_name)</p>
+<p><strong>===到这里为止，似乎是说language_backbone加载出现问题，且项目用的是基于Bert的backbone</strong></p>
+<p>File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 547, in from_pretrained config_dict, kwargs =
+cls.get_config_dict(pretrained_model_name_or_path, kwargs) File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 574, in get_config_dict config_dict, kwargs =
+cls._get_config_dict(pretrained_model_name_or_path, kwargs) File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 641, in _get_config_dict _commit_hash=commit_hash, File
+"/opt/conda/lib/python3.7/site-packages/transformers/utils/hub.py", line
+453, in cached_file f"We couldn't connect to
+'{HUGGINGFACE_CO_RESOLVE_ENDPOINT}' to load this file, couldn't find it
+in the"</p>
+<p><strong>OSError: We couldn't connect to 'https://huggingface.co' to
+load this file, couldn't find it in the cached files and it looks like
+bert-base-uncased is not the path to a directory containing a file named
+config.json.</strong></p>
+<p><strong>===总之就是在说：我们需要从huggingface官网下载这个<code>config.json</code>文件到本地</strong></p>
+<p>Checkout your internet connection or see how to run the library in
+offline mode at
+'https://huggingface.co/docs/transformers/installation#offline-mode'.</p>
+</blockquote>
+<p><strong>注意事项：</strong></p>
+<blockquote>
+<p>从huggingface官网下载到了config.json文件后，又该把它放在哪里呢？</p>
+<p>一开始我随便新建了一个文件夹<code>xxx/bert-base-uncased</code>放置该文件，结果项目运行时一直无法去这个目录中找到该文件。</p>
+<p><strong>最终尝试后直接将该文件放置在<code>bert-base-uncased</code>文件夹下，项目运行时就可以在本地找到这个文件夹</strong></p>
+</blockquote>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132204607.png"
+alt="Bert配置文件放置位置" />
+<figcaption aria-hidden="true">Bert配置文件放置位置</figcaption>
+</figure></li>
+</ol>
+<p>假设我们已经把docker安装好了（如果还没有安装docker可以参考<a
+href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">服务器端使用docker部署项目</a>），现在继续搭建docker容器。</p>
+<h2 id="上传服务器">上传服务器</h2>
+<p>在本地下载好上述代码/数据集/配置文件/预训练权重文件，并按照要求格式组织好结构之后，将其上传至Linux服务器端（上传步骤可以参考<a
+href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/#%E4%B8%8A%E4%BC%A0%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8">vscode连接linux服务器_上传代码至服务器/上传数据集</a>），接下来的所有操作就是在服务器端进行的了。</p>
+<h2 id="构建镜像">构建镜像</h2>
+<h3 id="dockerfile">Dockerfile</h3>
+<p>首先<code>cd</code>到项目所在文件夹<code>GLIP-main</code>，然后创建<code>Dockerfile</code>文件。</p>
+<p>文件内容为</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Choose the base image according to your server&#x27;s GPU</span><br><span class="line"></span><br><span class="line"># For newer GPUs:</span><br><span class="line">FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</span><br><span class="line"></span><br><span class="line"># Install additional dependencies</span><br><span class="line">RUN pip install einops shapely timm yacs tensorboardX ftfy prettytable pymongo transformers -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br><span class="line"># Copy your project files into the Docker container</span><br><span class="line">COPY . /workspace</span><br><span class="line"></span><br><span class="line"># Set the working directory to /workspace</span><br><span class="line">WORKDIR /workspace</span><br><span class="line"></span><br><span class="line"># Run the project setup script</span><br><span class="line">RUN python setup.py build develop --user</span><br><span class="line"></span><br><span class="line"># 运行上述代码发现缺少以下包，所以这里添加安装这些包的代码</span><br><span class="line">RUN pip install pycocotools scipy opencv-python-headless -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
+<p>注意事项：</p>
+<ol type="1">
+<li>这里在最开始下载docker镜像时踩了大坑：原本下载的是GLIP的Github仓库推荐的两种镜像</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403141008915.png"
+alt="官方推荐docker镜像" />
+<figcaption aria-hidden="true">官方推荐docker镜像</figcaption>
+</figure>
+<p>结果经过反复测试（真的是反复测试，，不断质疑是不是自己哪个小细节没注意到才导致安装失败），以及查看Issues，最终才确定<strong>GLIP项目支持的pytorch版本必须大于1.9.1且小于1.11.0</strong>；而官方仓库推荐的2个docker镜像中pytorch的版本都是1.9.0（真的好气喔。。我辣么相信官方。。甚至怀疑自己了。。不靠谱·官方），<strong>最终我选择了Dockerhub中的这一镜像pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</strong></p>
+<ol start="2" type="1">
+<li><p>在Dockerfile文件中有一行用于"运行项目安装脚本"的代码<code>RUN python setup.py build develop --user</code>，在这里构建镜像时并不会出现什么问题。</p>
+<p>但是，在后期<strong>开启训练时</strong>出现错误<code>RuntimeError: Not compiled with GPU support</code>，似乎跟它有关。</p>
+<p>因为解决方案如下：</p>
+<ol type="1">
+<li>首先删除项目文件夹下的<code>build</code>目录</li>
+<li>然后重新运行python setup.py build develop --user</li>
+<li>然后开启训练就没问题</li>
+</ol>
+<p>这可能意味着在创建Dockerfile文件时并不需要加这一行代码<code>RUN python setup.py build develop --user</code>，等后期<strong>开启训练前再提前运行这句代码</strong>就好了</p></li>
+</ol>
+<h3 id="构建镜像-1">构建镜像</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 注意这里还是cd到项目文件夹下，因为这句代码的意思是“基于该目录构建镜像”</span><br><span class="line">docker build -t my_glip_image .</span><br></pre></td></tr></table></figure>
+<h2 id="开启容器">开启容器</h2>
+<h3 id="分配共享内存">分配共享内存</h3>
+<p>为什么在开启容器前需要为docker容器分配共享内存？<del>因为我一开始没分配导致程序报错了。</del></p>
+<blockquote>
+<p>错误信息：DataLoader worker (pid 53617) is killed by signal: Bus
+error. It is possible that dataloader's workers are out of shared
+memory. Please try to raise your shared memory limit.</p>
+<p>错误原因：由于在docker镜像中默认限制了共享内存，然而数据处理时pytorch则需要使用共享内存，这就导致了在运行多线程时会将超出限制的DataLoader直接kill掉。</p>
+<p>解决方案：<strong>在开启容器前为容器分配足够多的共享内存</strong>，参考https://zhuanlan.zhihu.com/p/143914966</p>
+</blockquote>
+<p><strong>首先</strong>要查看宿主机系统可以为容器提供多少可用的内存</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#查看系统的总内存</span><br><span class="line">free -h</span><br><span class="line">#查看可分配的总共享内存</span><br><span class="line">df -h /dev/shm</span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132116924.png"
+alt="查看可分配共享内存" />
+<figcaption aria-hidden="true">查看可分配共享内存</figcaption>
+</figure>
+<h3 id="开启容器-1">开启容器</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --gpus all --shm-size 48G --name my_glip_container my_glip_image  /bin/bash </span><br></pre></td></tr></table></figure>
+<p>到目前为止，我们都只是在Linux服务器端运行代码，在开启容器后，接下来我想<strong>直接操纵docker容器内的代码和数据。</strong></p>
+<blockquote>
+<p>可以通过vscode直接连接开启的远程docker容器，连接成功后，就可以通过vscode直接操控容器中的文件及目录。</p>
+<p>这一过程需要借助vscode的docker插件、并赋予插件相应的权重才能实现。</p>
+<p>具体过程如下：</p>
+<ol type="1">
+<li>首先在命令行运行下述命令，为<strong>docker插件</strong>设置权限，<strong>这样docker插件才能检测到开启的容器（即下图左侧的内容）</strong>
+sudo chmod 666 /var/run/docker.sock</li>
+<li>然后按照下图操作</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403111200841.png"
+alt="vscode连接docker容器" />
+<figcaption aria-hidden="true">vscode连接docker容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="训练">训练</h2>
+<p>开始训练之前首先需要修改配置文件中的相关信息，如预训练权重文件、batch_size、数据集的名称等</p>
+<h3 id="修改配置文件">修改配置文件</h3>
+<h4 id="预训练权重">预训练权重</h4>
+<p>选择和配置文件(.yaml)匹配的预训练权重(.pth)【Model Zoo】</p>
+<h4 id="数据集-1">数据集</h4>
+<p><strong>为什么要更改数据集？</strong></p>
+<p>因为我们用的不是配置文件中默认的object365_dt_train，而是<code>flickr30k</code>数据集。</p>
+<p><strong>怎么更改数据集？</strong></p>
+<ol type="1">
+<li>首先，在当前使用的配置文件（即开启训练的代码<code>--config-file</code>对应的参数值）中找到<strong>默认的训练数据集</strong>的名称<code>object365_dt_train</code></li>
+<li>然后，在项目中全局搜索<code>object365_dt_train</code>，找到定义该名称的文件位置<code>paths_catalog.py</code></li>
+<li>然后，在<code>paths_catalog.py</code>中搜索<code>flickr30k</code>，找到<code>flickr30k</code>数据集对应的训练数据集及其名称<code>flickr30k_train</code></li>
+<li>最后，修改配置文件中训练数据集的名称，由<code>object365_dt_train</code>修改为<code>flickr30k_train</code></li>
+</ol>
+<h4 id="batch_size">batch_size</h4>
+<p>主要是因为显存不够，将训练时batch_size修改为2，测试时batch_size修改为1</p>
+<blockquote>
+<p>一开始无论怎么修改batch都无济于事（我把训练和测试时的batch_size都改为1了项目也运行不起来）。</p>
+<p>错误信息：</p>
+<p>RuntimeError: DataLoader worker (pid 53617) is killed by signal: Bus
+error. It is possible that dataloader's workers are out of shared
+memory. Please try to raise your shared memory limit.</p>
+<p>错误原因：</p>
+<p><strong>docker容器设置有问题，这就是前面在启动容器时要设置共享内存的原因</strong></p>
+<p>参考：https://zhuanlan.zhihu.com/p/143914966</p>
+</blockquote>
+<h3 id="开启训练">开启训练</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/train_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure>
+<h2 id="评估">评估</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/test_grounding_net.py \</span><br><span class="line">        --config-file configs/pretrain/glip_A_Swin_T_O365.yaml \</span><br><span class="line">        --task_config configs/flickr/test.yaml,configs/flickr/val.yaml \</span><br><span class="line">        --weight &#123;model_checkpoint&#125; \</span><br><span class="line">        OUTPUT_DIR output/evaluation/flickr30k TEST.IMS_PER_BATCH 1 SOLVER.IMS_PER_BATCH 1 TEST.MDETR_STYLE_AGGREGATE_CLASS_NUM 100 TEST.EVAL_TASK grounding MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False</span><br></pre></td></tr></table></figure>
+<h2 id="未完成">未完成</h2>
+<p>怎么将docker容器中的代码同步至github？</p>
+]]></content>
+      <categories>
+        <category>多模态</category>
+      </categories>
+      <tags>
+        <tag>代码复现</tag>
+        <tag>GLIP</tag>
       </tags>
   </entry>
 </search>
