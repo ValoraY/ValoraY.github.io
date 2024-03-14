@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="GLIP代码运行 GLIP论文官方的github仓库地址为https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;GLIP，因其推荐使用Docker来安装环境，因此接下来将在此基础上运行官方代码。 上传项目代码 首先把本地的项目文件夹传输到远程的Linux服务器端，利用VScode中的SFTP插件上传，具体可参考笔记vscode连接linux服务器">
+    <meta name="description" content="利用Docker容器部署GLIP项目 下载文件 下载包括把东西下载下来+组织成要求的格式+放到正确的位置。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="GLIP代码运行">
+<meta property="og:title" content="利用Docker容器部署GLIP项目">
 <meta property="og:url" content="https://valoray.github.io/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/index.html">
 <meta property="og:site_name" content="DeepRookie">
-<meta property="og:description" content="GLIP代码运行 GLIP论文官方的github仓库地址为https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;GLIP，因其推荐使用Docker来安装环境，因此接下来将在此基础上运行官方代码。 上传项目代码 首先把本地的项目文件夹传输到远程的Linux服务器端，利用VScode中的SFTP插件上传，具体可参考笔记vscode连接linux服务器">
+<meta property="og:description" content="利用Docker容器部署GLIP项目 下载文件 下载包括把东西下载下来+组织成要求的格式+放到正确的位置。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-02-21T08:32:15.000Z">
-<meta property="article:modified_time" content="2024-03-12T09:58:00.700Z">
+<meta property="article:modified_time" content="2024-03-14T03:40:52.710Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="代码复现">
 <meta property="article:tag" content="GLIP">
@@ -38,10 +38,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/","path":"2024/02/21/GLIP代码运行/","title":"GLIP代码运行"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/","path":"2024/02/21/GLIP代码运行/","title":"利用Docker容器部署GLIP项目"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>GLIP代码运行 | DeepRookie</title>
+<title>利用Docker容器部署GLIP项目 | DeepRookie</title>
   
 
 
@@ -141,7 +141,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#glip%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">GLIP代码运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.</span> <span class="nav-text">上传项目代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E6%95%B0%E6%8D%AE%E9%9B%86%E5%8F%8A%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">上传数据集及预训练模型参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8F%8A%E7%8E%AF%E5%A2%83"><span class="nav-number">1.3.</span> <span class="nav-text">安装依赖及环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E6%9C%AA%E6%88%90%E5%8A%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">Docker（未成功）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conda"><span class="nav-number">1.3.2.</span> <span class="nav-text">Conda</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85conda"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">安装Conda</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">创建虚拟环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">安装依赖</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A9%E7%94%A8docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2glip%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.</span> <span class="nav-text">利用Docker容器部署GLIP项目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">下载文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.</span> <span class="nav-text">项目代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.1.2.</span> <span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%8F%8A%E9%A2%84%E8%AE%AD%E7%BB%83%E6%9D%83%E9%87%8D"><span class="nav-number">1.1.3.</span> <span class="nav-text">配置文件及预训练权重</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">上传服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="nav-number">1.3.</span> <span class="nav-text">构建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dockerfile"><span class="nav-number">1.3.1.</span> <span class="nav-text">Dockerfile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F-1"><span class="nav-number">1.3.2.</span> <span class="nav-text">构建镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E5%AE%B9%E5%99%A8"><span class="nav-number">1.4.</span> <span class="nav-text">开启容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="nav-number">1.4.1.</span> <span class="nav-text">分配共享内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E5%AE%B9%E5%99%A8-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">开启容器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-number">1.5.</span> <span class="nav-text">训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.1.</span> <span class="nav-text">修改配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83%E6%9D%83%E9%87%8D"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">预训练权重</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86-1"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#batch_size"><span class="nav-number">1.5.1.3.</span> <span class="nav-text">batch_size</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E8%AE%AD%E7%BB%83"><span class="nav-number">1.5.2.</span> <span class="nav-text">开启训练</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0"><span class="nav-number">1.6.</span> <span class="nav-text">评估</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E5%AE%8C%E6%88%90"><span class="nav-number">1.7.</span> <span class="nav-text">未完成</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -198,7 +198,7 @@
           </li>
         
           <li>
-            <a href="/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" title="GLIP代码运行" target="_blank">GLIP代码运行</a>
+            <a href="/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" title="利用Docker容器部署GLIP项目" target="_blank">利用Docker容器部署GLIP项目</a>
           </li>
         
           <li>
@@ -255,40 +255,16 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="GLIP代码运行 | DeepRookie">
+      <meta itemprop="name" content="利用Docker容器部署GLIP项目 | DeepRookie">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          GLIP代码运行
+          利用Docker容器部署GLIP项目
         </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-02-21 16:32:15" itemprop="dateCreated datePublished" datetime="2024-02-21T16:32:15+08:00">2024-02-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-03-12 17:58:00" itemprop="dateModified" datetime="2024-03-12T17:58:00+08:00">2024-03-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%9A%E6%A8%A1%E6%80%81/" itemprop="url" rel="index"><span itemprop="name">多模态</span></a>
-        </span>
-    </span>
 
   
     <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
@@ -304,14 +280,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>7.5k</span>
+      <span>2.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>14 分钟</span>
+      <span>9 分钟</span>
     </span>
 </div>
 
@@ -321,251 +297,216 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="glip代码运行">GLIP代码运行</h1>
-<p>GLIP论文官方的github仓库地址为https://github.com/microsoft/GLIP，因其推荐使用Docker来安装环境，因此接下来将在此基础上运行官方代码。</p>
-<h2 id="上传项目代码">上传项目代码</h2>
-<p>首先把本地的项目文件夹传输到远程的Linux服务器端，利用VScode中的SFTP插件上传，具体可参考笔记<a
-href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/">vscode连接linux服务器</a></p>
+    <div class="post-body" itemprop="articleBody"><link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="利用docker容器部署glip项目">利用Docker容器部署GLIP项目</h1>
+<h2 id="下载文件">下载文件</h2>
+<p>下载包括把东西下载下来+组织成要求的格式+放到正确的位置。</p>
 <span id="more"></span>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281410649.png"
-alt="安装SFTP插件" />
-<figcaption aria-hidden="true">安装SFTP插件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281409456.png"
-alt="上传本地项目" />
-<figcaption aria-hidden="true">上传本地项目</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281357902.png"
-alt="打开sftp配置文件" />
-<figcaption aria-hidden="true">打开sftp配置文件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281413611.png"
-alt="修改sftp的服务器端信息" />
-<figcaption aria-hidden="true">修改sftp的服务器端信息</figcaption>
-</figure>
-<h2 id="上传数据集及预训练模型参数">上传数据集及预训练模型参数</h2>
-<p><strong>先本地下载数据集、预训练模型参数，利用Xftp软件上传</strong></p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281427556.png"
-alt="使用Xftp上传本地数据集——创建连接" />
-<figcaption
-aria-hidden="true">使用Xftp上传本地数据集——创建连接</figcaption>
-</figure>
-<p>点击连接后，即可上传文件</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281431411.png"
-alt="上传数据集" />
-<figcaption aria-hidden="true">上传数据集</figcaption>
-</figure>
-<p>在将所需的项目代码和文件都上传到服务器端后，我们就可以<strong>在服务器端</strong>着手搭建项目所需的环境及依赖了，这里首先进入服务器端的窗口。</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403021327359.png"
-alt="image-20240302132754316" />
-<figcaption aria-hidden="true">image-20240302132754316</figcaption>
-</figure>
-<h2 id="安装依赖及环境">安装依赖及环境</h2>
-<h3 id="docker未成功">Docker（未成功）</h3>
-<p>这里直接使用标准的Dockerfile文件进行搭建。</p>
+<h3 id="项目代码">项目代码</h3>
+<p>项目代码放置在<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/GLIP">GitHub仓库</a>，下载代码压缩包至本地。</p>
+<h3 id="数据集">数据集</h3>
+<p>数据集构建可以参考官方提供的<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>。</p>
+<p><strong>针对预训练任务</strong>，官方提供了3种数据集，我选择使用规模最小的<code>Flickr30k</code>数据集进行预训练。</p>
 <ol type="1">
-<li><p>首先，在服务器端窗口进入项目所在目录，创建Dockerfile文件（无后缀名，用于构建自定义镜像）。</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403021330980.png"
-alt="image-20240302133000925" />
-<figcaption aria-hidden="true">image-20240302133000925</figcaption>
-</figure></li>
-<li><p>其中，Dockerfile文件内容如下（Dockerfile用于构建Docker
-镜像，其中包含了一系列的指令和配置，用于定义容器镜像的构建规则和运行环境）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># Use an official Python runtime as a parent image</span><br><span class="line"># 拉取官方提供的docker镜像</span><br><span class="line">FROM pengchuanzhang/pytorch:ubuntu20.04_torch1.9-cuda11.3-nccl2.9.9</span><br><span class="line"></span><br><span class="line"># 设置容器的工作空间为/app目录</span><br><span class="line"># Set the working directory in the container</span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line"># 将项目目录内容复制到容器的/app目录（不然我们容器里就没有项目的代码）</span><br><span class="line"># Copy the current directory contents into the container at /app</span><br><span class="line">COPY . /app</span><br><span class="line"></span><br><span class="line"># 安装其他模型构建所需的依赖（注意加镜像源）</span><br><span class="line">RUN pip install einops shapely timm yacs tensorboardX ftfy prettytable pymongo -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">RUN pip install transformers -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">RUN python setup.py build develop</span><br><span class="line"></span><br><span class="line"># Make port 80 available to the world outside this container</span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line"># Define environment variable</span><br><span class="line">ENV NAME World</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-<li><p>构建上述Dockerfile中自定义的镜像</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051148987.png"
-alt="image-20240305114805947" />
-<figcaption aria-hidden="true">image-20240305114805947</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 首先在终端进入项目所在的文件夹</span><br><span class="line">cd GLIP-main</span><br><span class="line"># 基于当前文件夹构建镜像，镜像名字取为my-glip-app</span><br><span class="line">docker build -t my-glip-image .</span><br></pre></td></tr></table></figure></li>
-<li><p>基于上述镜像（my-glip-image）创建容器（my-glip-container）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --name my-glip-container my-glip-image /bin/bash</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051308890.png"
-alt="image-20240305130846846" />
-<figcaption aria-hidden="true">image-20240305130846846</figcaption>
-</figure></li>
-<li><p>检查容器内的工作空间有什么</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051309791.png"
-alt="image-20240305130949765" />
-<figcaption aria-hidden="true">image-20240305130949765</figcaption>
-</figure></li>
-<li><p>预训练（这段训练代码是glip官方提供的分布式训练代码，我只有单卡，需要修改这部分代码）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python -m torch.distributed.launch --nnodes 1 --nproc_per_node=8 tools/train_net.py \</span><br><span class="line">    --config-file configs/pretrain/glip_A_Swin_T_O365.yaml \</span><br><span class="line">    --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure>
-<p>具体步骤为：</p>
-<ol type="1">
-<li><p>ctrl+D，退出容器</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051326488.png"
-alt="image-20240305132651458" />
-<figcaption aria-hidden="true">image-20240305132651458</figcaption>
-</figure></li>
-<li><p>docker ps，列出所有运行中的容器</p></li>
-<li><p>再次进入容器</p>
-<ol type="1">
-<li><p>查找已存在的那个容器的ID</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a</span><br></pre></td></tr></table></figure></li>
-<li><p>拿到上述ID后，启动该容器</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 6baa7299310f</span><br><span class="line">docker strat &lt;容器ID或名称&gt;</span><br></pre></td></tr></table></figure></li>
-<li><p>再次进入其中</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 6baa7299310f</span><br><span class="line">docker exec -it &lt;容器ID或名称&gt; /bin/bash</span><br></pre></td></tr></table></figure></li>
-</ol></li>
-<li><p>修改训练代码，删除“分布式训练”的部分</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python tools/train_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure></li>
-</ol></li>
-<li><p>零样本测试</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">python tools/test_grounding_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --weight MODEL/glip_a_tiny_o365.pth \</span><br><span class="line">        TEST.IMS_PER_BATCH 1 \</span><br><span class="line">        MODEL.DYHEAD.SCORE_AGG &quot;MEAN&quot; \</span><br><span class="line">        TEST.EVAL_TASK detection \</span><br><span class="line">        MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False \</span><br><span class="line">        OUTPUT_DIR ./output_dir</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h3 id="conda">Conda</h3>
-<p>安装Conda及创建虚拟环境的步骤参考笔记<a
-target="_blank" rel="noopener" href="http://localhost:4000/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">服务器端安装conda并创建虚拟环境</a></p>
-<h4 id="安装conda">安装Conda</h4>
-<p>见<a
-target="_blank" rel="noopener" href="http://localhost:4000/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">服务器端安装conda并创建虚拟环境</a></p>
-<h4 id="创建虚拟环境">创建虚拟环境</h4>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 创建</span><br><span class="line">conda create -n glip_env python=3.8</span><br><span class="line"># 激活</span><br><span class="line">conda activate glip_env</span><br></pre></td></tr></table></figure>
-<h4 id="安装依赖">安装依赖</h4>
-<ol type="1">
-<li>先安装torch、torchvision</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">################cuda#######################</span><br><span class="line"># 1.安装cuda</span><br><span class="line">## 1.1查找源上可用的cuda版本</span><br><span class="line">conda search cudatoolkit --info</span><br><span class="line">## 1.2选择想要的版本，会有下载url，wget+url 下载这一版本的cuda压缩包</span><br><span class="line">wget url</span><br><span class="line">## 1.3安装cuda</span><br><span class="line">conda install --use-local  本地cuda包所在的路径</span><br><span class="line"></span><br><span class="line"># 2.安装对应版本的cudann</span><br><span class="line">## 2.1查看cuda对应的cudnn版本</span><br><span class="line">conda search cudnn --info</span><br><span class="line">## 1.2选择想要的版本，会有下载url，wget+url 下载这一版本的cudann压缩包</span><br><span class="line"></span><br><span class="line">## 1.3 安装cudann</span><br><span class="line">conda install --use-local 本地cudnn包所在的路径</span><br><span class="line"></span><br><span class="line"># 3.检查是否安装成功</span><br><span class="line">conda list cudatoolkit</span><br></pre></td></tr></table></figure>
-<p>查找源上可用的cuda版本，选择想要的版本，会有下载url，wget+url
-下载这一版本的cuda压缩包</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081522904.png"
-alt="image-20240308152233840" />
-<figcaption aria-hidden="true">image-20240308152233840</figcaption>
-</figure>
-<p>查看cuda对应的cudnn版本，选择想要的版本，会有下载url，wget+url
-下载这一版本的cudann压缩包</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403082021716.png"
-alt="image-20240308202126665" />
-<figcaption aria-hidden="true">image-20240308202126665</figcaption>
-</figure>
-<p>检查cuda和cudann是否安装成功</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403082040613.png"
-alt="image-20240308204002569" />
-<figcaption aria-hidden="true">image-20240308204002569</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">##############torch#########################</span><br><span class="line">1.去官网查询与cuda匹配的pytorch和torchvision包</span><br><span class="line">官网：https://pytorch.org/get-started/previous-versions/</span><br><span class="line">我的cuda是11.3，因此我执行这句话：</span><br><span class="line">(用conda安装老是不成功，要用pip安装)</span><br><span class="line">(这里改成-i 清华源镜像找不到这个版本的依赖，所以直接复制官网链接下载)</span><br><span class="line">pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113</span><br><span class="line">2.验证</span><br><span class="line">#进入python环境</span><br><span class="line">python</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; import torch</span><br><span class="line">&gt;&gt;&gt; torch.__version__</span><br><span class="line">&#x27;1.12.1+cu113&#x27;</span><br><span class="line">&gt;&gt;&gt; torch.cuda.is_available()</span><br><span class="line">True</span><br><span class="line">&gt;&gt;&gt; torch.cuda.device_count()</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-<p>去官网查询与cuda匹配的pytorch和torchvision包</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403082049336.png"
-alt="image-20240308204944140" />
-<figcaption aria-hidden="true">image-20240308204944140</figcaption>
-</figure>
-<p>验证安装成功的torch、torchvision</p>
-<p>​ 2.安装其他依赖</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install certifi charset-normalizer==3.3.0 cycler==0.11.0 dnspython==2.3.0 einops==0.6.1 filelock==3.12.2 fonttools==4.38.0 fsspec ftfy==6.1.1 huggingface-hub==0.16.4 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install idna==3.4 importlib-metadata==6.7.0 kiwisolver==1.4.5 matplotlib==3.5.3 opencv-python==4.8.1.78 prettytable==3.7.0 protobuf==4.24.4 pycocotools==2.0.7 pymongo==4.5.0 python-dateutil==2.8.2 regex -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install safetensors==0.4.0 scipy==1.7.3 shapely==2.0.1 tensorboardX==2.6.2.2 timm==0.9.7 tokenizers==0.13.3 wcwidth==0.2.8 yacs==0.1.8 urllib3==2.0.6 transformers==4.30.2 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<ol start="3" type="1">
-<li>安装其他其他依赖</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python setup.py build develop --user</span><br></pre></td></tr></table></figure>
+<li><p>首先，从官网（实际用的是csdn搜索到的国内下载链接）下载<code>Flickr30k</code>图像数据集<code>flickr30k-images</code>，并从<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/GLIP/blob/main/DATA.md">GLIP的Github仓库提供的注释文件地址</a>下载注释文件<code>mdetr_annotations</code>。</p></li>
+<li><p>其次，将图像数据集<code>flickr30k-images</code>依据注释文件划分为训练集、测试集和验证集。</p>
 <blockquote>
-<p>error: command '/usr/bin/nvcc' failed with exit code 1</p>
-<p>说是gcc与cuda版本不匹配，匹配表格见<a
-target="_blank" rel="noopener" href="https://blog.csdn.net/ZXF_1991/article/details/125579226">gcc与cuda对应关系</a></p>
-</blockquote>
-<p>直接运行上一行代码<code>python setup.py build develop --user</code>会出错：</p>
+<p>最初按照官方提供的<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>组织数据格式，没有进行数据集划分步骤。</p>
+<p>但在运行项目过程种发现：<code>paths_catalog.py</code>文件指示<code>Flickr30k</code>数据集要划分为训练集、测试集和验证集才能进行训练。</p>
+<p>于是这里先划分数据集，划分数据集的工具代码放置在本地<code>D:\04Code\GLIP-utils\splitFlickrDataset.py</code>。</p>
+<p>划分结束后，最终得到的图像分为训练集29783张，测试集999张，验证集1000张。</p>
+</blockquote></li>
+</ol>
+<p>注意事项：</p>
+<p>直接从官网/csdn链接下载的<code>Flickr30k</code>数据集的文件夹名称为<code>flickr30k-images</code>，而在<code>paths_catalog.py</code>文件中定义的数据集的文件名称为<code>flickr30k_images</code>。前者中间是短横线，而后者中间是下划线，注意修改为下划线<code>flickr30k_images</code>。</p>
+<p><strong>针对评估任务，</strong></p>
+<h3 id="配置文件及预训练权重">配置文件及预训练权重</h3>
+<p>模型的训练和评估过程均会用到相互对应的<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>，因服务器无法连接外网，所以二者都需要提前下载至本地，然后再上传至服务器。</p>
+<p>本项目需要下载的这种类型的文件可以分为两种：一种是GLIP模型的配置文件及预训练权重文件；另一种是由于GLIP模型结构中包含基于Bert的文本编码器，而该文本编码器需要一些预训练的相关文件。因此，针对这两类文件，都需要进行提前下载。</p>
+<ol type="1">
+<li><p>GLIP模型的配置文件及预训练权重文件</p>
+<p>关键：<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>要相互对应，具体可参考<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/GLIP">GitHub仓库</a>的<strong>Model
+Zoo</strong>表格。</p>
+<p>我选择了其中效果最差、文件大小最小的配置文件(.yaml)和预训练权重文件(.pth)，并将其分别组织到目录configs/pretrain和MODEL中。</p>
 <blockquote>
-<p>The detected CUDA version (11.5) mismatches the version that was used
-to compile PyTorch (12.1). Please make sure to use the same CUDA
-versions.</p>
+<p>为什么组织到这两个目录呢？</p>
+<p>参考<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/GLIP">GitHub仓库</a>提供的<strong>预训练代码（其中涉及到使用的配置文件的位置）</strong>及<strong>预训练权重文件下载位置</strong>这两个提示，可以决定这两类文件具体放置到什么位置。</p>
+</blockquote></li>
+<li><p>GLIP基于Bert的文本编码器所需的配置文件<code>config.json</code></p>
+<blockquote>
+<p>我是怎么知道需要<code>config.json</code>这个文件的呢？</p>
+<p>在代码运行过程中，出现以下错误：</p>
+<p>MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443):
+Max retries exceeded with url:
+<code>/bert-base-uncased/resolve/main/config.json</code> (Caused by
+ConnectTimeoutError('Connection to huggingface.co timed out. ),
+'(Request ID: 7b33f5be-46a9-40b5-a198-d5ff7ef25c7c)')' thrown while
+requesting HEAD
+https://huggingface.co/bert-base-uncased/resolve/main/config.json</p>
+<p><strong>===似乎是说服务器访问huggingface官网连接超时，导致无法下载一个<code>config.json</code>文件。</strong></p>
+<p>然后看具体的报错信息：</p>
+<p>Traceback (most recent call last): File "tools/train_net.py", line
+260, in <module> main() File "tools/train_net.py", line 256, in main
+use_tensorboard=args.use_tensorboard) File "tools/train_net.py", line
+37, in train model = build_detection_model(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/detector/<strong>init</strong>.py",
+line 11, in build_detection_model return meta_arch(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/detector/generalized_vl_rcnn.py",
+line 96, in <strong>init</strong> self.language_backbone =
+build_language_backbone(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
+line 45, in build_backbone return registry.LANGUAGE_BACKBONES<a
+href="cfg">cfg.MODEL.LANGUAGE_BACKBONE.MODEL_TYPE</a> File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
+line 14, in build_bert_backbone body = bert_model.BertEncoder(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/bert_model.py",
+line 18, in <strong>init</strong> config =
+BertConfig.from_pretrained(self.bert_name)</p>
+<p><strong>===到这里为止，似乎是说language_backbone加载出现问题，且项目用的是基于Bert的backbone</strong></p>
+<p>File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 547, in from_pretrained config_dict, kwargs =
+cls.get_config_dict(pretrained_model_name_or_path, kwargs) File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 574, in get_config_dict config_dict, kwargs =
+cls._get_config_dict(pretrained_model_name_or_path, kwargs) File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 641, in _get_config_dict _commit_hash=commit_hash, File
+"/opt/conda/lib/python3.7/site-packages/transformers/utils/hub.py", line
+453, in cached_file f"We couldn't connect to
+'{HUGGINGFACE_CO_RESOLVE_ENDPOINT}' to load this file, couldn't find it
+in the"</p>
+<p><strong>OSError: We couldn't connect to 'https://huggingface.co' to
+load this file, couldn't find it in the cached files and it looks like
+bert-base-uncased is not the path to a directory containing a file named
+config.json.</strong></p>
+<p><strong>===总之就是在说：我们需要从huggingface官网下载这个<code>config.json</code>文件到本地</strong></p>
+<p>Checkout your internet connection or see how to run the library in
+offline mode at
+'https://huggingface.co/docs/transformers/installation#offline-mode'.</p>
 </blockquote>
-<p>原因是：系统cuda版本为11.5，与编译pytorch的cuda版本12.1不一致。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># 于是关键问题变成了调整cuda、torch、torchvision的版本</span><br></pre></td></tr></table></figure>
-<p>一凡提供的版本</p>
+<p><strong>注意事项：</strong></p>
+<blockquote>
+<p>从huggingface官网下载到了config.json文件后，又该把它放在哪里呢？</p>
+<p>一开始我随便新建了一个文件夹<code>xxx/bert-base-uncased</code>放置该文件，结果项目运行时一直无法去这个目录中找到该文件。</p>
+<p><strong>最终尝试后直接将该文件放置在<code>bert-base-uncased</code>文件夹下，项目运行时就可以在本地找到这个文件夹</strong></p>
+</blockquote>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081024590.png"
-alt="image-20240308102417538" />
-<figcaption aria-hidden="true">image-20240308102417538</figcaption>
-</figure>
-<p>cuda版本排错步骤</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 激活conda环境</span><br><span class="line"># 检查现有的pytorch版本</span><br><span class="line"># 检查与现有的pytorch适配的cuda版本</span><br><span class="line"># 官网推荐的是：cuda11.3，pytorch1.9</span><br><span class="line"># 检查我的系统可用的最高cuda版本</span><br><span class="line"># 检查我的系统实际安装的cuda版本</span><br><span class="line"># 考虑上面的推荐版本，我需要：</span><br><span class="line">## 1.在conda虚拟环境中下载cuda11.1</span><br><span class="line">## 2.确认conda虚拟环境中python的版本</span><br><span class="line">## 3.由2确认需要下载的torch、torchvision的版本</span><br><span class="line">## 4.下载torch、torchvision</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>激活环境</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 激活conda环境</span><br><span class="line">source activate glip_dev</span><br></pre></td></tr></table></figure>
-<p>检查冲突版本</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 检查现有的pytorch版本</span><br><span class="line"></span><br><span class="line">python -c &quot;import torch; print(torch.__version__)&quot;</span><br></pre></td></tr></table></figure>
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132204607.png"
+alt="image-20240313220440510" />
+<figcaption aria-hidden="true">image-20240313220440510</figcaption>
+</figure></li>
+</ol>
+<p>假设我们已经把docker安装好了（如果还没有安装docker可以参考<a
+href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">服务器端使用docker部署项目</a>），现在继续搭建docker容器。</p>
+<h2 id="上传服务器">上传服务器</h2>
+<p>在本地下载好上述代码/数据集/配置文件/预训练权重文件，并按照要求格式组织好结构之后，将其上传至Linux服务器端（上传步骤可以参考<a
+href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/#%E4%B8%8A%E4%BC%A0%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8">vscode连接linux服务器_上传代码至服务器/上传数据集</a>），接下来的所有操作就是在服务器端进行的了。</p>
+<h2 id="构建镜像">构建镜像</h2>
+<h3 id="dockerfile">Dockerfile</h3>
+<p>首先<code>cd</code>到项目所在文件夹<code>GLIP-main</code>，然后创建<code>Dockerfile</code>文件。</p>
+<p>文件内容为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># Choose the base image according to your server&#x27;s GPU</span><br><span class="line"></span><br><span class="line"># For newer GPUs:</span><br><span class="line">FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</span><br><span class="line"></span><br><span class="line"># Install additional dependencies</span><br><span class="line">RUN pip install einops shapely timm yacs tensorboardX ftfy prettytable pymongo transformers -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br><span class="line"># Copy your project files into the Docker container</span><br><span class="line">COPY . /workspace</span><br><span class="line"></span><br><span class="line"># Set the working directory to /workspace</span><br><span class="line">WORKDIR /workspace</span><br><span class="line"></span><br><span class="line"># Run the project setup script</span><br><span class="line">RUN python setup.py build develop --user</span><br><span class="line"></span><br><span class="line"># 运行上述代码发现缺少以下包，所以这里添加安装这些包的代码</span><br><span class="line">RUN pip install pycocotools scipy opencv-python-headless -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
+<p>注意事项：</p>
+<ol type="1">
+<li>这里在最开始下载docker镜像时踩了大坑：原本下载的是GLIP的Github仓库推荐的两种镜像</li>
+</ol>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061215597.png"
-alt="image-20240306121548570" />
-<figcaption aria-hidden="true">image-20240306121548570</figcaption>
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403141008915.png"
+alt="image-20240314100814796" />
+<figcaption aria-hidden="true">image-20240314100814796</figcaption>
 </figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 检查与现有的pytorch适配的cuda版本</span><br><span class="line">python -c &quot;import torch; print(torch.version.cuda)&quot;</span><br></pre></td></tr></table></figure>
+<p>结果经过反复测试（真的是反复测试，，不断质疑是不是自己哪个小细节没注意到才导致安装失败），以及查看Issues，最终才确定<strong>GLIP项目支持的pytorch版本必须大于1.9.1且小于1.11.0</strong>；而官方仓库推荐的2个docker镜像中pytorch的版本都是1.9.0（真的好气喔。。我辣么相信官方。。甚至怀疑自己了。。不靠谱·官方），<strong>最终我选择了Dockerhub中的这一镜像pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</strong></p>
+<ol start="2" type="1">
+<li><p>在Dockerfile文件中有一行用于"运行项目安装脚本"的代码<code>RUN python setup.py build develop --user</code>，在这里构建镜像时并不会出现什么问题。</p>
+<p>但是，在后期<strong>开启训练时</strong>出现错误<code>RuntimeError: Not compiled with GPU support</code>，似乎跟它有关。</p>
+<p>因为解决方案如下：</p>
+<ol type="1">
+<li>首先删除项目文件夹下的<code>build</code>目录</li>
+<li>然后重新运行python setup.py build develop --user</li>
+<li>然后开启训练就没问题</li>
+</ol>
+<p>这可能意味着在创建Dockerfile文件时并不需要加这一行代码<code>RUN python setup.py build develop --user</code>，等后期<strong>开启训练前再提前运行这句代码</strong>就好了</p></li>
+</ol>
+<h3 id="构建镜像-1">构建镜像</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 注意这里还是cd到项目文件夹下，因为这句代码的意思是“基于该目录构建镜像”</span><br><span class="line">docker build -t my_glip_image .</span><br></pre></td></tr></table></figure>
+<h2 id="开启容器">开启容器</h2>
+<h3 id="分配共享内存">分配共享内存</h3>
+<p>为什么在开启容器前需要为docker容器分配共享内存？<del>因为我一开始没分配导致程序报错了。</del></p>
+<blockquote>
+<p>错误信息：DataLoader worker (pid 53617) is killed by signal: Bus
+error. It is possible that dataloader's workers are out of shared
+memory. Please try to raise your shared memory limit.</p>
+<p>错误原因：由于在docker镜像中默认限制了共享内存，然而数据处理时pytorch则需要使用共享内存，这就导致了在运行多线程时会将超出限制的DataLoader直接kill掉。</p>
+<p>解决方案：<strong>在开启容器前为容器分配足够多的共享内存</strong>，参考https://zhuanlan.zhihu.com/p/143914966</p>
+</blockquote>
+<p><strong>首先</strong>要查看宿主机系统可以为容器提供多少可用的内存</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#查看系统的总内存</span><br><span class="line">free -h</span><br><span class="line">#查看可分配的总共享内存</span><br><span class="line">df -h /dev/shm</span><br></pre></td></tr></table></figure>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061216001.png"
-alt="image-20240306121632970" />
-<figcaption aria-hidden="true">image-20240306121632970</figcaption>
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132116924.png"
+alt="image-20240313211631287" />
+<figcaption aria-hidden="true">image-20240313211631287</figcaption>
 </figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 检查我的cuda版本（可用的最高版本）</span><br><span class="line">nvidia-smi</span><br></pre></td></tr></table></figure>
+<h3 id="开启容器-1">开启容器</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --gpus all --shm-size 48G --name my_glip_container my_glip_image  /bin/bash </span><br></pre></td></tr></table></figure>
+<p>到目前为止，我们都只是在Linux服务器端运行代码，在开启容器后，接下来我想<strong>直接操纵docker容器内的代码和数据。</strong></p>
+<blockquote>
+<p>可以通过vscode直接连接开启的远程docker容器，连接成功后，就可以通过vscode直接操控容器中的文件及目录。</p>
+<p>这一过程需要借助vscode的docker插件、并赋予插件相应的权重才能实现。</p>
+<p>具体过程如下：</p>
+<ol type="1">
+<li>首先在命令行运行下述命令，为<strong>docker插件</strong>设置权限，<strong>这样docker插件才能检测到开启的容器（即下图左侧的内容）</strong>
+sudo chmod 666 /var/run/docker.sock</li>
+<li>然后按照下图操作</li>
+</ol>
 <figure>
 <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061215422.png"
-alt="image-20240306121522369" />
-<figcaption aria-hidden="true">image-20240306121522369</figcaption>
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403111200841.png"
+alt="vscode连接docker容器" />
+<figcaption aria-hidden="true">vscode连接docker容器</figcaption>
 </figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 检查我的系统实际安装的cuda版本</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061220087.png"
-alt="image-20240306122022052" />
-<figcaption aria-hidden="true">image-20240306122022052</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 确定相应的pytorch版本 https://pytorch.org/get-started/previous-versions/</span><br><span class="line">## 官网没有cuda11.5对应的pytorch，我找了一个cuda11.3对应的pytorch</span><br><span class="line">conda install pytorch==1.9.1 torchvision==0.10.1 torchaudio==0.9.1 cudatoolkit=11.3 -c pytorch -c conda-forge</span><br><span class="line">## 上面哪个conda连接有问题，用下面这个pip安装pytorch1.9和cuda11.1</span><br><span class="line">pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html</span><br></pre></td></tr></table></figure>
-<p>安装新版本</p>
-<p>卸载旧版本</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">## 首先卸载glip_dev中原有的与cuda相关的依赖</span><br><span class="line">pip list</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081041834.png"
-alt="image-20240308104147718" />
-<figcaption aria-hidden="true">image-20240308104147718</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 卸载上述cuda相关依赖</span><br><span class="line">pip uninstall nvidia-cublas-cu12 nvidia-cuda-cupti-cu12 nvidia-cuda-nvrtc-cu12 nvidia-cuda-runtime-cu12 nvidia-cudnn-cu12 nvidia-cufft-cu12 nvidia-curand-cu12 nvidia-cusolver-cu12 nvidia-cusparse-cu12 nvidia-nccl-cu12 nvidia-nvjitlink-cu12 nvidia-nvtx-cu12</span><br></pre></td></tr></table></figure>
-<p>安装新版本</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># 重新安装cuda11.1</span><br><span class="line"># 在conda环境安装cuda，更准确地说是要安装cudatoolkit</span><br><span class="line">conda install cudatoolkit=11.1</span><br><span class="line"></span><br><span class="line">#######安装安装不上啊，先不管了######</span><br><span class="line"># 安装cuda11.1</span><br><span class="line">conda install cudatoolkit=11.1 -c nvidia/label/cuda-11.1.1 -c conda-forge</span><br><span class="line"># 安装对应版本的cudann</span><br><span class="line">conda install cudnn=8.2.1 -c nvidia/label/cudnn8.2.1</span><br><span class="line"></span><br><span class="line">##安装时出现错误</span><br><span class="line">CondaHTTPError: HTTP 000 CONNECTION FAILED for url &lt;https://conda.anaconda.org/conda-forge/noarch/repodata.json&gt;</span><br><span class="line">Elapsed: -</span><br><span class="line"></span><br><span class="line">An HTTP error occurred when trying to retrieve this URL.</span><br><span class="line">HTTP errors are often intermittent, and a simple retry will get you on your way.</span><br><span class="line">SSLError(MaxRetryError(&#x27;HTTPSConnectionPool(host=\&#x27;conda.anaconda.org\&#x27;, port=443): Max retries exceeded with url: /conda-forge/noarch/repodata.json (Caused by SSLError(SSLError(&quot;bad handshake: Error([(\&#x27;SSL routines\&#x27;, \&#x27;ssl3_get_server_certificate\&#x27;, \&#x27;c</span><br><span class="line"></span><br><span class="line">##解决</span><br><span class="line">conda config --set ssl_verify false </span><br><span class="line"></span><br><span class="line">##还是不行</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 验证安装是否成功</span><br><span class="line">conda list cudatoolkit</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 确定python版本</span><br><span class="line">python --version</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081129398.png"
-alt="image-20240308112917305" />
-<figcaption aria-hidden="true">image-20240308112917305</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 确定torch和torchvision版本——参考一凡推荐去官网找下载链接</span><br><span class="line">pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html</span><br><span class="line"># 改成镜像(改成镜像找不到包，但是直接用上面那个可以下载)</span><br><span class="line">pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 安装完torch、torchvision后，运行最开始的python setup.py build develop --user会出现以下错误</span><br><span class="line">error: command &#x27;/usr/bin/nvcc&#x27; failed with exit code 1</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="训练">训练</h2>
+<p>开始训练之前首先需要修改配置文件中的相关信息，如预训练权重文件、batch_size、数据集的名称等</p>
+<h3 id="修改配置文件">修改配置文件</h3>
+<h4 id="预训练权重">预训练权重</h4>
+<p>选择和配置文件(.yaml)匹配的预训练权重(.pth)【Model Zoo】</p>
+<h4 id="数据集-1">数据集</h4>
+<p><strong>为什么要更改数据集？</strong></p>
+<p>因为我们用的不是配置文件中默认的object365_dt_train，而是<code>flickr30k</code>数据集。</p>
+<p><strong>怎么更改数据集？</strong></p>
+<ol type="1">
+<li>首先，在当前使用的配置文件（即开启训练的代码<code>--config-file</code>对应的参数值）中找到<strong>默认的训练数据集</strong>的名称<code>object365_dt_train</code></li>
+<li>然后，在项目中全局搜索<code>object365_dt_train</code>，找到定义该名称的文件位置<code>paths_catalog.py</code></li>
+<li>然后，在<code>paths_catalog.py</code>中搜索<code>flickr30k</code>，找到<code>flickr30k</code>数据集对应的训练数据集及其名称<code>flickr30k_train</code></li>
+<li>最后，修改配置文件中训练数据集的名称，由<code>object365_dt_train</code>修改为<code>flickr30k_train</code></li>
+</ol>
+<h4 id="batch_size">batch_size</h4>
+<p>主要是因为显存不够，将训练时batch_size修改为2，测试时batch_size修改为1</p>
+<blockquote>
+<p>一开始无论怎么修改batch都无济于事（我把训练和测试时的batch_size都改为1了项目也运行不起来）。</p>
+<p>错误信息：</p>
+<p>RuntimeError: DataLoader worker (pid 53617) is killed by signal: Bus
+error. It is possible that dataloader's workers are out of shared
+memory. Please try to raise your shared memory limit.</p>
+<p>错误原因：</p>
+<p><strong>docker容器设置有问题，这就是前面在启动容器时要设置共享内存的原因</strong></p>
+<p>参考：https://zhuanlan.zhihu.com/p/143914966</p>
+</blockquote>
+<h3 id="开启训练">开启训练</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python tools/train_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure>
+<h2 id="评估">评估</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">python tools/test_grounding_net.py \</span><br><span class="line">        --config-file configs/pretrain/glip_A_Swin_T_O365.yaml \</span><br><span class="line">        --task_config configs/flickr/test.yaml,configs/flickr/val.yaml \</span><br><span class="line">        --weight &#123;model_checkpoint&#125; \</span><br><span class="line">        OUTPUT_DIR output/evaluation/flickr30k TEST.IMS_PER_BATCH 1 SOLVER.IMS_PER_BATCH 1 TEST.MDETR_STYLE_AGGREGATE_CLASS_NUM 100 TEST.EVAL_TASK grounding MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False</span><br></pre></td></tr></table></figure>
+<h2 id="未完成">未完成</h2>
+<p>怎么将docker容器中的代码同步至github？</p>
 
     </div>
 
@@ -607,7 +548,7 @@ alt="image-20240308112917305" />
 
   <footer class="footer">
     <div class="footer-inner">
-
+<!--
   <div class="copyright">
     &copy; 
     <span itemprop="copyrightYear">2024</span>
@@ -621,13 +562,13 @@ alt="image-20240308112917305" />
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">NaNm</span>
+    <span title="站点总字数">97k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">NaN:aN</span>
+    <span title="站点阅读时长">5:25</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -648,17 +589,7 @@ alt="image-20240308112917305" />
       </span>
     </span>
 </div>
-
-<div class="powered-by">
-<i class="fa fa-user-md"></i>
-<span id="busuanzi_container_site_uv">
-本站总访客数:<span id="busuanzi_value_site_uv"></span>&nbsp;&nbsp;| 
-</span>
-<span id="busuanzi_container_site_pv">
-  &nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
-</span>
-</div>
-</div>
+-->
 
     </div>
   </footer>

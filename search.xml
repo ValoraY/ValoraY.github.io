@@ -156,6 +156,199 @@ model，第二个参数是任意数量的关键词参数。如果查询对象存
       </tags>
   </entry>
   <entry>
+    <title>CLIP论文理解</title>
+    <url>/2024/01/31/CLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><strong>在绝对的力量面前，技巧不值一提。</strong></p>
+<h1 id="clip论文理解">CLIP论文理解</h1>
+<h2 id="方法总结">方法总结</h2>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401311723505.png"
+alt="CLIP使用的方法总结" />
+<figcaption aria-hidden="true">CLIP使用的方法总结</figcaption>
+</figure>
+<p>CLIP (<em>Contrastive Language–Image Pre-training</em>)
+使用的方法非常简单，主要分为2个部分：</p>
+<span id="more"></span>
+<ol type="1">
+<li><p><strong>使用图像和文本进行对比学习预训练</strong></p>
+<ol type="1">
+<li><p>组件</p>
+<ul>
+<li><p>文本编码器：Transformer</p></li>
+<li><p>图像编码器：ResNet or Vision Transformer</p></li>
+<li><p>对比学习</p>
+<ul>
+<li><p>目标：通过最大化正样本对（图像和文本描述）的相似性，最小化负样本对（图像和不相关文本描述）的相似性来学习图像和文本的共享表示</p></li>
+<li><p>损失函数（InfoNCE loss）:</p>
+<p>论文MoCo提出，我们可以把对比学习看成是一个字典查询的任务，即训练一个编码器从而去做字典查询的任务。假设已经有一个编码好的query
+<span class="math inline">\(q\)</span> (一个特征),
+以及一系列编码好的样本 <span
+class="math inline">\(k0,k1,k2,\ldots\)</span>, 那么 <span
+class="math inline">\(k0,k1,k2,\ldots\)</span>
+可以看作是字典里的key。假设字典里只有一个key即 <span
+class="math inline">\(k+\)</span> (称为<span
+class="math inline">\(k\)</span> positive) 是跟<span
+class="math inline">\(q\)</span> 是匹配的，那么 <span
+class="math inline">\(q\)</span> 和 <span
+class="math inline">\(k+\)</span>
+就互为正样本对，其余的key为q的负样本。一旦定义好了正负样本对，就需要一个对比学习的损失函数来指导模型来进行学习。这个损失函数需要满足以下要求：</p>
+<ul>
+<li>当query <span class="math inline">\(q\)</span> 和唯一的正样本 <span
+class="math inline">\(k+\)</span>
+相似，并且和其他所有负样本key都不相似的时候，loss应该较小。</li>
+<li>反之，如果<span class="math inline">\(q\)</span>和<span
+class="math inline">\(k+\)</span>不相似，或者<span
+class="math inline">\(q\)</span> 和其他负样本的key相似了，那么loss
+应该较大，从而惩罚模型，促使模型进行参数更新。</li>
+</ul>
+<p>MoCo采用的对比学习损失函数是InfoNCE Ioss,
+以此来训练模型，公式如下：</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401311753672.gif"
+alt="InfoNCE loss" />
+<figcaption aria-hidden="true">InfoNCE loss</figcaption>
+</figure></li>
+<li><p>优点：</p>
+<p>相比于让模型直接预测和图像匹配的文本描述中的每一个具体的单词，使用对比学习让模型预测哪条文本描述整体上和图片是配对的，如果两种方式都实现了相当的效果，那么使用对比学习的模型收敛更快，需要的算力更少。</p></li>
+</ul></li>
+</ul></li>
+<li><p>训练过程</p>
+<ul>
+<li><p>代理任务：给定一张图片，从一个随机采样的batch的文本描述中预测，哪一个文本描述是和这张图片匹配的</p></li>
+<li><p>训练过程：</p>
+<ol type="1">
+<li>在模型训练过程中，我们取到的每个batch由 <span
+class="math inline">\(N\)</span> 个图像-文本对组成</li>
+<li>将这 <span class="math inline">\(N\)</span>
+个图像送入到图像编码器中会得到 <span class="math inline">\(N\)</span>
+个图像特征向量 <span class="math inline">\((I_1,I_2,\cdots,I_N)\)</span>
+,</li>
+<li>同理，将这 <span class="math inline">\(N\)</span>
+个文本送入到文本编码器中我们可以得到<span
+class="math inline">\(N\)</span> 个文本特征向量 <span
+class="math inline">\((T_1,T_2,\cdots,T_N)\)</span></li>
+<li>因为不同编码器的输出的特征向量长度不一样，所以CLIP
+使用了一个线性映射将两个编码器生成的特征向量映射到统一长度（这样就把图像和文本映射到了同一个特征空间）</li>
+<li>使用向量内积计算相似度：这 <span class="math inline">\(N\)</span>
+个图像特征向量和这 <span class="math inline">\(N\)</span>
+个文本特征向量的相似度</li>
+<li>因为只有在对角线上的图像和文本是一对，
+所以CLIP的训练目标是让正样本对（图像和文本描述）的特征向量相似度尽可能高，而负样本对（图像和不相关文本描述）的相似度尽可能低。通过这个方式，CLIP构建了一个由
+<span class="math inline">\(N\)</span> 个正样本和<span
+class="math inline">\(N^2-N\)</span>
+个负样本组成的损失函数。CLIP的计算过程伪代码如下。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># image_encoder - 残差网络 或者 ViT</span><br><span class="line"># text_encoder - CBOW 或者 文本Transformer</span><br><span class="line"># I[n, h, w, c] - 训练图像</span><br><span class="line"># T[n, l] - 训练文本</span><br><span class="line"># W_i[d_i, d_e] - 训练图像生成的特征向量</span><br><span class="line"># W_t[d_t, d_e]  - 训练文本生成的特征向量</span><br><span class="line"># t - softmax的温度（temperature）参数</span><br><span class="line"></span><br><span class="line"># 提取多模态的特征</span><br><span class="line">I_f = image_encoder(I) #[n, d_i]</span><br><span class="line">T_f = text_encoder(T) #[n, d_t]</span><br><span class="line"></span><br><span class="line"># 多模态特征向特征空间的映射</span><br><span class="line">I_e = l2_normalize(np.dot(I_f, W_i), axis=1)</span><br><span class="line">T_e = l2_normalize(np.dot(T_f, W_t), axis=1)</span><br><span class="line"></span><br><span class="line"># 计算余弦相似度</span><br><span class="line">logits = np.dot(I_e, T_e.T) * np.exp(t)</span><br><span class="line"></span><br><span class="line"># 构建损失函数</span><br><span class="line">labels = np.arange(n)</span><br><span class="line">loss_i = cross_entropy_loss(logits, labels, axis=0)</span><br><span class="line">loss_t  = cross_entropy_loss(logits, labels, axis=1)</span><br><span class="line">loss = (loss_i + loss_t)/2</span><br></pre></td></tr></table></figure></li>
+<li><p>训练结果：当模型训练完成后，CLIP模型的效果就是——获得了把图像和文本映射到同一个特征空间的能力，此时得到的模型并没有显式的分类头。</p></li>
+</ul></li>
+</ol></li>
+<li><p>执行零样本预测（推理过程）</p>
+<ol type="1">
+<li>当进行图像分类时，我们把待识别的图像通过图像编码器映射成一个特征向量</li>
+<li>然后将所有可能的图像类别标签全部使用文本编码器进行编码，得到一组特征向量。（"多项选择题"）</li>
+<li>将图像特征向量和一组文本对应的特征向量逐一计算相似度，相似度最高的那一个图像-文本对所对应的文本就是图像预测出的类别</li>
+<li>为了提升性能，这里的文本描述不是简单地将标签 plane, car, dog, ...,
+bird 送入文本编码器，而是进行了 prompt工程，通过使用 A photo of a
+{object} 作为输入，大大提升了零样本预测结果的准确度。</li>
+</ol></li>
+</ol>
+<h2 id="方法核心">方法核心</h2>
+<p>把图像和文本映射到同一个特征空间（可以理解为将文本特征向量和图像特征向量的维度变成一致的）。</p>
+<blockquote>
+<p>这个特征空间是一个抽象的概念，例如当我们看到一条狗的图片的时候，我们心中想的是狗，当我们读到狗的时候我们想的也是狗，那么我们心中想象的狗，便是“特征空间”。</p>
+</blockquote>
+<h2 id="模型评估">模型评估</h2>
+<p>模型通过零样本迁移可以展示其<strong>学习各种各样任务的能力</strong>，是一个能够很好地评估模型整体能力的指标。</p>
+<h2 id="优势">优势</h2>
+<ol type="1">
+<li>训练高效，节省算力
+<ul>
+<li>采用了对比学习，优于直接预测学习</li>
+</ul></li>
+<li>灵活且泛化性好
+<ul>
+<li>零样本迁移能力强大，能够很方便地解决全新的任务（/全新数据集）
+<ul>
+<li>过去的模型要迁移到新任务：
+<ol type="1">
+<li>build a new dataset</li>
+<li>add an output head</li>
+<li>and fine-tune the model</li>
+</ol></li>
+<li>CLIP要迁移到新任务：
+<ul>
+<li>不需要额外的训练数据</li>
+<li>只需要"告诉"CLIP的文本编码器新任务涉及到的视觉概念的名字，然后直接使用预训练好的CLIP模型进行预测，模型就能给出相应的新视觉概念的分类。</li>
+<li>碎碎念：我觉得这不是严格的零样本，感觉CLIP之所以能够"通过仅修改预测时文本编码器的输入就迁移到新任务"，还是离不开它在预训练过程中已经通过庞大的数据集来尽可能的覆盖下游任务（也就是说，只不过是因为CLIP训练用的4亿的图片-文本对见过这些新视觉概念对应的图片）、</li>
+</ul></li>
+</ul></li>
+<li>表征学习效果很好（Representation
+Learning）：说明它提取出的特征很好</li>
+</ul></li>
+</ol>
+<h2 id="局限性">局限性</h2>
+<ol type="1">
+<li><p><strong>夸大的零样本：</strong>CLIP在它预训练阶段没有覆盖到的数据上的泛化性很差。也就是说，CLIP还是通过庞大的数据集来尽可能的覆盖下游任务，搜易它在未见过的数据上表现非常不理想。比如在MNIST数据集上（1-9手写数字图片），CLIP
+只达到了88%的准确度，还不如一个作用在像素点上的逻辑回归。虽然 4
+亿数据集很大，但是很有可能没有包含这种不常见的手写数字的图片。这就引起了一些疑虑：<strong>CLIP
+的强大有多大程度上取决于这个高质量、大规模的数据集。</strong></p></li>
+<li><p>CLIP的零样本分类器（即文本编码器）对输入文本的提示工程很敏感（prompt
+engineering）</p>
+<ul>
+<li>提示工程：分类的时候不是直接把一个“dog”标签喂给文本编码器让它编码，而是设计一个prompt，变成“A
+photo of a dog.”再进行编码。原因有二：
+<ul>
+<li>多义词导致只用一个单词做标签很容易产生歧义，比如remote即可以是“远程的”又可以指遥控器，编码器难以确认是哪个意思，如果变成“A
+photo of a remote.”就很明显是遥控器的意思</li>
+<li>训练时文本编码器编的是句子，推理测试时如果只用单词会产生数据分布gap，可能会影响性能</li>
+</ul></li>
+</ul></li>
+<li><p>在一些任务上表现不好：</p>
+<ul>
+<li><p>更抽象和系统性的任务：如计数图像中目标的数量</p></li>
+<li><p>更复杂的任务：如预测照片中最近的车的距离（能不能注入领域知识，让模型学会思考这些？）</p></li>
+<li><p>极细粒度的分类任务：如说出不同汽车模型或者不同种类的花之间的区别</p></li>
+</ul></li>
+</ol>
+<h2 id="用途">用途</h2>
+<h3 id="根源用途">根源用途</h3>
+<p>​ 把图片和文字编码到同一空间，计算图像和文本的语义相似度</p>
+<h3 id="扩展用途">扩展用途</h3>
+<p>​ 1）图文搜索（根据图像搜索对应文本、或根据文本搜索对应图像） ​
+2）协助完成相关的多模态任务（例如在 Stable Diffusion 里作为文本编码器） ​
+3）作为评测工具（例如文生图任务中，计算生成图像与文本之间的相似度）</p>
+<h2 id="最大影响">最大影响</h2>
+<p><strong>允许人们设计自己的分类头，而不需要特定领域的训练数据。</strong></p>
+<p>怎么实现的呢？</p>
+<p><strong>在推理时，直接向文本编码器中输入所有可能的类别集合，这个类别集合里面就包括人们想要添加的新类别，这样模型在预测时就可能能够预测到这个新类别。</strong>（但是有个疑问：添加的新类别是否只能是WIT（WebImageText数据集）里面训练过的类别呢？）</p>
+<p>在推理过程中，通过自由设置“多项选择题”，我们就摆脱了事先定义好的分类标签，而实现了将模型扩展到自己专属的任务（因为可以定义自己模型需要预测的新类别），让下游任务的推理变得更灵活。</p>
+<ul>
+<li>过去的分类网络：
+<ul>
+<li>类别数量固定，一般时最后一层跟着 softmax 全连接层；</li>
+<li>如果要更改类别数量，就要更换最后一层</li>
+<li>并且预测的内容是固定的，不能超过训练集的类别范围。</li>
+</ul></li>
+<li>CLIP
+<ul>
+<li>提供给网络的分类标签不仅数量不固定，内容也是自由的</li>
+<li>如果提供两个标签，那就是一个二分类问题；如果提供1000个标签，那就是1000分类问题。</li>
+<li>标签内容可以是常规的分类标签，也可以是一些冷门的分类标签。</li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>图像分类</category>
+      </categories>
+      <tags>
+        <tag>CLIP</tag>
+        <tag>论文理解</tag>
+        <tag>多模态</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Django搭建敏感图片检测系统（二）</title>
     <url>/2024/01/04/Django%E6%90%AD%E5%BB%BA%E6%95%8F%E6%84%9F%E5%9B%BE%E7%89%87%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="项目需求">项目需求</h1>
@@ -560,8 +753,8 @@ RCNN是怎么有效训练的？（通过反向传播来训练整个网络的权�
         <category>目标检测</category>
       </categories>
       <tags>
-        <tag>Fast RCNN</tag>
         <tag>论文理解</tag>
+        <tag>Fast RCNN</tag>
       </tags>
   </entry>
   <entry>
@@ -703,6 +896,84 @@ truth边界框的偏移和比例（用于边界框回归任务），以及每个
 <p>（10）一个训练步骤<code>trainer.train_step(img, bbox, label, scale)</code>完成后，评估训练结果并在<code>visdom</code>中可视化展示
 <img src="https://ooo.0x0.ooo/2023/12/29/OKYXOt.png"
 alt="OKYXOt.png" /></p>
+]]></content>
+      <categories>
+        <category>目标检测</category>
+      </categories>
+      <tags>
+        <tag>代码复现</tag>
+        <tag>Faster RCNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Faster RCNN项目部署（一）</title>
+    <url>/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="faster-rcnn项目部署">Faster RCNN项目部署</h2>
+<p>simple-faster-rcnn-pytorch-master</p>
+<p><strong>项目源码</strong>：https://github.com/chenyuntc/simple-faster-rcnn-pytorch</p>
+<span id="more"></span>
+<p><strong>云服务器环境：</strong></p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYfPN.png" alt="OKYfPN.png" />
+<figcaption aria-hidden="true">OKYfPN.png</figcaption>
+</figure>
+<h3 id="安装依赖">安装依赖</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">!pip install scikit-image</span><br><span class="line">!pip install visdom</span><br><span class="line">!pip install torchnet</span><br><span class="line">!pip install opencv-python</span><br><span class="line">!pip install ipdb</span><br><span class="line">!pip install ipython==7.28.0</span><br><span class="line">!pip install fire</span><br></pre></td></tr></table></figure>
+<h3 id="运行demo">运行demo</h3>
+<h4 id="下载预训练模型">下载预训练模型</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">百度网盘地址：https://pan.baidu.com/s/1o87RuXW</span><br><span class="line">密码：scxn</span><br></pre></td></tr></table></figure>
+<h4 id="运行demo.pipynb">运行demo.pipynb</h4>
+<blockquote>
+<p>问题：在运行<code>img = read_image('/root/autodl-tmp/FasterRCNN/misc/demo.jpg')</code>出现错误：
+<code>UnidentifiedImageError：Image.open() cannot identify image file</code></p>
+<p>解决：我也不知道咋解决，因为另外测试后发现PIL的Image.open()是可以用的，我重启了几次不知道为什么就能用了</p>
+</blockquote>
+<h3 id="train">Train</h3>
+<h4 id="准备数据">准备数据</h4>
+<p>参考项目官网的<code>5.1 Prepare data--Pascal VOC2007</code></p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYllC.png" alt="OKYllC.png" />
+<figcaption aria-hidden="true">OKYllC.png</figcaption>
+</figure>
+<p>最终得到的数据目录如下</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYjTL.png" alt="OKYjTL.png" />
+<figcaption aria-hidden="true">OKYjTL.png</figcaption>
+</figure>
+<h4 id="修改配置">修改配置</h4>
+<ol type="1">
+<li>utils/config.py：修改VOC数据集的存放位置<code>voc_data_dir = '/root/autodl-tmp/FasterRCNN/dataset/VOCdevkit/VOC2007/'</code></li>
+</ol>
+<h4 id="开启训练">开启训练</h4>
+<p>如果直接运行代码<code>!python train.py train --env='fasterrcnn' --plot-every=100</code>，会出现以下问题：</p>
+<blockquote>
+<p>问题：ERROR:visdom:[WinError 10061]
+由于目标计算机积极拒绝，无法连接。</p>
+<p>原因：代码中用到了在线可视化工具visdom，但是没有启动</p>
+<p>解决：利用Xshell映射云端服务器的visdom，进行训练过程可视。参考博客https://blog.csdn.net/m0_6551</p>
+</blockquote>
+<p>因此，先利用Xshell映射云端服务器的visdom（参见上面的博客），再在jupyter
+notebook运行以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python train.py train --env=&#x27;fasterrcnn&#x27; --plot-every=100</span><br></pre></td></tr></table></figure>
+<p>运行成功结果如下： <img
+src="https://ooo.0x0.ooo/2023/12/29/OKY2vi.png" alt="OKY2vi.png" /></p>
+<h4 id="利用pycharm进行调试">利用Pycharm进行调试</h4>
+<p>因为在jupyter
+notebook中开启训练时使用了代码<code>python train.py train --env='fasterrcnn' --plot-every=100</code>，而在Pycharm中无法输入这样的命令进行debug，因此我对<code>train.py</code>做了以下修改：</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYsua.png" alt="OKYsua.png" />
+<figcaption aria-hidden="true">OKYsua.png</figcaption>
+</figure>
+<p>我舍弃了利用fire.Fire()来调用函数train，而是直接在main函数中调用了train()方法，并传递了参数。此时就可以在Pycharm进行debug了。</p>
+<blockquote>
+<p>另外，Pycharm在调试过程会遇到一个问题，即：debug时Pycharm卡住在connected界面不动</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYYzS.png" alt="OKYYzS.png" />
+<figcaption aria-hidden="true">OKYYzS.png</figcaption>
+</figure>
+<p>解决：<img src="https://ooo.0x0.ooo/2023/12/29/OKY6cX.png"
+alt="OKY6cX.png" /></p>
+</blockquote>
 ]]></content>
       <categories>
         <category>目标检测</category>
@@ -880,81 +1151,445 @@ RCNN，即这里RPN和Fast RCNN并没有共享卷积特征）</strong></p>
       </tags>
   </entry>
   <entry>
-    <title>Faster RCNN项目部署（一）</title>
-    <url>/2023/12/29/Faster-RCNN%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E4%B8%80%EF%BC%89/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="faster-rcnn项目部署">Faster RCNN项目部署</h2>
-<p>simple-faster-rcnn-pytorch-master</p>
-<p><strong>项目源码</strong>：https://github.com/chenyuntc/simple-faster-rcnn-pytorch</p>
+    <title>GLIP论文理解</title>
+    <url>/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="glip论文理解">GLIP论文理解</h1>
+<p>GLIP(<em>Grounded Language-Image Pre-training)</em>
+是一个可扩展的（generalizable）目标检测模型（其实准确来说应该表述为短语定位模型，本句在这里将"目标检测"和"短语定位"任务混为一谈）</p>
+<p>在文章开头先解释一下GLIP论文中用到的一些"黑话"</p>
+<p>generalizable（可泛化）：侧重于描述模型<strong>在不同任务和数据集上的适应性</strong>，强调模型学到的特征能够泛化到新的情境。</p>
+<p>scalable（可扩展）：
+关注系统、算法、数据集的可扩展性，确保算法在面对更大规模、更复杂的情况时性能能够保持或提高。在本论文中用到的描述为"
+scalable and semantic-rich
+data"，侧重于强调数据集的可扩展性，论文通过自训练生成伪标注的方式提高数据集的可扩展性。</p>
+<p>language-aware（语言感知的）：模型能够理解和处理自然语言。本论文的模型接收文本描述prompt作为输入，自然是language
+aware的。</p>
+<p>semantic-rich（语义丰富的）：用于形容数据集包含了丰富的语义信息（包括对物体、场景或其他视觉元素的深层次、有意义的描述，能够捕捉图像中物体之间的关系等）</p>
 <span id="more"></span>
-<p><strong>云服务器环境：</strong></p>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYfPN.png" alt="OKYfPN.png" />
-<figcaption aria-hidden="true">OKYfPN.png</figcaption>
-</figure>
-<h3 id="安装依赖">安装依赖</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">!pip install scikit-image</span><br><span class="line">!pip install visdom</span><br><span class="line">!pip install torchnet</span><br><span class="line">!pip install opencv-python</span><br><span class="line">!pip install ipdb</span><br><span class="line">!pip install ipython==7.28.0</span><br><span class="line">!pip install fire</span><br></pre></td></tr></table></figure>
-<h3 id="运行demo">运行demo</h3>
-<h4 id="下载预训练模型">下载预训练模型</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">百度网盘地址：https://pan.baidu.com/s/1o87RuXW</span><br><span class="line">密码：scxn</span><br></pre></td></tr></table></figure>
-<h4 id="运行demo.pipynb">运行demo.pipynb</h4>
-<blockquote>
-<p>问题：在运行<code>img = read_image('/root/autodl-tmp/FasterRCNN/misc/demo.jpg')</code>出现错误：
-<code>UnidentifiedImageError：Image.open() cannot identify image file</code></p>
-<p>解决：我也不知道咋解决，因为另外测试后发现PIL的Image.open()是可以用的，我重启了几次不知道为什么就能用了</p>
-</blockquote>
-<h3 id="train">Train</h3>
-<h4 id="准备数据">准备数据</h4>
-<p>参考项目官网的<code>5.1 Prepare data--Pascal VOC2007</code></p>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYllC.png" alt="OKYllC.png" />
-<figcaption aria-hidden="true">OKYllC.png</figcaption>
-</figure>
-<p>最终得到的数据目录如下</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYjTL.png" alt="OKYjTL.png" />
-<figcaption aria-hidden="true">OKYjTL.png</figcaption>
-</figure>
-<h4 id="修改配置">修改配置</h4>
+<h2 id="方法核心">方法核心</h2>
+<p>通过将目标检测任务<strong>重新表述</strong>为视觉-语言任务（也叫短语定位任务），从而统一目标检测和短语定位任务。</p>
+<p><strong>如何实现目标检测和短语定位任务的统一？</strong></p>
+<ul>
+<li>改变训练输入
+<ul>
+<li>典型的目标检测模型训练时<strong>只输入图片</strong>，然后模型试图预测图片中目标的类别及边界框，为了使预测结果与ground
+truth越来越接近，模型不断地学习和调整，逐渐成为一个优秀的好模型。</li>
+<li>然而，GLIP选择不走寻常路。它舍弃了上述的典型输入（只输入图片），转而向模型输入"<strong>图片和对应的文本描述</strong>"，其中文本描述有两种类型，
+<ul>
+<li>针对目标检测数据集：一条由所有候选类名构成的合成句子</li>
+<li>针对短语定位数据集：对图片的自然语言描述</li>
+</ul></li>
+</ul></li>
+<li>改变训练目的
+<ul>
+<li>典型的目标检测模型是为了使预测结果（分类标签和边界框位置）和ground
+truth越来越接近</li>
+<li>而GLIP则是为了识别出句子中的短语和图像中的对象之间的细粒度对应关系</li>
+</ul></li>
+<li>改变损失函数（损失函数是由训练目的决定的）
+<ul>
+<li>用单词-区域对齐得分（word-region alignment
+scores）取代原先目标检测分类头的对象分类得分（object classification
+logits）</li>
+<li>通过region(or box) visual features 和 token(or phrase) language
+features 的点乘，来计算单词-区域对齐得分</li>
+</ul></li>
+</ul>
+<p><strong>统一这两个任务有什么好处？</strong></p>
 <ol type="1">
-<li>utils/config.py：修改VOC数据集的存放位置<code>voc_data_dir = '/root/autodl-tmp/FasterRCNN/dataset/VOCdevkit/VOC2007/'</code></li>
+<li>扩大数据集：训练时可以同时使用这两种任务的数据集</li>
+<li>训练结果有益于这两种任务（win-win）
+<ul>
+<li>从检测任务的角度来看，使用定位任务的数据，极大丰富了检测任务的视觉概念池子</li>
+<li>从定位任务角度来看，使用检测任务的数据，引入了更多边界框标注，有助于训练新的SOTA的定位模型</li>
+</ul></li>
 </ol>
-<h4 id="开启训练">开启训练</h4>
-<p>如果直接运行代码<code>!python train.py train --env='fasterrcnn' --plot-every=100</code>，会出现以下问题：</p>
-<blockquote>
-<p>问题：ERROR:visdom:[WinError 10061]
-由于目标计算机积极拒绝，无法连接。</p>
-<p>原因：代码中用到了在线可视化工具visdom，但是没有启动</p>
-<p>解决：利用Xshell映射云端服务器的visdom，进行训练过程可视。参考博客https://blog.csdn.net/m0_6551</p>
-</blockquote>
-<p>因此，先利用Xshell映射云端服务器的visdom（参见上面的博客），再在jupyter
-notebook运行以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python train.py train --env=&#x27;fasterrcnn&#x27; --plot-every=100</span><br></pre></td></tr></table></figure>
-<p>运行成功结果如下： <img
-src="https://ooo.0x0.ooo/2023/12/29/OKY2vi.png" alt="OKY2vi.png" /></p>
-<h4 id="利用pycharm进行调试">利用Pycharm进行调试</h4>
-<p>因为在jupyter
-notebook中开启训练时使用了代码<code>python train.py train --env='fasterrcnn' --plot-every=100</code>，而在Pycharm中无法输入这样的命令进行debug，因此我对<code>train.py</code>做了以下修改：</p>
+<h2 id="模型结构">模型结构</h2>
+<h3 id="模型结构-1">模型结构</h3>
 <figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYsua.png" alt="OKYsua.png" />
-<figcaption aria-hidden="true">OKYsua.png</figcaption>
+<img src="https://ooo.0x0.ooo/2024/02/01/OvtOTa.png"
+alt="GLIP模型结构" />
+<figcaption aria-hidden="true">GLIP模型结构</figcaption>
 </figure>
-<p>我舍弃了利用fire.Fire()来调用函数train，而是直接在main函数中调用了train()方法，并传递了参数。此时就可以在Pycharm进行debug了。</p>
-<blockquote>
-<p>另外，Pycharm在调试过程会遇到一个问题，即：debug时Pycharm卡住在connected界面不动</p>
+<h3 id="特点">特点</h3>
+<ol type="1">
+<li><p>双编码器结构</p>
+<ul>
+<li>文本编码器</li>
+<li>视觉编码器</li>
+</ul></li>
+<li><p>输入</p>
+<ul>
+<li>图片</li>
+<li>文本描述</li>
+</ul></li>
+<li><p>损失</p>
+<ul>
+<li>对齐损失</li>
+<li>定位损失</li>
+</ul></li>
+<li><p><strong>深度跨模态融合</strong>：</p>
+<p>相比于<u>CLIP只在最后一个层通过点乘来融合视觉和语义信息</u>，<strong>GLIP进行了深度跨模态融合</strong>，这对于学习高质量、语义感知的视觉表达很关键</p></li>
+</ol>
+<h2 id="训练过程">训练过程</h2>
+<ol type="1">
+<li><p>训练教师模型（train a teacher GLIP on a moderate amount of gold
+grounding data）</p>
+<ul>
+<li>模型结构：GLIP</li>
+<li>训练数据：<strong>适量的</strong>、人工标注的（gold
+data）、定位数据集</li>
+<li>训练结果：获得了一个良好的定位模型</li>
+</ul></li>
+<li><p><strong>利用教师模型生成伪标注边界框（generate grounding boxes
+for massive image-text-paired data）</strong></p>
+<ul>
+<li>做法：利用教师模型在massive image-text-paired
+data上做预测，预测与<u>文本中的短语</u>对应的<u>图像中的目标</u>的边界框</li>
+<li>源数据：massive image-text-paired
+data（互联网爬取的、<strong>大量的</strong>、图像-文本对、没有目标边界框信息）</li>
+<li>处理后数据：图像-文本-目标边界框，形成了一个新的、更大的、定位数据集</li>
+<li>好处：
+<ul>
+<li>过去为了训练一个更好的目标检测模型，通常会直接扩展目标检测数据集，但是再怎么扩展，模型依旧无法预测超出"训练数据涉及到的视觉概念库"中的视觉概念</li>
+<li>然而本文通过<strong>"互联网搜集大量图像-文本对" +
+"教师模型生成伪标注边界框"</strong>的方式，获得了一个<strong>语义丰富的定位数据集</strong>，从而极大地扩展了视觉概念，改善了下游任务的运行效果（尤其在一些罕见类别上）</li>
+</ul></li>
+</ul></li>
+<li><p>预训练学生模型</p>
+<ul>
+<li>数据集：2中大量的伪标注数据集+1中适量的人工标注数据集，构成了一个语义丰富的新数据集</li>
+<li>模型结构：GLIP</li>
+<li>训练结果：获得了一个语义丰富的目标检测模型</li>
+</ul></li>
+<li><p>微调上述学生模型，实现知识迁移</p>
+<ul>
+<li><p>法一：直接在预测时输入特定任务的文本描述prompt（如增加的新类别、对属性特征的进一步描述等），此时不需要额外标注数据，GLIP可以直接进行领域迁移</p>
 <figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYYzS.png" alt="OKYYzS.png" />
-<figcaption aria-hidden="true">OKYYzS.png</figcaption>
-</figure>
-<p>解决：<img src="https://ooo.0x0.ooo/2023/12/29/OKY6cX.png"
-alt="OKY6cX.png" /></p>
-</blockquote>
+<img src="https://ooo.0x0.ooo/2024/02/21/OyUVwr.png"
+alt="手动提示微调" />
+<figcaption aria-hidden="true">手动提示微调</figcaption>
+</figure></li>
+<li><p>法二：当有特定领域的标注数据时，不需要微调整个模型，我们可以<strong>在保持模型参数不变的情况下，只微调特定领域的提示嵌入向量（prompt
+embedding）</strong>。通过提示学习，GLIP模型可以适应各种下游任务，减少了微调和部署的花费。（提示学习可以参考论文MaPLe：
+Multi-modal Prompt Learning）</p></li>
+</ul></li>
+</ol>
 ]]></content>
       <categories>
         <category>目标检测</category>
       </categories>
       <tags>
+        <tag>论文理解</tag>
+        <tag>多模态</tag>
+        <tag>GLIP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>利用Docker容器部署GLIP项目</title>
+    <url>/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="利用docker容器部署glip项目">利用Docker容器部署GLIP项目</h1>
+<h2 id="下载文件">下载文件</h2>
+<p>下载包括把东西下载下来+组织成要求的格式+放到正确的位置。</p>
+<span id="more"></span>
+<h3 id="项目代码">项目代码</h3>
+<p>项目代码放置在<a
+href="https://github.com/microsoft/GLIP">GitHub仓库</a>，下载代码压缩包至本地。</p>
+<h3 id="数据集">数据集</h3>
+<p>数据集构建可以参考官方提供的<a
+href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>。</p>
+<p><strong>针对预训练任务</strong>，官方提供了3种数据集，我选择使用规模最小的<code>Flickr30k</code>数据集进行预训练。</p>
+<ol type="1">
+<li><p>首先，从官网（实际用的是csdn搜索到的国内下载链接）下载<code>Flickr30k</code>图像数据集<code>flickr30k-images</code>，并从<a
+href="https://github.com/microsoft/GLIP/blob/main/DATA.md">GLIP的Github仓库提供的注释文件地址</a>下载注释文件<code>mdetr_annotations</code>。</p></li>
+<li><p>其次，将图像数据集<code>flickr30k-images</code>依据注释文件划分为训练集、测试集和验证集。</p>
+<blockquote>
+<p>最初按照官方提供的<a
+href="https://github.com/microsoft/GLIP/blob/main/DATA.md">数据集组织页面</a>组织数据格式，没有进行数据集划分步骤。</p>
+<p>但在运行项目过程种发现：<code>paths_catalog.py</code>文件指示<code>Flickr30k</code>数据集要划分为训练集、测试集和验证集才能进行训练。</p>
+<p>于是这里先划分数据集，划分数据集的工具代码放置在本地<code>D:\04Code\GLIP-utils\splitFlickrDataset.py</code>。</p>
+<p>划分结束后，最终得到的图像分为训练集29783张，测试集999张，验证集1000张。</p>
+</blockquote></li>
+</ol>
+<p>注意事项：</p>
+<p>直接从官网/csdn链接下载的<code>Flickr30k</code>数据集的文件夹名称为<code>flickr30k-images</code>，而在<code>paths_catalog.py</code>文件中定义的数据集的文件名称为<code>flickr30k_images</code>。前者中间是短横线，而后者中间是下划线，注意修改为下划线<code>flickr30k_images</code>。</p>
+<p><strong>针对评估任务，</strong></p>
+<h3 id="配置文件及预训练权重">配置文件及预训练权重</h3>
+<p>模型的训练和评估过程均会用到相互对应的<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>，因服务器无法连接外网，所以二者都需要提前下载至本地，然后再上传至服务器。</p>
+<p>本项目需要下载的这种类型的文件可以分为两种：一种是GLIP模型的配置文件及预训练权重文件；另一种是由于GLIP模型结构中包含基于Bert的文本编码器，而该文本编码器需要一些预训练的相关文件。因此，针对这两类文件，都需要进行提前下载。</p>
+<ol type="1">
+<li><p>GLIP模型的配置文件及预训练权重文件</p>
+<p>关键：<strong>配置文件(.yaml)和预训练权重文件(.pth)</strong>要相互对应，具体可参考<a
+href="https://github.com/microsoft/GLIP">GitHub仓库</a>的<strong>Model
+Zoo</strong>表格。</p>
+<p>我选择了其中效果最差、文件大小最小的配置文件(.yaml)和预训练权重文件(.pth)，并将其分别组织到目录configs/pretrain和MODEL中。</p>
+<blockquote>
+<p>为什么组织到这两个目录呢？</p>
+<p>参考<a
+href="https://github.com/microsoft/GLIP">GitHub仓库</a>提供的<strong>预训练代码（其中涉及到使用的配置文件的位置）</strong>及<strong>预训练权重文件下载位置</strong>这两个提示，可以决定这两类文件具体放置到什么位置。</p>
+</blockquote></li>
+<li><p>GLIP基于Bert的文本编码器所需的配置文件<code>config.json</code></p>
+<blockquote>
+<p>我是怎么知道需要<code>config.json</code>这个文件的呢？</p>
+<p>在代码运行过程中，出现以下错误：</p>
+<p>MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443):
+Max retries exceeded with url:
+<code>/bert-base-uncased/resolve/main/config.json</code> (Caused by
+ConnectTimeoutError('Connection to huggingface.co timed out. ),
+'(Request ID: 7b33f5be-46a9-40b5-a198-d5ff7ef25c7c)')' thrown while
+requesting HEAD
+https://huggingface.co/bert-base-uncased/resolve/main/config.json</p>
+<p><strong>===似乎是说服务器访问huggingface官网连接超时，导致无法下载一个<code>config.json</code>文件。</strong></p>
+<p>然后看具体的报错信息：</p>
+<p>Traceback (most recent call last): File "tools/train_net.py", line
+260, in <module> main() File "tools/train_net.py", line 256, in main
+use_tensorboard=args.use_tensorboard) File "tools/train_net.py", line
+37, in train model = build_detection_model(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/detector/<strong>init</strong>.py",
+line 11, in build_detection_model return meta_arch(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/detector/generalized_vl_rcnn.py",
+line 96, in <strong>init</strong> self.language_backbone =
+build_language_backbone(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
+line 45, in build_backbone return registry.LANGUAGE_BACKBONES<a
+href="cfg">cfg.MODEL.LANGUAGE_BACKBONE.MODEL_TYPE</a> File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/backbone.py",
+line 14, in build_bert_backbone body = bert_model.BertEncoder(cfg) File
+"/workspace/maskrcnn_benchmark/modeling/language_backbone/bert_model.py",
+line 18, in <strong>init</strong> config =
+BertConfig.from_pretrained(self.bert_name)</p>
+<p><strong>===到这里为止，似乎是说language_backbone加载出现问题，且项目用的是基于Bert的backbone</strong></p>
+<p>File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 547, in from_pretrained config_dict, kwargs =
+cls.get_config_dict(pretrained_model_name_or_path, kwargs) File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 574, in get_config_dict config_dict, kwargs =
+cls._get_config_dict(pretrained_model_name_or_path, kwargs) File
+"/opt/conda/lib/python3.7/site-packages/transformers/configuration_utils.py",
+line 641, in _get_config_dict _commit_hash=commit_hash, File
+"/opt/conda/lib/python3.7/site-packages/transformers/utils/hub.py", line
+453, in cached_file f"We couldn't connect to
+'{HUGGINGFACE_CO_RESOLVE_ENDPOINT}' to load this file, couldn't find it
+in the"</p>
+<p><strong>OSError: We couldn't connect to 'https://huggingface.co' to
+load this file, couldn't find it in the cached files and it looks like
+bert-base-uncased is not the path to a directory containing a file named
+config.json.</strong></p>
+<p><strong>===总之就是在说：我们需要从huggingface官网下载这个<code>config.json</code>文件到本地</strong></p>
+<p>Checkout your internet connection or see how to run the library in
+offline mode at
+'https://huggingface.co/docs/transformers/installation#offline-mode'.</p>
+</blockquote>
+<p><strong>注意事项：</strong></p>
+<blockquote>
+<p>从huggingface官网下载到了config.json文件后，又该把它放在哪里呢？</p>
+<p>一开始我随便新建了一个文件夹<code>xxx/bert-base-uncased</code>放置该文件，结果项目运行时一直无法去这个目录中找到该文件。</p>
+<p><strong>最终尝试后直接将该文件放置在<code>bert-base-uncased</code>文件夹下，项目运行时就可以在本地找到这个文件夹</strong></p>
+</blockquote>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132204607.png"
+alt="image-20240313220440510" />
+<figcaption aria-hidden="true">image-20240313220440510</figcaption>
+</figure></li>
+</ol>
+<p>假设我们已经把docker安装好了（如果还没有安装docker可以参考<a
+href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">服务器端使用docker部署项目</a>），现在继续搭建docker容器。</p>
+<h2 id="上传服务器">上传服务器</h2>
+<p>在本地下载好上述代码/数据集/配置文件/预训练权重文件，并按照要求格式组织好结构之后，将其上传至Linux服务器端（上传步骤可以参考<a
+href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/#%E4%B8%8A%E4%BC%A0%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8">vscode连接linux服务器_上传代码至服务器/上传数据集</a>），接下来的所有操作就是在服务器端进行的了。</p>
+<h2 id="构建镜像">构建镜像</h2>
+<h3 id="dockerfile">Dockerfile</h3>
+<p>首先<code>cd</code>到项目所在文件夹<code>GLIP-main</code>，然后创建<code>Dockerfile</code>文件。</p>
+<p>文件内容为</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Choose the base image according to your server&#x27;s GPU</span><br><span class="line"></span><br><span class="line"># For newer GPUs:</span><br><span class="line">FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</span><br><span class="line"></span><br><span class="line"># Install additional dependencies</span><br><span class="line">RUN pip install einops shapely timm yacs tensorboardX ftfy prettytable pymongo transformers -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br><span class="line"># Copy your project files into the Docker container</span><br><span class="line">COPY . /workspace</span><br><span class="line"></span><br><span class="line"># Set the working directory to /workspace</span><br><span class="line">WORKDIR /workspace</span><br><span class="line"></span><br><span class="line"># Run the project setup script</span><br><span class="line">RUN python setup.py build develop --user</span><br><span class="line"></span><br><span class="line"># 运行上述代码发现缺少以下包，所以这里添加安装这些包的代码</span><br><span class="line">RUN pip install pycocotools scipy opencv-python-headless -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
+<p>注意事项：</p>
+<ol type="1">
+<li>这里在最开始下载docker镜像时踩了大坑：原本下载的是GLIP的Github仓库推荐的两种镜像</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403141008915.png"
+alt="image-20240314100814796" />
+<figcaption aria-hidden="true">image-20240314100814796</figcaption>
+</figure>
+<p>结果经过反复测试（真的是反复测试，，不断质疑是不是自己哪个小细节没注意到才导致安装失败），以及查看Issues，最终才确定<strong>GLIP项目支持的pytorch版本必须大于1.9.1且小于1.11.0</strong>；而官方仓库推荐的2个docker镜像中pytorch的版本都是1.9.0（真的好气喔。。我辣么相信官方。。甚至怀疑自己了。。不靠谱·官方），<strong>最终我选择了Dockerhub中的这一镜像pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel</strong></p>
+<ol start="2" type="1">
+<li><p>在Dockerfile文件中有一行用于"运行项目安装脚本"的代码<code>RUN python setup.py build develop --user</code>，在这里构建镜像时并不会出现什么问题。</p>
+<p>但是，在后期<strong>开启训练时</strong>出现错误<code>RuntimeError: Not compiled with GPU support</code>，似乎跟它有关。</p>
+<p>因为解决方案如下：</p>
+<ol type="1">
+<li>首先删除项目文件夹下的<code>build</code>目录</li>
+<li>然后重新运行python setup.py build develop --user</li>
+<li>然后开启训练就没问题</li>
+</ol>
+<p>这可能意味着在创建Dockerfile文件时并不需要加这一行代码<code>RUN python setup.py build develop --user</code>，等后期<strong>开启训练前再提前运行这句代码</strong>就好了</p></li>
+</ol>
+<h3 id="构建镜像-1">构建镜像</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 注意这里还是cd到项目文件夹下，因为这句代码的意思是“基于该目录构建镜像”</span><br><span class="line">docker build -t my_glip_image .</span><br></pre></td></tr></table></figure>
+<h2 id="开启容器">开启容器</h2>
+<h3 id="分配共享内存">分配共享内存</h3>
+<p>为什么在开启容器前需要为docker容器分配共享内存？<del>因为我一开始没分配导致程序报错了。</del></p>
+<blockquote>
+<p>错误信息：DataLoader worker (pid 53617) is killed by signal: Bus
+error. It is possible that dataloader's workers are out of shared
+memory. Please try to raise your shared memory limit.</p>
+<p>错误原因：由于在docker镜像中默认限制了共享内存，然而数据处理时pytorch则需要使用共享内存，这就导致了在运行多线程时会将超出限制的DataLoader直接kill掉。</p>
+<p>解决方案：<strong>在开启容器前为容器分配足够多的共享内存</strong>，参考https://zhuanlan.zhihu.com/p/143914966</p>
+</blockquote>
+<p><strong>首先</strong>要查看宿主机系统可以为容器提供多少可用的内存</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#查看系统的总内存</span><br><span class="line">free -h</span><br><span class="line">#查看可分配的总共享内存</span><br><span class="line">df -h /dev/shm</span><br></pre></td></tr></table></figure>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403132116924.png"
+alt="image-20240313211631287" />
+<figcaption aria-hidden="true">image-20240313211631287</figcaption>
+</figure>
+<h3 id="开启容器-1">开启容器</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --gpus all --shm-size 48G --name my_glip_container my_glip_image  /bin/bash </span><br></pre></td></tr></table></figure>
+<p>到目前为止，我们都只是在Linux服务器端运行代码，在开启容器后，接下来我想<strong>直接操纵docker容器内的代码和数据。</strong></p>
+<blockquote>
+<p>可以通过vscode直接连接开启的远程docker容器，连接成功后，就可以通过vscode直接操控容器中的文件及目录。</p>
+<p>这一过程需要借助vscode的docker插件、并赋予插件相应的权重才能实现。</p>
+<p>具体过程如下：</p>
+<ol type="1">
+<li>首先在命令行运行下述命令，为<strong>docker插件</strong>设置权限，<strong>这样docker插件才能检测到开启的容器（即下图左侧的内容）</strong>
+sudo chmod 666 /var/run/docker.sock</li>
+<li>然后按照下图操作</li>
+</ol>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403111200841.png"
+alt="vscode连接docker容器" />
+<figcaption aria-hidden="true">vscode连接docker容器</figcaption>
+</figure>
+</blockquote>
+<h2 id="训练">训练</h2>
+<p>开始训练之前首先需要修改配置文件中的相关信息，如预训练权重文件、batch_size、数据集的名称等</p>
+<h3 id="修改配置文件">修改配置文件</h3>
+<h4 id="预训练权重">预训练权重</h4>
+<p>选择和配置文件(.yaml)匹配的预训练权重(.pth)【Model Zoo】</p>
+<h4 id="数据集-1">数据集</h4>
+<p><strong>为什么要更改数据集？</strong></p>
+<p>因为我们用的不是配置文件中默认的object365_dt_train，而是<code>flickr30k</code>数据集。</p>
+<p><strong>怎么更改数据集？</strong></p>
+<ol type="1">
+<li>首先，在当前使用的配置文件（即开启训练的代码<code>--config-file</code>对应的参数值）中找到<strong>默认的训练数据集</strong>的名称<code>object365_dt_train</code></li>
+<li>然后，在项目中全局搜索<code>object365_dt_train</code>，找到定义该名称的文件位置<code>paths_catalog.py</code></li>
+<li>然后，在<code>paths_catalog.py</code>中搜索<code>flickr30k</code>，找到<code>flickr30k</code>数据集对应的训练数据集及其名称<code>flickr30k_train</code></li>
+<li>最后，修改配置文件中训练数据集的名称，由<code>object365_dt_train</code>修改为<code>flickr30k_train</code></li>
+</ol>
+<h4 id="batch_size">batch_size</h4>
+<p>主要是因为显存不够，将训练时batch_size修改为2，测试时batch_size修改为1</p>
+<blockquote>
+<p>一开始无论怎么修改batch都无济于事（我把训练和测试时的batch_size都改为1了项目也运行不起来）。</p>
+<p>错误信息：</p>
+<p>RuntimeError: DataLoader worker (pid 53617) is killed by signal: Bus
+error. It is possible that dataloader's workers are out of shared
+memory. Please try to raise your shared memory limit.</p>
+<p>错误原因：</p>
+<p><strong>docker容器设置有问题，这就是前面在启动容器时要设置共享内存的原因</strong></p>
+<p>参考：https://zhuanlan.zhihu.com/p/143914966</p>
+</blockquote>
+<h3 id="开启训练">开启训练</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/train_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure>
+<h2 id="评估">评估</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/test_grounding_net.py \</span><br><span class="line">        --config-file configs/pretrain/glip_A_Swin_T_O365.yaml \</span><br><span class="line">        --task_config configs/flickr/test.yaml,configs/flickr/val.yaml \</span><br><span class="line">        --weight &#123;model_checkpoint&#125; \</span><br><span class="line">        OUTPUT_DIR output/evaluation/flickr30k TEST.IMS_PER_BATCH 1 SOLVER.IMS_PER_BATCH 1 TEST.MDETR_STYLE_AGGREGATE_CLASS_NUM 100 TEST.EVAL_TASK grounding MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False</span><br></pre></td></tr></table></figure>
+<h2 id="未完成">未完成</h2>
+<p>怎么将docker容器中的代码同步至github？</p>
+]]></content>
+      <categories>
+        <category>多模态</category>
+      </categories>
+      <tags>
         <tag>代码复现</tag>
-        <tag>Faster RCNN</tag>
+        <tag>GLIP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pycharm连接云服务器训练</title>
+    <url>/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="在autodl租用实例">在AutoDL租用实例</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
+<h4 id="点击-tools点击-部署deployment点击configuration">点击
+<code>Tools</code>，点击
+部署<code>Deployment</code>，点击<code>Configuration</code></h4>
+<span id="more"></span>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png" alt="OKfzRF.png" />
+<figcaption aria-hidden="true">OKfzRF.png</figcaption>
+</figure>
+<h4 id="配置服务器信息并测试连接">配置服务器信息并测试连接</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfbuI.png" alt="OKfbuI.png" />
+<figcaption aria-hidden="true">OKfbuI.png</figcaption>
+</figure>
+<h4 id="设置本地路径和远程路径映射">设置本地路径和远程路径映射</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfoUq.png" alt="OKfoUq.png" />
+<figcaption aria-hidden="true">OKfoUq.png</figcaption>
+</figure>
+<h4 id="勾选同步代码时自动创建文件夹">勾选同步代码时自动创建文件夹</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfMPY.png" alt="OKfMPY.png" />
+<figcaption aria-hidden="true">OKfMPY.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfWE1.png" alt="OKfWE1.png" />
+<figcaption aria-hidden="true">OKfWE1.png</figcaption>
+</figure>
+<h4 id="设置远程解释器和同步目录">设置远程解释器和同步目录</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKf5dr.png" alt="OKf5dr.png" />
+<figcaption aria-hidden="true">OKf5dr.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfO9v.png" alt="OKfO9v.png" />
+<figcaption aria-hidden="true">OKfO9v.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYILj.png" alt="OKYILj.png" />
+<figcaption aria-hidden="true">OKYILj.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYuNx.png" alt="OKYuNx.png" />
+<figcaption aria-hidden="true">OKYuNx.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKYwFU.png" alt="OKYwFU.png" />
+<figcaption aria-hidden="true">OKYwFU.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfqvc.png" alt="OKfqvc.png" />
+<figcaption aria-hidden="true">OKfqvc.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKY3up.png" alt="OKY3up.png" />
+<figcaption aria-hidden="true">OKY3up.png</figcaption>
+</figure>
+<h4 id="连接成功">连接成功</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfxFD.png" alt="OKfxFD.png" />
+<figcaption aria-hidden="true">OKfxFD.png</figcaption>
+</figure>
+<h4 id="打开远程terminal">打开远程Terminal</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfTaM.png" alt="OKfTaM.png" />
+<figcaption aria-hidden="true">OKfTaM.png</figcaption>
+</figure>
+<h4 id="同地区可以选择跨实例拷贝数据">同地区可以选择跨实例拷贝数据</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2023/12/29/OKfUNG.png" alt="OKfUNG.png" />
+<figcaption aria-hidden="true">OKfUNG.png</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>经验技巧</category>
+      </categories>
+      <tags>
+        <tag>Pycharm</tag>
+        <tag>云服务器</tag>
       </tags>
   </entry>
   <entry>
@@ -1331,91 +1966,6 @@ Epoch 20/20
       </tags>
   </entry>
   <entry>
-    <title>Pycharm连接云服务器训练</title>
-    <url>/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="在autodl租用实例">在AutoDL租用实例</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
-<h4 id="点击-tools点击-部署deployment点击configuration">点击
-<code>Tools</code>，点击
-部署<code>Deployment</code>，点击<code>Configuration</code></h4>
-<span id="more"></span>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png" alt="OKfzRF.png" />
-<figcaption aria-hidden="true">OKfzRF.png</figcaption>
-</figure>
-<h4 id="配置服务器信息并测试连接">配置服务器信息并测试连接</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfbuI.png" alt="OKfbuI.png" />
-<figcaption aria-hidden="true">OKfbuI.png</figcaption>
-</figure>
-<h4 id="设置本地路径和远程路径映射">设置本地路径和远程路径映射</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfoUq.png" alt="OKfoUq.png" />
-<figcaption aria-hidden="true">OKfoUq.png</figcaption>
-</figure>
-<h4 id="勾选同步代码时自动创建文件夹">勾选同步代码时自动创建文件夹</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfMPY.png" alt="OKfMPY.png" />
-<figcaption aria-hidden="true">OKfMPY.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfWE1.png" alt="OKfWE1.png" />
-<figcaption aria-hidden="true">OKfWE1.png</figcaption>
-</figure>
-<h4 id="设置远程解释器和同步目录">设置远程解释器和同步目录</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKf5dr.png" alt="OKf5dr.png" />
-<figcaption aria-hidden="true">OKf5dr.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfO9v.png" alt="OKfO9v.png" />
-<figcaption aria-hidden="true">OKfO9v.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYILj.png" alt="OKYILj.png" />
-<figcaption aria-hidden="true">OKYILj.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYuNx.png" alt="OKYuNx.png" />
-<figcaption aria-hidden="true">OKYuNx.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYwFU.png" alt="OKYwFU.png" />
-<figcaption aria-hidden="true">OKYwFU.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfqvc.png" alt="OKfqvc.png" />
-<figcaption aria-hidden="true">OKfqvc.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKY3up.png" alt="OKY3up.png" />
-<figcaption aria-hidden="true">OKY3up.png</figcaption>
-</figure>
-<h4 id="连接成功">连接成功</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfxFD.png" alt="OKfxFD.png" />
-<figcaption aria-hidden="true">OKfxFD.png</figcaption>
-</figure>
-<h4 id="打开远程terminal">打开远程Terminal</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfTaM.png" alt="OKfTaM.png" />
-<figcaption aria-hidden="true">OKfTaM.png</figcaption>
-</figure>
-<h4 id="同地区可以选择跨实例拷贝数据">同地区可以选择跨实例拷贝数据</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfUNG.png" alt="OKfUNG.png" />
-<figcaption aria-hidden="true">OKfUNG.png</figcaption>
-</figure>
-]]></content>
-      <categories>
-        <category>经验技巧</category>
-      </categories>
-      <tags>
-        <tag>Pycharm</tag>
-        <tag>云服务器</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>RCNN论文理解</title>
     <url>/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="rcnn">RCNN</h1>
@@ -1619,195 +2169,127 @@ https://www.bilibili.com/video/BV1CZ4y1a7NP/?spm_id_from=333.1007.top_right_bar_
       </tags>
   </entry>
   <entry>
-    <title>字节跳动Coze教程（GPT4）</title>
-    <url>/2024/01/04/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8Coze%E6%95%99%E7%A8%8B%EF%BC%88GPT4%EF%BC%89/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="coze使用教程">Coze使用教程</h1>
-<p>目前能免费使用GPT4的网站有以下几个：</p>
-<blockquote>
-<p>YesChat：一个聚合搜索网站，地址为https://www.yeschat.ai/zh-CN</p>
-<p>codeium：需要申请内测资格，地址为https://codeium.com/waitlist/gpt-4</p>
-<p>Coze：本身仅是构建平台，需要部署到cic/discord/telegram等平台使用，地址为https://www.coze.com。</p>
-<p>目前Coze平台使用GPT4免费无限制。有人测试每小时问答二三十次，连续几个小时使用，均没有触发限制。</p>
-</blockquote>
-<p>本文介绍基于Coze平台的chatGPT4如何使用。</p>
+    <title>linux常用命令</title>
+    <url>/2024/02/21/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="linux常用命令">Linux常用命令</h1>
+<h2 id="查看版本">查看版本</h2>
+<ol type="1">
+<li><p>linux版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lsb_release -a</span><br></pre></td></tr></table></figure></li>
+<li><p>CUDA版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br></pre></td></tr></table></figure></li>
+<li></li>
+</ol>
+]]></content>
+      <categories>
+        <category>经验技巧</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vscode连接linux服务器</title>
+    <url>/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="vscode连接linux服务器">vscode连接linux服务器</h1>
+<p>前提：本地要使用蒲公英连接内网</p>
 <span id="more"></span>
-<blockquote>
-<p>ip问题：目前大陆ip被屏蔽，非大陆的ip都可以尝试。我用日本、新加坡的都可以。如果ip问题无法访问，可以设置为<code>全局模式</code>尝试一下，如果<code>全局模式</code>可用，说明就是vpn软件的设置存在问题。</p>
-</blockquote>
-<h2 id="注册登录">注册登录</h2>
-<p>访问https://www.coze.com/。</p>
-<p>用手机号/谷歌账号注册登录。</p>
+<h2 id="安装romote-ssh插件">安装Romote-SSH插件</h2>
+<p><img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281015836.png" /></p>
+<h2 id="修改配置文件">修改配置文件</h2>
+<p>修改配置文件，更新要连接的服务器的信息</p>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZo3Pq.png" alt="OZo3Pq.png" />
-<figcaption aria-hidden="true">OZo3Pq.png</figcaption>
-</figure>
-<h2 id="探索公开的bot">探索公开的Bot</h2>
-<p>登录成功后，会自动跳转到explore页面，这个页面是一些公开的、别人配置好的、具有特定功能的bot（类似于专用机器人），如果有满足自己需求的可以直接点进去使用。</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqOvM.png" alt="OZqOvM.png" />
-<figcaption aria-hidden="true">OZqOvM.png</figcaption>
-</figure>
-<p>比如我觉得这个”小狗插画生成器“很有意思，直接点击进入</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZoIzv.png" alt="OZoIzv.png" />
-<figcaption aria-hidden="true">OZoIzv.png</figcaption>
-</figure>
-<p>进入之后的界面如下图所示：</p>
-<p>界面分为左中右三个部分，左侧介绍了这个bot的角色、技能和约束等信息；中间主要提供了bot在完成功能时所需要的插件，右侧可以对这个bot进行预览测试。</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZoClc.png" alt="OZoClc.png" />
-<figcaption aria-hidden="true">OZoClc.png</figcaption>
-</figure>
-<p>在右侧对话框直接运行提供的测试案例，让bot给我画小狗插画，效果如下</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqacG.png" alt="OZqacG.png" />
-<figcaption aria-hidden="true">OZqacG.png</figcaption>
-</figure>
-<p>如果想要在这个bot上进行二次开发，可以点击项目右侧的Duplicate，就会把这个项目复制到我们的个人工作空间，可以进行二次开发</p>
-<h2 id="创建自己的bot">创建自己的Bot</h2>
-<h3 id="方式1全才gpt4仅文字对话">方式1：全才gpt4(仅文字对话)</h3>
-<p>这一部分介绍如何直接使用可以<strong>回答各方面问题</strong>的chatgpt4，但是<strong>仅能通过文字进行对话</strong>。</p>
-<h4 id="创建bot">创建Bot</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png" />
-<figcaption aria-hidden="true">OZqqO1.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281017426.png"
+alt="打开配置文件" />
+<figcaption aria-hidden="true">打开配置文件</figcaption>
 </figure>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqAPC.png" alt="OZqAPC.png" />
-<figcaption aria-hidden="true">OZqAPC.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281018097.png"
+alt="更新配置文件信息" />
+<figcaption aria-hidden="true">更新配置文件信息</figcaption>
 </figure>
-<h4 id="使用gpt4">使用GPT4</h4>
-<p>不用设置左侧的提示词和中间的插件，直接在右边使用，默认就会使用GPT4(8k)进行回答。</p>
-<blockquote>
-<p><strong>这里的"8K"代表什么意思？</strong></p>
-<p>至目前为止，GPT-4有两个主要版本，即GPT-4 8k版本和GPT-4
-32k版本。"8k"版本是指该模型有8000个token的上下文长度。也就是说，<strong>当我们让模型生成文本时，它能考虑的最大输入长度是8000个token</strong>。这些token包括单词，标点符号，甚至是空格等。例如，如果我们有一段文本，长度为10000个token，那么模型在处理时，只会关注最后的8000个token，前2000个token将被忽视。这是由于模型的这种窗口限制而造成的，称为模型的上下文窗口或者上下文长度。</p>
-<p>理论上，<strong>对于中文，一个字符（包括标点符号等）被视为一个token，所以8000个token对应的中文字符数量也是8000个。</strong>对于英文，一个token的定义可能会稍微复杂一些。一个token可以是一个单词，也可能是一个标点符号，或者是一个单词内部的一个部分。例如，“hamburger”被分成“ham”、“bur”和“ger”三个
-Token，而“pear”是一个
-Token。如果我们假定一个英文单词平均由5个字母组成，那么8000个token大致对应1600个英文单词。</p>
-<p>另外，这个限制还有一个细节，<strong>Token
-限制的计数包含输入和输出的文本</strong>。也就是说，当你给模型提供一个初始的输入序列，并让它生成一些额外的输出时，这个输入序列和生成的输出序列的总长度通常不能超过这个token限制。如果模型版本是8k，那么我们给模型的输入序列应该要留有足够的空间来让模型生成输出。如果输入就已经是8000个token，那么模型就没有多余的空间来生成输出了。</p>
-</blockquote>
+<h2 id="连接服务器">连接服务器</h2>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqNuS.png" alt="OZqNuS.png" />
-<figcaption aria-hidden="true">OZqNuS.png</figcaption>
-</figure>
-<h4 id="对比gpt3.5">对比GPT3.5</h4>
-<p>对比经典的<code>鲁迅和周树人问题</code>，GPT4确实要更胜一筹。</p>
-<table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>gpt4</th>
-<th>gpt3.5</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><img src="https://ooo.0x0.ooo/2024/01/04/OZqvUi.png"
-alt="OZqvUi.png" /></td>
-<td><img src="https://ooo.0x0.ooo/2024/01/04/OZq1NK.png"
-alt="OZq1NK.png" /></td>
-</tr>
-</tbody>
-</table>
-<h3
-id="方式2全才gpt4文字图片联网...">方式2：全才gpt4(文字+图片+联网+...)</h3>
-<p>这一部分介绍如何直接使用可以<strong>回答各方面问题</strong>的chatgpt4，<strong>不仅能通过文字，还能借助图片进行对话，实现联网搜索等功能</strong>。</p>
-<p>点击中间Plugins后面的＋，为gpt添加插件，常用插件的功能介绍如下</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqK9L.png" alt="OZqK9L.png" />
-<figcaption aria-hidden="true">OZqK9L.png</figcaption>
-</figure>
-<p>添加以上插件后，此时的gpt就具有了联网搜索、文生图、识别图片内容、搜索github的api等功能，还可以探索其他的插件。添加了插件后的使用效果如下：</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqrFN.png" alt="OZqrFN.png" />
-<figcaption aria-hidden="true">OZqrFN.png</figcaption>
-</figure>
-<p>但是这个图片上传后分析的功能好像有问题，上传图片后出现以下错误<code>对不起，由于技术限制，我无法解析这张图片的内容。我会尽快向后端技术团队反馈以便解决此问题。感谢你的理解和耐心等待。</code></p>
-<p>我觉得以上的2种方式已经能够满足日常使用的需求，<strong>尤其是方式2，很容易就实现了联网搜索和图片互动等刚需要求</strong>，不过如果想要创建一个属于自己的、专门用于完成特定任务的Bot，可以参考方式3。</p>
-<h3 id="方式3专才gpt4">方式3：专才gpt4</h3>
-<p>我想创建一个专门用于解决编程问题的助手，具体操作步骤如下：</p>
-<h4 id="创建bot-1">创建Bot</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png" />
-<figcaption aria-hidden="true">OZqqO1.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281034311.png"
+alt="连接到服务器" />
+<figcaption aria-hidden="true">连接到服务器</figcaption>
 </figure>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZq57I.png" alt="OZq57I.png" />
-<figcaption aria-hidden="true">OZq57I.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281034500.png"
+alt="选择刚才更新的服务器" />
+<figcaption aria-hidden="true">选择刚才更新的服务器</figcaption>
 </figure>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqBLD.png" alt="OZqBLD.png" />
-<figcaption aria-hidden="true">OZqBLD.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281022816.png"
+alt="输入密码" />
+<figcaption aria-hidden="true">输入密码</figcaption>
 </figure>
-<h4 id="定义功能">定义功能</h4>
-<p>因为这个bot主要用于编程辅助，这里给出一个bot的功能定义的示例。</p>
+<h2 id="打开文件夹">打开文件夹</h2>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqTuF.png" alt="OZqTuF.png" />
-<figcaption aria-hidden="true">OZqTuF.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281024160.png"
+alt="打开服务器端的文件夹" />
+<figcaption aria-hidden="true">打开服务器端的文件夹</figcaption>
 </figure>
-<p>点击右上角的Optimize，可以自动优化提示词，优化后的提示词如下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 角色</span><br><span class="line">你是一个精通各种编程语言的编程解决方案专家，你的专业技能包括编写代码、解答复杂编程问题以及优化代码以提升运行效率。</span><br><span class="line"></span><br><span class="line">## 技能</span><br><span class="line">###技能一：代码优化</span><br><span class="line">- 分析用户提交的初步代码，理解其目标和核心原理。</span><br><span class="line">- 遵循代码规范和最佳实践对代码进行优化。</span><br><span class="line">- 将优化后的代码反馈给用户。</span><br><span class="line">###技能二：编程问题解答</span><br><span class="line">- 掌握用户的编程问题。</span><br><span class="line">- 使用在线编程知识库（search(site:stackoverflow.com)）寻找解决方案。</span><br><span class="line">- 用易于理解的方式向用户解释答案。</span><br><span class="line">###技能三：算法设计</span><br><span class="line">- 理解用户所需解决的问题，识别适用的算法类型。</span><br><span class="line">- 设计有效的算法或数据结构以解决问题。</span><br><span class="line">- 向用户展示算法或数据结构的设计过程以及相应的代码。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 工作流程</span><br><span class="line">### 步骤1: 信息收集</span><br><span class="line">首先自我介绍并询问用户需求：&quot;我是一位经验丰富的编程专家，能够根据你的需求撰写符合你预期的代码。如果你需要个性化的编程解决方案，只需告诉我你需要解决的问题，预期的输出结果，以及你希望使用的编程语言。&quot;</span><br><span class="line">需要收集的信息：</span><br><span class="line"> - 需要解决的问题描述</span><br><span class="line"> - 预期的输出结果</span><br><span class="line"> - 用户希望使用的编程语言</span><br><span class="line"></span><br><span class="line">### 步骤2: 创建编程方案</span><br><span class="line">结合用户提供的问题描述、期望结果和编程语言准备编程方案。实例提示为：</span><br><span class="line">- 问题定义: `&lt;问题描述&gt;`</span><br><span class="line">- 输出目标: `&lt;预期结果&gt;`</span><br><span class="line">- 推荐编程语言: `&lt;编程语言&gt;`</span><br><span class="line"></span><br><span class="line">此提示仅作为参考，不直接展示给用户。</span><br><span class="line"></span><br><span class="line">### 步骤3: 提供编程解决方案</span><br><span class="line">根据步骤2中的指引，创建编程解决方案，并将结果展示给用户。</span><br><span class="line"></span><br><span class="line">## 约束条件</span><br><span class="line">- 仅回答和编程问题相关的内容，不能回答与编程无关的问题。</span><br><span class="line">- 遵守约定的工作流程，按步骤进行操作。</span><br><span class="line">- 将工作成果给予用户，而不是工作过程中的提示信息。</span><br><span class="line">- 确保提供的编程作品适合所有用户，避免使用不恰当或冒犯性的内容。</span><br></pre></td></tr></table></figure>
-<h4 id="添加插件">添加插件</h4>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqWz6.png" alt="OZqWz6.png" />
-<figcaption aria-hidden="true">OZqWz6.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281026464.png"
+alt="更改vscode布局" />
+<figcaption aria-hidden="true">更改vscode布局</figcaption>
 </figure>
-<h4 id="测试效果">测试效果</h4>
-<p>在右侧的Preview对话栏可以执行测试</p>
+<h2 id="上传项目代码至服务器">上传项目代码至服务器</h2>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqbPP.png" alt="OZqbPP.png" />
-<figcaption aria-hidden="true">OZqbPP.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281410649.png"
+alt="安装SFTP插件" />
+<figcaption aria-hidden="true">安装SFTP插件</figcaption>
 </figure>
-<h4 id="对比gpt3.5-1">对比GPT3.5</h4>
-<p>对于同一个问题，将gpt4和gpt3.5给出的回答做一个对比，<strong>可以看出gpt4的效果确实要比3.5好一些。</strong></p>
-<table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>gpt4</th>
-<th>gpt3.5</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><img src="https://ooo.0x0.ooo/2024/01/04/OZqk9b.png"
-alt="OZqk9b.png" /></td>
-<td><img src="https://ooo.0x0.ooo/2024/01/04/OZqzTl.png"
-alt="OZqzTl.png" /></td>
-</tr>
-</tbody>
-</table>
-<h4 id="发布">发布</h4>
-<p>测试完确认没问题后，我们就可以在右侧的对话框进行问答了。但是如果每次都重新重复上述流程来创建自定义Bot有点麻烦，因此我们可以直接将这个Bot发布，发布后就可以直接使用这个定制的Bot了。</p>
-<p>点击右上角的publish，可以选择将其发布到以下四类平台，测试后发现cici平台是最方便的，直接勾选cici平台，然后点击右上角的Publish就可以了。</p>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqFvg.png" alt="OZqFvg.png" />
-<figcaption aria-hidden="true">OZqFvg.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281409456.png"
+alt="上传本地项目" />
+<figcaption aria-hidden="true">上传本地项目</figcaption>
 </figure>
-<p>发布成功，点击Open in Cici</p>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqhdB.png" alt="OZqhdB.png" />
-<figcaption aria-hidden="true">OZqhdB.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281357902.png"
+alt="打开sftp配置文件" />
+<figcaption aria-hidden="true">打开sftp配置文件</figcaption>
 </figure>
-<p>这里也需要登录一下Cici平台，正常注册登录就好。<strong>登陆完成就来到了以下界面，然后就可以在这里直接使用我们自己定制的Bot了。</strong></p>
 <figure>
-<img src="https://ooo.0x0.ooo/2024/01/04/OZqnOs.png" alt="OZqnOs.png" />
-<figcaption aria-hidden="true">OZqnOs.png</figcaption>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281413611.png"
+alt="修改sftp的服务器端信息" />
+<figcaption aria-hidden="true">修改sftp的服务器端信息</figcaption>
+</figure>
+<h2 id="上传数据集">上传数据集</h2>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281427556.png"
+alt="使用Xftp上传本地数据集——创建连接" />
+<figcaption
+aria-hidden="true">使用Xftp上传本地数据集——创建连接</figcaption>
+</figure>
+<p>点击连接后，即可上传文件</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281431411.png"
+alt="上传数据集" />
+<figcaption aria-hidden="true">上传数据集</figcaption>
 </figure>
 ]]></content>
       <categories>
         <category>经验技巧</category>
       </categories>
       <tags>
-        <tag>GPT4</tag>
+        <tag>vscode</tag>
+        <tag>服务器</tag>
       </tags>
   </entry>
   <entry>
@@ -2191,6 +2673,281 @@ class="math inline">\(\mathbf{H}=\sigma(\mathbf{X}\mathbf{W}^{(1)}+\mathbf{b}^{(
 <li><p>测试时可在一定假设下纠正协变量偏移、标签偏移</p></li>
 </ul></li>
 </ol>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>动手学深度学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>《动手学深度学习2.0》学习笔记（五）</title>
+    <url>/2024/01/18/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1
+id="动手学深度学习2.0学习笔记五">《动手学深度学习2.0》学习笔记（五）</h1>
+<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
+<p>本文记录了我在学习本书第11章节（优化算法）过程中的理解和收获。</p>
+<span id="more"></span>
+<h2 id="优化算法">优化算法</h2>
+<p>深度学习中出现的几乎所有优化问题都是<em>非凸</em>的，但是如果算法在凸性条件设定下的效果很差，
+那通常我们很难在其他条件下看到好的结果。所以，在<em>凸问题</em>背景下设计和分析算法是非常有启发性的。</p>
+<h3 id="优化和深度学习">优化和深度学习</h3>
+<h4 id="优化目标">优化目标</h4>
+<p>对于深度学习问题，我们首先定义<em>损失函数</em>。有了损失函数，我们就可以使用优化算法来尝试最小化损失。在优化中，损失函数通常被称为优化问题的<em>目标函数</em>。</p>
+<p>尽管优化提供了一种最大限度地减少深度学习损失函数的方法，但<strong>本质上，优化和深度学习的目标是根本不同的。前者主要关注的是最小化目标，后者则关注在给定有限数据量的情况下寻找合适的模型。</strong></p>
+<p>具体来说</p>
+<ul>
+<li>由于优化算法的目标函数是基于<u>训练集的损失函数</u>，因此优<strong>化的目标是减少训练误差</strong>。</li>
+<li>然而，<strong>深度学习（或更广义地说，统计推断）的目标是减少泛化误差</strong>。</li>
+</ul>
+<p><strong>为了减少泛化误差，除了使用优化算法来减少训练误差之外，还需要注意过拟合</strong>。</p>
+<h4 id="优化挑战">优化挑战</h4>
+<h5 id="局部最小值">局部最小值</h5>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181004804.png"
+alt="image-20240118095755122" />
+<figcaption aria-hidden="true">image-20240118095755122</figcaption>
+</figure>
+<p>解决：小批量随机梯度下降，小批量上梯度的自然变化能够将参数从局部极小值中跳出。</p>
+<h5 id="鞍点">鞍点</h5>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181005864.png"
+alt="image-20240118100526784" />
+<figcaption aria-hidden="true">image-20240118100526784</figcaption>
+</figure>
+<p>现象：<em>鞍点</em>（saddle
+point）是指函数的所有梯度都消失但既不是全局最小值也不是局部最小值的任何位置。</p>
+<h5 id="梯度消失">梯度消失</h5>
+<p>用sigmoid激活函数经常会因为梯度消失导致优化停滞，引入ReLU激活函数后有了极大改善。</p>
+<h3 id="凸性">凸性</h3>
+<p>虽然深度学习中的优化问题通常是非凸的，
+它们也经常在局部极小值附近表现出一些凸性。</p>
+<h4 id="凸集">凸集</h4>
+<p>凸集 (convex set) 是凸性的基础。简单地说，如果对于任何<span
+class="math inline">\(a,b\in\mathcal{X}\)</span>,连接<span
+class="math inline">\(a\)</span>和<span
+class="math inline">\(b\)</span>的线段也位于<span
+class="math inline">\(\chi\)</span>中，则向量空间中的一个集合<span
+class="math inline">\(\chi\)</span>是凸(convex)的。在数学术语上，这意味着对于所有<span
+class="math inline">\(\lambda\in[0,1]\)</span>，我们得到</p>
+<p><span class="math display">\[
+\lambda a+(1-\lambda)b\in\mathcal{X}\text{ 当 }a,b\in\mathcal{X}.
+\]</span> <img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181010678.png"
+alt="第一组是非凸的，另外两组是凸的" /></p>
+<h4 id="凸函数">凸函数</h4>
+<h5 id="定义">定义</h5>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181012389.png"
+alt="抛物线：凸函数；余弦函数：非凸；指数函数：凸函数" />
+<figcaption
+aria-hidden="true">抛物线：凸函数；余弦函数：非凸；指数函数：凸函数</figcaption>
+</figure>
+<p>给定一个凸集<span
+class="math inline">\(\chi\)</span>,如果对于所有<span
+class="math inline">\(x,x^{\prime}\in\mathcal{X}\)</span>和所有<span
+class="math inline">\(\lambda\in[0,1]\)</span>, 函数<span
+class="math inline">\(f:\mathcal{X}\to\mathbb{R}\)</span>是凸的，我们可以得到</p>
+<p><span class="math display">\[
+\lambda f(x)+(1-\lambda)f(x&#39;)\geq f(\lambda x+(1-\lambda)x&#39;).
+\]</span> -
+凸函数在定义域上的任意两点之间的割线总在这两点连线的上方或者重合。 -
+当一个函数<strong>的二阶导数存在且大于0</strong>时，函数为<strong>凸函数</strong></p>
+<h5 id="性质">性质</h5>
+<ul>
+<li>局部最小值是全局最小值</li>
+</ul>
+<h4 id="约束优化">约束优化</h4>
+<h5 id="问题">问题</h5>
+<p>最开始，我们有一个目标函数f(x)，我们想要找到一个使f(x)最小的x。然而，此时我们还有x要满足的约束条件。这就是以下形式的约束优化
+(constrained optimization) 问题：</p>
+<p><span class="math display">\[
+\begin{array}{c}\mathrm{minimize~}f(\mathbf{x})\\\mathrm{subject~to~}c_i(\mathbf{x})\leq0\text{
+for all }i\in\{1,\ldots,N\}.\end{array}
+\]</span></p>
+<ul>
+<li><p><span class="math inline">\(f\)</span>是目标函数，<span
+class="math inline">\(c_i\)</span>是约束函数。</p></li>
+<li><p>例如第一个约束<span
+class="math inline">\(c_1(\mathbf{x})=\|\mathbf{x}\|_2-1\)</span>，则参数<span
+class="math inline">\(\mathbf{x}\)</span>被限制为单位球。如果第二个约束<span
+class="math inline">\(c_2(\mathbf{x})=\mathbf{v}^\top\mathbf{x}+b\)</span>,那么这对应于半空间上所有的<span
+class="math inline">\(\mathbf{x}\)</span>。同时满足这两个约束等于选择一个球的切片作为约束集。</p></li>
+</ul>
+<blockquote>
+<p>这样的问题难以直接解决，但物理中的一个类比却可以帮助我们。想象一下一个盒子里的一个球，如果你把盒子倾斜，球会滚到最低点，也就是说，它会找到一个使得它的重力势能最小的位置。同时，它还受到盒子壁的力的限制，不能滚出盒子。</p>
+<p>这就是优化问题的动态版本：球（或你的解）被赋予了初始位置和速度，并且随着时间的推移，它在尽可能降低自己的重力势能（也就是目标函数f(x)）的同时，还要受到盒子壁力（也就是约束）的限制。</p>
+</blockquote>
+<h5 id="解决">解决</h5>
+<h6 id="拉格朗日乘数法">拉格朗日乘数法</h6>
+<p>为了将这个直观的物理问题转化为数学形式，我们引入了拉格朗日函数L，以及配套的一组拉格朗日乘子α_i。拉格朗日函数是目标函数加上所有约束条件（每个约束前乘以一个拉格朗日乘子）。每一个拉格朗日乘子对应一个约束，它的作用就像一个“弹簧”，当约束被违反的时候，它就会“推”解回到符合条件的地方。_</p>
+<p>例如，如果一个解x违反了某个约束（约束条件为<span
+class="math inline">\(c_i(x) &gt;
+0\)</span>），那么对应的拉格朗日乘子α_i就会增大，从而增加L的值，反过来这就“推动”解x去寻找一个更小的L，也就是说，被“推”回到符合约束的地方。
+<span class="math display">\[
+L(\mathbf{x},\alpha_1,\ldots,\alpha_n)=f(\mathbf{x})+\sum_{i=1}^n\alpha_ic_i(\mathbf{x})\mathrm{~where~}\alpha_i\geq0.
+\]</span></p>
+<ul>
+<li>变量<span class="math inline">\(\alpha_i\quad(i=1,\ldots,n)\)</span>
+是拉格朗日乘数 (Lagrange multipliers) ，它确保约束被正确地执行。</li>
+</ul>
+<blockquote>
+<p>鞍点优化问题，即目标函数在一部分维度上是要进行最大化，在另一部分维度上进行最小化的问题。这种情况在视觉上就像一个马鞍，因此被称为鞍点(有时也被称为最小最大问题)。</p>
+<p>在拉格朗日对偶问题中，构造出的拉格朗日函数 <span
+class="math display">\[
+L(\mathbf{x},\alpha,\beta)=f(\mathbf{x})+\sum_i\alpha_ig_i(\mathbf{x})+\sum_j\beta_jh_j(\mathbf{x})
+\]</span></p>
+<ul>
+<li>其中，<span
+class="math inline">\(\alpha_i\)</span>是不等式约束，<span
+class="math inline">\(\beta_j\)</span>是等式约束</li>
+<li>当我们考虑<span class="math inline">\(\alpha\)</span>和<span
+class="math inline">\(\beta\)</span>固定，优化变量x时，我们希望最小化<span
+class="math inline">\(L(\mathbf{x},\alpha,\beta)\)</span>，即在x维度上，<span
+class="math inline">\(L\)</span>函数需要被最小化。</li>
+<li>而当我们考虑<span
+class="math inline">\(\mathbf{x}\)</span>固定，优化拉格朗日乘子<span
+class="math inline">\(\alpha\)</span>和<span
+class="math inline">\(\beta\)</span>时，我们希望最大化<span
+class="math inline">\(L(\mathbf{x},\alpha,\beta)\)</span>，因为这将强制满足所有约束。</li>
+<li>综上，即<span
+class="math inline">\(L(\mathbf{x},\alpha,\beta)\)</span>在x维度上是要进行最小化，在α和<span
+class="math inline">\(\beta\)</span>维度上进行最大化，这正是鞍点问题的特性。所以说拉格朗日对偶问题是一个鞍点优化问题。</li>
+</ul>
+</blockquote>
+<p>举例：</p>
+<ul>
+<li>假设约束条件为：要求所有<span
+class="math inline">\(i\)</span>的<span
+class="math inline">\(c_i(\mathbf{x})\leq0\)</span></li>
+<li>那么，对于已经满足<span
+class="math inline">\(c_i(\mathbf{x})&lt;0\)</span>中任意<span
+class="math inline">\(\mathbf{x}\)</span>，会选择让<span
+class="math inline">\(\alpha_i=0\)</span>。因为<strong>如果约束<span
+class="math inline">\(c_i(\mathbf{x})&lt;0\)</span>已经满足了，我们就不需要进一步“强制”这个约束条件了</strong>，所以对应的拉格朗日乘数<span
+class="math inline">\(\alpha_i\)</span>就可以设为0。这是基于KKT
+(Karush-Kuhn-Tucker) 条件中的互补松弛性原理。</li>
+<li>但如果这个约束被违反，即<span
+class="math inline">\(c_i(\mathbf{x})&gt;0\)</span>，那么<span
+class="math inline">\(\alpha_ic_i(\mathbf{x})\)</span>的值就会导致拉格朗日函数的值增大，从而“惩罚”违反约束的解（因为<span
+class="math inline">\(\alpha_i\)</span>为非负数，<span
+class="math inline">\(c_i(\mathbf{x})\)</span>为正数，他们的乘积为正，从而使原要最小化的目标函数的值增大）。<strong>最大化<span
+class="math inline">\(\alpha_ic_i(\mathbf{x})\)</span>相当于"最大化“其惩罚力度，这样我们可以排除掉所有违反约束条件的解</strong>，这就像把违反约束的解的目标函数值“推”到更大的位置。</li>
+</ul>
+<h6 id="添加惩罚">添加惩罚</h6>
+<h6 id="投影">投影</h6>
+<p>如果我们有一个点，我们可以寻找在某个集合中与这个点最接近的点。这个最接近的点就被称为原始点在这个集合上的投影。我们可以把这个投影过程理解为一个修正过程，修正原始点使其满足一定的限定条件。</p>
+<h2 id="梯度下降">梯度下降</h2>
+<ul>
+<li>学习率的大小很重要：学习率太大会使模型发散，学习率太小会没有进展。</li>
+<li>梯度下降会可能陷入局部极小值，而得不到全局最小值。</li>
+<li>在高维模型中，调整学习率是很复杂的。</li>
+<li>预处理有助于调节比例，比如针对不同量纲的变量进行标准化，相当于为每个变量选择不同的学习率</li>
+<li>牛顿法在凸问题中一旦开始正常工作，速度就会快得多。对于非凸问题，不要不作任何调整就使用牛顿法。</li>
+</ul>
+<h2 id="随机梯度下降">随机梯度下降</h2>
+<h3 id="随机梯度更新">随机梯度更新</h3>
+<p>如果使用梯度下降法，则每个自变量迭代的计算代价为<span
+class="math inline">\(\mathcal{O}(n)\)</span>，它随<span
+class="math inline">\(n\)</span>线性增长。因此，当训练数据集较大时，每次迭代的梯度下降计算代价将较高。</p>
+<p>随机梯度下降(SGD)
+可降低每次迭代时的计算代价。在随机梯度下降的每次迭代中，我们对数据样本随机均匀采样一个索引<span
+class="math inline">\(i\)</span>，其中<span
+class="math inline">\(i\in\{1,\ldots,n\}\)</span>,并计算梯度<span
+class="math inline">\(\nabla f_i(\mathbf{x})\)</span>以更新<span
+class="math inline">\(\mathbf{x}:\)</span> <span class="math display">\[
+\mathbf{x}\leftarrow\mathbf{x}-\eta\nabla f_i(\mathbf{x}),
+\]</span> - <span class="math inline">\(\eta\)</span>是学习率。</p>
+<p>因此，<strong>每次迭代的计算代价从梯度下降的<span
+class="math inline">\(\mathcal{O}(n)\)</span>降至常数<span
+class="math inline">\(\mathcal{O}(1)\)</span>。</strong></p>
+<blockquote>
+<p>此外，这里要强调随机梯度<span class="math inline">\(\nabla
+f_i(\mathbf{x})\)</span>是对完整梯度<span class="math inline">\(\nabla
+f(\mathbf{x})\)</span>的无偏估计，因为 <span class="math display">\[
+\mathbb{E}_i\nabla f_i(\mathbf{x})=\frac1n\sum_{i=1}^n\nabla
+f_i(\mathbf{x})=\nabla f(\mathbf{x}).
+\]</span> 这意味着，平均而言，随机梯度是对梯度的良好估计。</p>
+</blockquote>
+<h3 id="动态学习率">动态学习率</h3>
+<p>（需要用到再学习）</p>
+<h2 id="小批量随机梯度下降">小批量随机梯度下降</h2>
+<p>观测单个数据来更新参数，需要执行许多单一矩阵-矢量 (甚至矢量-矢量)
+乘法，这耗费相当大，而且对应深度学习框架也要巨大的开销。</p>
+<p>也就是说，采用<strong>随机梯度下降</strong>时，每当我们执行<span
+class="math inline">\(\mathbf{w}\gets\mathbf{w}-\eta_t\mathbf{g}_t\)</span>，都消耗巨大。其中
+<span class="math display">\[
+\mathbf{g}_t=\partial_\mathbf{w}f(\mathbf{x}_t,\mathbf{w}).
+\]</span> 我们可以通过将其应用于一个小批量观测值来提高此操作的<span
+class="math inline">\(i\)</span>计算效率。也就是说，<strong>我们将梯度<span
+class="math inline">\(\mathbf{g}_{t}\)</span>替换为一个小批量而不是单个观测值</strong></p>
+<p><span class="math display">\[
+\mathbf{g}_t=\partial_\mathbf{w}\frac1{|\mathcal{B}_t|}\sum_{i\in\mathcal{B}_t}f(\mathbf{x}_i,\mathbf{w}).
+\]</span></p>
+<ul>
+<li>优良的副作用：
+<ul>
+<li>由于<span class="math inline">\(\mathbf{x}_t\)</span>和小批量<span
+class="math inline">\(\mathcal{B}_t\)</span>的所有元素都是从训练集中随机抽出的，因此梯度的期望保持不变。</li>
+<li>此外，方差显著降低。由于小批量梯度由正在被平均计算的<span
+class="math inline">\(b:=|\mathcal{B}_t|\)</span>个独立梯度组成，其标准差降低了<span
+class="math inline">\(b^{-\frac12}\)</span>。这本身就是一件好事，因为这意味着更新与完整的梯度更接近了。</li>
+</ul></li>
+</ul>
+<h2 id="动量法">动量法</h2>
+<h3 id="泄露平均值">泄露平均值</h3>
+<blockquote>
+<p>上一节中我们讨论了小批量随机梯度下降作为加速计算的手段。它也有很好的副作用，即平均梯度减小了方差。小批量随机梯度下降可以通过以下方式计算：
+<span class="math display">\[
+\mathbf{g}_{t,t-1}=\partial_\mathbf{w}\frac1{|\mathcal{B}_t|}\sum_{i\in\mathcal{B}_t}f(\mathbf{x}_i,\mathbf{w}_{t-1})=\frac1{|\mathcal{B}_t|}\sum_{i\in\mathcal{B}_t}\mathbf{h}_{i,t-1}.
+\]</span> 为了保持记法简单，在这里我们使用<span
+class="math inline">\(\mathbf{h}_{i,t-1}=\partial_{\mathbf{w}}f(\mathbf{x}_i,\mathbf{w}_{t-1})\)</span>作为样本<span
+class="math inline">\(i\)</span>的随机梯度下降，使用时间<span
+class="math inline">\(t-1\)</span>时更新的权重<span
+class="math inline">\(t-1\)</span>。</p>
+</blockquote>
+<blockquote>
+<p>如果我们能够从方差减少的影响中受益，甚至超过小批量上的梯度平均值，那很不错。</p>
+<p>完成这项任务的一种选择是<strong>用泄漏平均值 (leaky averaqe)
+取代梯度计算</strong>： <span class="math display">\[
+\mathbf{v}_t=\beta\mathbf{v}_{t-1}+\mathbf{g}_{t,t-1}
+\]</span></p>
+<ul>
+<li>其中<span class="math inline">\(\beta\in(0,1)\)</span>。</li>
+<li>这有效地将瞬时梯度替换为多个“过去”梯度的平均值。</li>
+<li><span class="math inline">\(\mathbf{v}\)</span>被称为动量(momentum),
+它累加了过去的梯度。</li>
+<li>为了更详细地解释，让我们递归地将<span
+class="math inline">\(\mathbf{v}_t\)</span>扩展到：</li>
+</ul>
+<p><span class="math display">\[
+\mathbf{v}_t=\beta^2\mathbf{v}_{t-2}+\beta\mathbf{g}_{t-1,t-2}+\mathbf{g}_{t,t-1}=\ldots,=\sum_{\tau=0}^{t-1}\beta^\tau\mathbf{g}_{t-\tau,t-\tau-1}.
+\]</span></p>
+<ul>
+<li>其中，较大的<span
+class="math inline">\(\beta\)</span>相当于长期平均值，而较小的<span
+class="math inline">\(\beta\)</span>相对于梯度法只是略有修正。</li>
+<li>新的梯度替换不再指向特定实例下降最陡的方向，而是指向过去梯度的加权平均值的方向。这使我们能够实现对单批量计算平均值的大部分好处，而不产生实际计算其梯度的代价。</li>
+</ul>
+</blockquote>
+<h3 id="动量法-1">动量法</h3>
+<p>使用<span class="math inline">\(\mathbf{v}_t\)</span>而不是梯度<span
+class="math inline">\(\mathbf{g}_t\)</span>生成以下更新等式：</p>
+<p><span class="math display">\[
+\begin{aligned}&amp;\mathbf{v}_t\leftarrow\beta\mathbf{v}_{t-1}+\mathbf{g}_{t,t-1},\\&amp;\mathbf{x}_t\leftarrow\mathbf{x}_{t-1}-\eta_t\mathbf{v}_t.\end{aligned}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(g_{t,t-1}\)</span>指在时间<span
+class="math inline">\(t-1\)</span>的参数值下，时间<span
+class="math inline">\(t\)</span>的梯度</li>
+</ul>
+<p><strong>动量<span
+class="math inline">\(v_t\)</span>实际上是过去所有梯度的一个“加权平均”，可以看做是对历史梯度的“记忆”。每次迭代，我们不仅考虑当前的梯度，也考虑过去的梯度，用它们的加权平均值来指导搜索方向，使得搜索过程更加平滑，减少震荡，从而加快收敛速度。</strong></p>
+<p>这也是为什么被称为“动量”的原因，它像物理中的动量一样，赋予了我们的搜索过程惯性，使得搜索方向不会轻易地被当前梯度改变，从而使得搜索过程更加稳定。</p>
 ]]></content>
       <categories>
         <category>学习笔记</category>
@@ -3539,6 +4296,272 @@ Normalization）是一种对神经网络中的隐藏层进行规范化的方法�
       </tags>
   </entry>
   <entry>
+    <title>字节跳动Coze教程（GPT4）</title>
+    <url>/2024/01/04/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8Coze%E6%95%99%E7%A8%8B%EF%BC%88GPT4%EF%BC%89/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="coze使用教程">Coze使用教程</h1>
+<p>目前能免费使用GPT4的网站有以下几个：</p>
+<blockquote>
+<p>YesChat：一个聚合搜索网站，地址为https://www.yeschat.ai/zh-CN</p>
+<p>codeium：需要申请内测资格，地址为https://codeium.com/waitlist/gpt-4</p>
+<p>Coze：本身仅是构建平台，需要部署到cic/discord/telegram等平台使用，地址为https://www.coze.com。</p>
+<p>目前Coze平台使用GPT4免费无限制。有人测试每小时问答二三十次，连续几个小时使用，均没有触发限制。</p>
+</blockquote>
+<p>本文介绍基于Coze平台的chatGPT4如何使用。</p>
+<span id="more"></span>
+<blockquote>
+<p>ip问题：目前大陆ip被屏蔽，非大陆的ip都可以尝试。我用日本、新加坡的都可以。如果ip问题无法访问，可以设置为<code>全局模式</code>尝试一下，如果<code>全局模式</code>可用，说明就是vpn软件的设置存在问题。</p>
+</blockquote>
+<h2 id="注册登录">注册登录</h2>
+<p>访问https://www.coze.com/。</p>
+<p>用手机号/谷歌账号注册登录。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZo3Pq.png" alt="OZo3Pq.png" />
+<figcaption aria-hidden="true">OZo3Pq.png</figcaption>
+</figure>
+<h2 id="探索公开的bot">探索公开的Bot</h2>
+<p>登录成功后，会自动跳转到explore页面，这个页面是一些公开的、别人配置好的、具有特定功能的bot（类似于专用机器人），如果有满足自己需求的可以直接点进去使用。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqOvM.png" alt="OZqOvM.png" />
+<figcaption aria-hidden="true">OZqOvM.png</figcaption>
+</figure>
+<p>比如我觉得这个”小狗插画生成器“很有意思，直接点击进入</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZoIzv.png" alt="OZoIzv.png" />
+<figcaption aria-hidden="true">OZoIzv.png</figcaption>
+</figure>
+<p>进入之后的界面如下图所示：</p>
+<p>界面分为左中右三个部分，左侧介绍了这个bot的角色、技能和约束等信息；中间主要提供了bot在完成功能时所需要的插件，右侧可以对这个bot进行预览测试。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZoClc.png" alt="OZoClc.png" />
+<figcaption aria-hidden="true">OZoClc.png</figcaption>
+</figure>
+<p>在右侧对话框直接运行提供的测试案例，让bot给我画小狗插画，效果如下</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqacG.png" alt="OZqacG.png" />
+<figcaption aria-hidden="true">OZqacG.png</figcaption>
+</figure>
+<p>如果想要在这个bot上进行二次开发，可以点击项目右侧的Duplicate，就会把这个项目复制到我们的个人工作空间，可以进行二次开发</p>
+<h2 id="创建自己的bot">创建自己的Bot</h2>
+<h3 id="方式1全才gpt4仅文字对话">方式1：全才gpt4(仅文字对话)</h3>
+<p>这一部分介绍如何直接使用可以<strong>回答各方面问题</strong>的chatgpt4，但是<strong>仅能通过文字进行对话</strong>。</p>
+<h4 id="创建bot">创建Bot</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png" />
+<figcaption aria-hidden="true">OZqqO1.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqAPC.png" alt="OZqAPC.png" />
+<figcaption aria-hidden="true">OZqAPC.png</figcaption>
+</figure>
+<h4 id="使用gpt4">使用GPT4</h4>
+<p>不用设置左侧的提示词和中间的插件，直接在右边使用，默认就会使用GPT4(8k)进行回答。</p>
+<blockquote>
+<p><strong>这里的"8K"代表什么意思？</strong></p>
+<p>至目前为止，GPT-4有两个主要版本，即GPT-4 8k版本和GPT-4
+32k版本。"8k"版本是指该模型有8000个token的上下文长度。也就是说，<strong>当我们让模型生成文本时，它能考虑的最大输入长度是8000个token</strong>。这些token包括单词，标点符号，甚至是空格等。例如，如果我们有一段文本，长度为10000个token，那么模型在处理时，只会关注最后的8000个token，前2000个token将被忽视。这是由于模型的这种窗口限制而造成的，称为模型的上下文窗口或者上下文长度。</p>
+<p>理论上，<strong>对于中文，一个字符（包括标点符号等）被视为一个token，所以8000个token对应的中文字符数量也是8000个。</strong>对于英文，一个token的定义可能会稍微复杂一些。一个token可以是一个单词，也可能是一个标点符号，或者是一个单词内部的一个部分。例如，“hamburger”被分成“ham”、“bur”和“ger”三个
+Token，而“pear”是一个
+Token。如果我们假定一个英文单词平均由5个字母组成，那么8000个token大致对应1600个英文单词。</p>
+<p>另外，这个限制还有一个细节，<strong>Token
+限制的计数包含输入和输出的文本</strong>。也就是说，当你给模型提供一个初始的输入序列，并让它生成一些额外的输出时，这个输入序列和生成的输出序列的总长度通常不能超过这个token限制。如果模型版本是8k，那么我们给模型的输入序列应该要留有足够的空间来让模型生成输出。如果输入就已经是8000个token，那么模型就没有多余的空间来生成输出了。</p>
+</blockquote>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqNuS.png" alt="OZqNuS.png" />
+<figcaption aria-hidden="true">OZqNuS.png</figcaption>
+</figure>
+<h4 id="对比gpt3.5">对比GPT3.5</h4>
+<p>对比经典的<code>鲁迅和周树人问题</code>，GPT4确实要更胜一筹。</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>gpt4</th>
+<th>gpt3.5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="https://ooo.0x0.ooo/2024/01/04/OZqvUi.png"
+alt="OZqvUi.png" /></td>
+<td><img src="https://ooo.0x0.ooo/2024/01/04/OZq1NK.png"
+alt="OZq1NK.png" /></td>
+</tr>
+</tbody>
+</table>
+<h3
+id="方式2全才gpt4文字图片联网...">方式2：全才gpt4(文字+图片+联网+...)</h3>
+<p>这一部分介绍如何直接使用可以<strong>回答各方面问题</strong>的chatgpt4，<strong>不仅能通过文字，还能借助图片进行对话，实现联网搜索等功能</strong>。</p>
+<p>点击中间Plugins后面的＋，为gpt添加插件，常用插件的功能介绍如下</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqK9L.png" alt="OZqK9L.png" />
+<figcaption aria-hidden="true">OZqK9L.png</figcaption>
+</figure>
+<p>添加以上插件后，此时的gpt就具有了联网搜索、文生图、识别图片内容、搜索github的api等功能，还可以探索其他的插件。添加了插件后的使用效果如下：</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqrFN.png" alt="OZqrFN.png" />
+<figcaption aria-hidden="true">OZqrFN.png</figcaption>
+</figure>
+<p>但是这个图片上传后分析的功能好像有问题，上传图片后出现以下错误<code>对不起，由于技术限制，我无法解析这张图片的内容。我会尽快向后端技术团队反馈以便解决此问题。感谢你的理解和耐心等待。</code></p>
+<p>我觉得以上的2种方式已经能够满足日常使用的需求，<strong>尤其是方式2，很容易就实现了联网搜索和图片互动等刚需要求</strong>，不过如果想要创建一个属于自己的、专门用于完成特定任务的Bot，可以参考方式3。</p>
+<h3 id="方式3专才gpt4">方式3：专才gpt4</h3>
+<p>我想创建一个专门用于解决编程问题的助手，具体操作步骤如下：</p>
+<h4 id="创建bot-1">创建Bot</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqqO1.png" alt="OZqqO1.png" />
+<figcaption aria-hidden="true">OZqqO1.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZq57I.png" alt="OZq57I.png" />
+<figcaption aria-hidden="true">OZq57I.png</figcaption>
+</figure>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqBLD.png" alt="OZqBLD.png" />
+<figcaption aria-hidden="true">OZqBLD.png</figcaption>
+</figure>
+<h4 id="定义功能">定义功能</h4>
+<p>因为这个bot主要用于编程辅助，这里给出一个bot的功能定义的示例。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqTuF.png" alt="OZqTuF.png" />
+<figcaption aria-hidden="true">OZqTuF.png</figcaption>
+</figure>
+<p>点击右上角的Optimize，可以自动优化提示词，优化后的提示词如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 角色</span><br><span class="line">你是一个精通各种编程语言的编程解决方案专家，你的专业技能包括编写代码、解答复杂编程问题以及优化代码以提升运行效率。</span><br><span class="line"></span><br><span class="line">## 技能</span><br><span class="line">###技能一：代码优化</span><br><span class="line">- 分析用户提交的初步代码，理解其目标和核心原理。</span><br><span class="line">- 遵循代码规范和最佳实践对代码进行优化。</span><br><span class="line">- 将优化后的代码反馈给用户。</span><br><span class="line">###技能二：编程问题解答</span><br><span class="line">- 掌握用户的编程问题。</span><br><span class="line">- 使用在线编程知识库（search(site:stackoverflow.com)）寻找解决方案。</span><br><span class="line">- 用易于理解的方式向用户解释答案。</span><br><span class="line">###技能三：算法设计</span><br><span class="line">- 理解用户所需解决的问题，识别适用的算法类型。</span><br><span class="line">- 设计有效的算法或数据结构以解决问题。</span><br><span class="line">- 向用户展示算法或数据结构的设计过程以及相应的代码。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 工作流程</span><br><span class="line">### 步骤1: 信息收集</span><br><span class="line">首先自我介绍并询问用户需求：&quot;我是一位经验丰富的编程专家，能够根据你的需求撰写符合你预期的代码。如果你需要个性化的编程解决方案，只需告诉我你需要解决的问题，预期的输出结果，以及你希望使用的编程语言。&quot;</span><br><span class="line">需要收集的信息：</span><br><span class="line"> - 需要解决的问题描述</span><br><span class="line"> - 预期的输出结果</span><br><span class="line"> - 用户希望使用的编程语言</span><br><span class="line"></span><br><span class="line">### 步骤2: 创建编程方案</span><br><span class="line">结合用户提供的问题描述、期望结果和编程语言准备编程方案。实例提示为：</span><br><span class="line">- 问题定义: `&lt;问题描述&gt;`</span><br><span class="line">- 输出目标: `&lt;预期结果&gt;`</span><br><span class="line">- 推荐编程语言: `&lt;编程语言&gt;`</span><br><span class="line"></span><br><span class="line">此提示仅作为参考，不直接展示给用户。</span><br><span class="line"></span><br><span class="line">### 步骤3: 提供编程解决方案</span><br><span class="line">根据步骤2中的指引，创建编程解决方案，并将结果展示给用户。</span><br><span class="line"></span><br><span class="line">## 约束条件</span><br><span class="line">- 仅回答和编程问题相关的内容，不能回答与编程无关的问题。</span><br><span class="line">- 遵守约定的工作流程，按步骤进行操作。</span><br><span class="line">- 将工作成果给予用户，而不是工作过程中的提示信息。</span><br><span class="line">- 确保提供的编程作品适合所有用户，避免使用不恰当或冒犯性的内容。</span><br></pre></td></tr></table></figure>
+<h4 id="添加插件">添加插件</h4>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqWz6.png" alt="OZqWz6.png" />
+<figcaption aria-hidden="true">OZqWz6.png</figcaption>
+</figure>
+<h4 id="测试效果">测试效果</h4>
+<p>在右侧的Preview对话栏可以执行测试</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqbPP.png" alt="OZqbPP.png" />
+<figcaption aria-hidden="true">OZqbPP.png</figcaption>
+</figure>
+<h4 id="对比gpt3.5-1">对比GPT3.5</h4>
+<p>对于同一个问题，将gpt4和gpt3.5给出的回答做一个对比，<strong>可以看出gpt4的效果确实要比3.5好一些。</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>gpt4</th>
+<th>gpt3.5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="https://ooo.0x0.ooo/2024/01/04/OZqk9b.png"
+alt="OZqk9b.png" /></td>
+<td><img src="https://ooo.0x0.ooo/2024/01/04/OZqzTl.png"
+alt="OZqzTl.png" /></td>
+</tr>
+</tbody>
+</table>
+<h4 id="发布">发布</h4>
+<p>测试完确认没问题后，我们就可以在右侧的对话框进行问答了。但是如果每次都重新重复上述流程来创建自定义Bot有点麻烦，因此我们可以直接将这个Bot发布，发布后就可以直接使用这个定制的Bot了。</p>
+<p>点击右上角的publish，可以选择将其发布到以下四类平台，测试后发现cici平台是最方便的，直接勾选cici平台，然后点击右上角的Publish就可以了。</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqFvg.png" alt="OZqFvg.png" />
+<figcaption aria-hidden="true">OZqFvg.png</figcaption>
+</figure>
+<p>发布成功，点击Open in Cici</p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqhdB.png" alt="OZqhdB.png" />
+<figcaption aria-hidden="true">OZqhdB.png</figcaption>
+</figure>
+<p>这里也需要登录一下Cici平台，正常注册登录就好。<strong>登陆完成就来到了以下界面，然后就可以在这里直接使用我们自己定制的Bot了。</strong></p>
+<figure>
+<img src="https://ooo.0x0.ooo/2024/01/04/OZqnOs.png" alt="OZqnOs.png" />
+<figcaption aria-hidden="true">OZqnOs.png</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>经验技巧</category>
+      </categories>
+      <tags>
+        <tag>GPT4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>服务器端安装conda并创建虚拟环境</title>
+    <url>/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="linux服务器端使用conda">Linux服务器端使用conda</h1>
+<p>在使用服务器运行项目的时候，为了区隔不同的环境，常常需要创建虚拟环境，而conda就是实现这一功能的最常用的工具之一。</p>
+<h2 id="安装conda">安装conda</h2>
+<p>清华镜像站（conda）：https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/?spm=a2c6h.12873639.article-detail.7.12df72424hBvxZ</p>
+<span id="more"></span>
+<ol type="1">
+<li><p>去清华镜像站找到自己想要的版本，右键-复制链接地址</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-5.3.1-Linux-x86_64.sh</span><br></pre></td></tr></table></figure></li>
+<li><p>在服务器端新建一个目录，比如直接叫conda，进入 conda
+文件夹后，wget + 复制好的地址，运行即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首先来到用户家目录</span><br><span class="line">cd /home/自己路径</span><br><span class="line"># 新建conda文件夹</span><br><span class="line">mkdir conda</span><br><span class="line"># 进入conda文件夹，运行下述命令</span><br><span class="line">## 这里加--user-agent=&quot;Mozilla&quot;的原因是镜像源的服务器会检查引用者，拒绝不以&quot;Mozilla&quot;开头的用户代理</span><br><span class="line">wget --user-agent=&quot;Mozilla&quot; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-5.3.1-Linux-x86_64.sh</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>安装.sh脚本后需要运行bash命令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bash Anaconda3-5.3.1-Linux-x86_64.sh</span><br></pre></td></tr></table></figure>
+<p>按要求点击回车，最后重启终端</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 网络上有很多先修改.bashrc文件再重启的操作，貌似是老版conda才需要这么做；实测直接重启就可以</span><br><span class="line">source ~/.bashrc</span><br></pre></td></tr></table></figure></li>
+<li><p>检查conda是否安装成功</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda --version</span><br></pre></td></tr></table></figure></li>
+<li><p>升级conda版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda update -n base -c defaults conda</span><br></pre></td></tr></table></figure></li>
+<li><p>配置conda镜像源</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"># 进入配置文件</span><br><span class="line">vim ~/.condarc</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">channels:</span><br><span class="line">  - defaults</span><br><span class="line">show_channel_urls: true</span><br><span class="line">default_channels:</span><br><span class="line">  - http://mirrors.aliyun.com/anaconda/pkgs/main</span><br><span class="line">  - http://mirrors.aliyun.com/anaconda/pkgs/r</span><br><span class="line">  - http://mirrors.aliyun.com/anaconda/pkgs/msys2</span><br><span class="line">custom_channels:</span><br><span class="line">  conda-forge: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  msys2: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  bioconda: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  menpo: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  pytorch: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  simpleitk: http://mirrors.aliyun.com/anaconda/cloud</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="新建虚拟环境">新建虚拟环境</h2>
+<ol type="1">
+<li>检查已有虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda env list</span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>创建虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda create -n glip_dev python=3.8</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>启动虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">source activate glip_dev</span><br></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li>安装包</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda install &lt;包名&gt;</span><br><span class="line">conda install python=3.8</span><br></pre></td></tr></table></figure>
+<ol start="5" type="1">
+<li>退出虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">source deactivate glip_dev</span><br></pre></td></tr></table></figure>
+<ol start="6" type="1">
+<li>查看安装了哪些包</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda list</span><br></pre></td></tr></table></figure>
+<ol start="7" type="1">
+<li>查看当前存在哪些虚拟环境</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda env list </span><br><span class="line">或者</span><br><span class="line">conda info -e</span><br></pre></td></tr></table></figure>
+<h2 id="安装依赖">安装依赖</h2>
+<ul>
+<li><p>用conda安装</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda install xxx</span><br></pre></td></tr></table></figure></li>
+<li><p>用pip安装</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 清华源</span><br><span class="line">pip install xxx -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"># 豆瓣源</span><br><span class="line">pip install xxx -i http://pypi.douban.com/simple/</span><br><span class="line"># 阿里云源</span><br><span class="line">pip install xxx -i http://mirrors.aliyun.com/pypi/simple/</span><br><span class="line">#中国科技大学</span><br><span class="line">pip install xxx -i https://pypi.mirrors.ustc.edu.cn/simple/ </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># pip如果容易中断的话：</span><br><span class="line">pip --default-timeout=1000 install xxx -i xxx</span><br><span class="line">pip install xxx -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="导出依赖">导出依赖</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># conda打包环境</span><br><span class="line">conda env export &gt; xxx.yml</span><br><span class="line"># xxx.yml文件可以直接用记事本打开，里面有依赖包列表</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>经验技巧</category>
+      </categories>
+      <tags>
+        <tag>服务器</tag>
+        <tag>conda</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>《动手学深度学习2.0》学习笔记（四）</title>
     <url>/2024/01/17/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89/</url>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1
@@ -4233,609 +5256,6 @@ class="math inline">\((x^{\prime},y^{\prime})\)</span>的相对距离来计算�
       </tags>
   </entry>
   <entry>
-    <title>《动手学深度学习2.0》学习笔记（五）</title>
-    <url>/2024/01/18/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1
-id="动手学深度学习2.0学习笔记五">《动手学深度学习2.0》学习笔记（五）</h1>
-<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
-<p>本文记录了我在学习本书第11章节（优化算法）过程中的理解和收获。</p>
-<span id="more"></span>
-<h2 id="优化算法">优化算法</h2>
-<p>深度学习中出现的几乎所有优化问题都是<em>非凸</em>的，但是如果算法在凸性条件设定下的效果很差，
-那通常我们很难在其他条件下看到好的结果。所以，在<em>凸问题</em>背景下设计和分析算法是非常有启发性的。</p>
-<h3 id="优化和深度学习">优化和深度学习</h3>
-<h4 id="优化目标">优化目标</h4>
-<p>对于深度学习问题，我们首先定义<em>损失函数</em>。有了损失函数，我们就可以使用优化算法来尝试最小化损失。在优化中，损失函数通常被称为优化问题的<em>目标函数</em>。</p>
-<p>尽管优化提供了一种最大限度地减少深度学习损失函数的方法，但<strong>本质上，优化和深度学习的目标是根本不同的。前者主要关注的是最小化目标，后者则关注在给定有限数据量的情况下寻找合适的模型。</strong></p>
-<p>具体来说</p>
-<ul>
-<li>由于优化算法的目标函数是基于<u>训练集的损失函数</u>，因此优<strong>化的目标是减少训练误差</strong>。</li>
-<li>然而，<strong>深度学习（或更广义地说，统计推断）的目标是减少泛化误差</strong>。</li>
-</ul>
-<p><strong>为了减少泛化误差，除了使用优化算法来减少训练误差之外，还需要注意过拟合</strong>。</p>
-<h4 id="优化挑战">优化挑战</h4>
-<h5 id="局部最小值">局部最小值</h5>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181004804.png"
-alt="image-20240118095755122" />
-<figcaption aria-hidden="true">image-20240118095755122</figcaption>
-</figure>
-<p>解决：小批量随机梯度下降，小批量上梯度的自然变化能够将参数从局部极小值中跳出。</p>
-<h5 id="鞍点">鞍点</h5>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181005864.png"
-alt="image-20240118100526784" />
-<figcaption aria-hidden="true">image-20240118100526784</figcaption>
-</figure>
-<p>现象：<em>鞍点</em>（saddle
-point）是指函数的所有梯度都消失但既不是全局最小值也不是局部最小值的任何位置。</p>
-<h5 id="梯度消失">梯度消失</h5>
-<p>用sigmoid激活函数经常会因为梯度消失导致优化停滞，引入ReLU激活函数后有了极大改善。</p>
-<h3 id="凸性">凸性</h3>
-<p>虽然深度学习中的优化问题通常是非凸的，
-它们也经常在局部极小值附近表现出一些凸性。</p>
-<h4 id="凸集">凸集</h4>
-<p>凸集 (convex set) 是凸性的基础。简单地说，如果对于任何<span
-class="math inline">\(a,b\in\mathcal{X}\)</span>,连接<span
-class="math inline">\(a\)</span>和<span
-class="math inline">\(b\)</span>的线段也位于<span
-class="math inline">\(\chi\)</span>中，则向量空间中的一个集合<span
-class="math inline">\(\chi\)</span>是凸(convex)的。在数学术语上，这意味着对于所有<span
-class="math inline">\(\lambda\in[0,1]\)</span>，我们得到</p>
-<p><span class="math display">\[
-\lambda a+(1-\lambda)b\in\mathcal{X}\text{ 当 }a,b\in\mathcal{X}.
-\]</span> <img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181010678.png"
-alt="第一组是非凸的，另外两组是凸的" /></p>
-<h4 id="凸函数">凸函数</h4>
-<h5 id="定义">定义</h5>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401181012389.png"
-alt="抛物线：凸函数；余弦函数：非凸；指数函数：凸函数" />
-<figcaption
-aria-hidden="true">抛物线：凸函数；余弦函数：非凸；指数函数：凸函数</figcaption>
-</figure>
-<p>给定一个凸集<span
-class="math inline">\(\chi\)</span>,如果对于所有<span
-class="math inline">\(x,x^{\prime}\in\mathcal{X}\)</span>和所有<span
-class="math inline">\(\lambda\in[0,1]\)</span>, 函数<span
-class="math inline">\(f:\mathcal{X}\to\mathbb{R}\)</span>是凸的，我们可以得到</p>
-<p><span class="math display">\[
-\lambda f(x)+(1-\lambda)f(x&#39;)\geq f(\lambda x+(1-\lambda)x&#39;).
-\]</span> -
-凸函数在定义域上的任意两点之间的割线总在这两点连线的上方或者重合。 -
-当一个函数<strong>的二阶导数存在且大于0</strong>时，函数为<strong>凸函数</strong></p>
-<h5 id="性质">性质</h5>
-<ul>
-<li>局部最小值是全局最小值</li>
-</ul>
-<h4 id="约束优化">约束优化</h4>
-<h5 id="问题">问题</h5>
-<p>最开始，我们有一个目标函数f(x)，我们想要找到一个使f(x)最小的x。然而，此时我们还有x要满足的约束条件。这就是以下形式的约束优化
-(constrained optimization) 问题：</p>
-<p><span class="math display">\[
-\begin{array}{c}\mathrm{minimize~}f(\mathbf{x})\\\mathrm{subject~to~}c_i(\mathbf{x})\leq0\text{
-for all }i\in\{1,\ldots,N\}.\end{array}
-\]</span></p>
-<ul>
-<li><p><span class="math inline">\(f\)</span>是目标函数，<span
-class="math inline">\(c_i\)</span>是约束函数。</p></li>
-<li><p>例如第一个约束<span
-class="math inline">\(c_1(\mathbf{x})=\|\mathbf{x}\|_2-1\)</span>，则参数<span
-class="math inline">\(\mathbf{x}\)</span>被限制为单位球。如果第二个约束<span
-class="math inline">\(c_2(\mathbf{x})=\mathbf{v}^\top\mathbf{x}+b\)</span>,那么这对应于半空间上所有的<span
-class="math inline">\(\mathbf{x}\)</span>。同时满足这两个约束等于选择一个球的切片作为约束集。</p></li>
-</ul>
-<blockquote>
-<p>这样的问题难以直接解决，但物理中的一个类比却可以帮助我们。想象一下一个盒子里的一个球，如果你把盒子倾斜，球会滚到最低点，也就是说，它会找到一个使得它的重力势能最小的位置。同时，它还受到盒子壁的力的限制，不能滚出盒子。</p>
-<p>这就是优化问题的动态版本：球（或你的解）被赋予了初始位置和速度，并且随着时间的推移，它在尽可能降低自己的重力势能（也就是目标函数f(x)）的同时，还要受到盒子壁力（也就是约束）的限制。</p>
-</blockquote>
-<h5 id="解决">解决</h5>
-<h6 id="拉格朗日乘数法">拉格朗日乘数法</h6>
-<p>为了将这个直观的物理问题转化为数学形式，我们引入了拉格朗日函数L，以及配套的一组拉格朗日乘子α_i。拉格朗日函数是目标函数加上所有约束条件（每个约束前乘以一个拉格朗日乘子）。每一个拉格朗日乘子对应一个约束，它的作用就像一个“弹簧”，当约束被违反的时候，它就会“推”解回到符合条件的地方。_</p>
-<p>例如，如果一个解x违反了某个约束（约束条件为<span
-class="math inline">\(c_i(x) &gt;
-0\)</span>），那么对应的拉格朗日乘子α_i就会增大，从而增加L的值，反过来这就“推动”解x去寻找一个更小的L，也就是说，被“推”回到符合约束的地方。
-<span class="math display">\[
-L(\mathbf{x},\alpha_1,\ldots,\alpha_n)=f(\mathbf{x})+\sum_{i=1}^n\alpha_ic_i(\mathbf{x})\mathrm{~where~}\alpha_i\geq0.
-\]</span></p>
-<ul>
-<li>变量<span class="math inline">\(\alpha_i\quad(i=1,\ldots,n)\)</span>
-是拉格朗日乘数 (Lagrange multipliers) ，它确保约束被正确地执行。</li>
-</ul>
-<blockquote>
-<p>鞍点优化问题，即目标函数在一部分维度上是要进行最大化，在另一部分维度上进行最小化的问题。这种情况在视觉上就像一个马鞍，因此被称为鞍点(有时也被称为最小最大问题)。</p>
-<p>在拉格朗日对偶问题中，构造出的拉格朗日函数 <span
-class="math display">\[
-L(\mathbf{x},\alpha,\beta)=f(\mathbf{x})+\sum_i\alpha_ig_i(\mathbf{x})+\sum_j\beta_jh_j(\mathbf{x})
-\]</span></p>
-<ul>
-<li>其中，<span
-class="math inline">\(\alpha_i\)</span>是不等式约束，<span
-class="math inline">\(\beta_j\)</span>是等式约束</li>
-<li>当我们考虑<span class="math inline">\(\alpha\)</span>和<span
-class="math inline">\(\beta\)</span>固定，优化变量x时，我们希望最小化<span
-class="math inline">\(L(\mathbf{x},\alpha,\beta)\)</span>，即在x维度上，<span
-class="math inline">\(L\)</span>函数需要被最小化。</li>
-<li>而当我们考虑<span
-class="math inline">\(\mathbf{x}\)</span>固定，优化拉格朗日乘子<span
-class="math inline">\(\alpha\)</span>和<span
-class="math inline">\(\beta\)</span>时，我们希望最大化<span
-class="math inline">\(L(\mathbf{x},\alpha,\beta)\)</span>，因为这将强制满足所有约束。</li>
-<li>综上，即<span
-class="math inline">\(L(\mathbf{x},\alpha,\beta)\)</span>在x维度上是要进行最小化，在α和<span
-class="math inline">\(\beta\)</span>维度上进行最大化，这正是鞍点问题的特性。所以说拉格朗日对偶问题是一个鞍点优化问题。</li>
-</ul>
-</blockquote>
-<p>举例：</p>
-<ul>
-<li>假设约束条件为：要求所有<span
-class="math inline">\(i\)</span>的<span
-class="math inline">\(c_i(\mathbf{x})\leq0\)</span></li>
-<li>那么，对于已经满足<span
-class="math inline">\(c_i(\mathbf{x})&lt;0\)</span>中任意<span
-class="math inline">\(\mathbf{x}\)</span>，会选择让<span
-class="math inline">\(\alpha_i=0\)</span>。因为<strong>如果约束<span
-class="math inline">\(c_i(\mathbf{x})&lt;0\)</span>已经满足了，我们就不需要进一步“强制”这个约束条件了</strong>，所以对应的拉格朗日乘数<span
-class="math inline">\(\alpha_i\)</span>就可以设为0。这是基于KKT
-(Karush-Kuhn-Tucker) 条件中的互补松弛性原理。</li>
-<li>但如果这个约束被违反，即<span
-class="math inline">\(c_i(\mathbf{x})&gt;0\)</span>，那么<span
-class="math inline">\(\alpha_ic_i(\mathbf{x})\)</span>的值就会导致拉格朗日函数的值增大，从而“惩罚”违反约束的解（因为<span
-class="math inline">\(\alpha_i\)</span>为非负数，<span
-class="math inline">\(c_i(\mathbf{x})\)</span>为正数，他们的乘积为正，从而使原要最小化的目标函数的值增大）。<strong>最大化<span
-class="math inline">\(\alpha_ic_i(\mathbf{x})\)</span>相当于"最大化“其惩罚力度，这样我们可以排除掉所有违反约束条件的解</strong>，这就像把违反约束的解的目标函数值“推”到更大的位置。</li>
-</ul>
-<h6 id="添加惩罚">添加惩罚</h6>
-<h6 id="投影">投影</h6>
-<p>如果我们有一个点，我们可以寻找在某个集合中与这个点最接近的点。这个最接近的点就被称为原始点在这个集合上的投影。我们可以把这个投影过程理解为一个修正过程，修正原始点使其满足一定的限定条件。</p>
-<h2 id="梯度下降">梯度下降</h2>
-<ul>
-<li>学习率的大小很重要：学习率太大会使模型发散，学习率太小会没有进展。</li>
-<li>梯度下降会可能陷入局部极小值，而得不到全局最小值。</li>
-<li>在高维模型中，调整学习率是很复杂的。</li>
-<li>预处理有助于调节比例，比如针对不同量纲的变量进行标准化，相当于为每个变量选择不同的学习率</li>
-<li>牛顿法在凸问题中一旦开始正常工作，速度就会快得多。对于非凸问题，不要不作任何调整就使用牛顿法。</li>
-</ul>
-<h2 id="随机梯度下降">随机梯度下降</h2>
-<h3 id="随机梯度更新">随机梯度更新</h3>
-<p>如果使用梯度下降法，则每个自变量迭代的计算代价为<span
-class="math inline">\(\mathcal{O}(n)\)</span>，它随<span
-class="math inline">\(n\)</span>线性增长。因此，当训练数据集较大时，每次迭代的梯度下降计算代价将较高。</p>
-<p>随机梯度下降(SGD)
-可降低每次迭代时的计算代价。在随机梯度下降的每次迭代中，我们对数据样本随机均匀采样一个索引<span
-class="math inline">\(i\)</span>，其中<span
-class="math inline">\(i\in\{1,\ldots,n\}\)</span>,并计算梯度<span
-class="math inline">\(\nabla f_i(\mathbf{x})\)</span>以更新<span
-class="math inline">\(\mathbf{x}:\)</span> <span class="math display">\[
-\mathbf{x}\leftarrow\mathbf{x}-\eta\nabla f_i(\mathbf{x}),
-\]</span> - <span class="math inline">\(\eta\)</span>是学习率。</p>
-<p>因此，<strong>每次迭代的计算代价从梯度下降的<span
-class="math inline">\(\mathcal{O}(n)\)</span>降至常数<span
-class="math inline">\(\mathcal{O}(1)\)</span>。</strong></p>
-<blockquote>
-<p>此外，这里要强调随机梯度<span class="math inline">\(\nabla
-f_i(\mathbf{x})\)</span>是对完整梯度<span class="math inline">\(\nabla
-f(\mathbf{x})\)</span>的无偏估计，因为 <span class="math display">\[
-\mathbb{E}_i\nabla f_i(\mathbf{x})=\frac1n\sum_{i=1}^n\nabla
-f_i(\mathbf{x})=\nabla f(\mathbf{x}).
-\]</span> 这意味着，平均而言，随机梯度是对梯度的良好估计。</p>
-</blockquote>
-<h3 id="动态学习率">动态学习率</h3>
-<p>（需要用到再学习）</p>
-<h2 id="小批量随机梯度下降">小批量随机梯度下降</h2>
-<p>观测单个数据来更新参数，需要执行许多单一矩阵-矢量 (甚至矢量-矢量)
-乘法，这耗费相当大，而且对应深度学习框架也要巨大的开销。</p>
-<p>也就是说，采用<strong>随机梯度下降</strong>时，每当我们执行<span
-class="math inline">\(\mathbf{w}\gets\mathbf{w}-\eta_t\mathbf{g}_t\)</span>，都消耗巨大。其中
-<span class="math display">\[
-\mathbf{g}_t=\partial_\mathbf{w}f(\mathbf{x}_t,\mathbf{w}).
-\]</span> 我们可以通过将其应用于一个小批量观测值来提高此操作的<span
-class="math inline">\(i\)</span>计算效率。也就是说，<strong>我们将梯度<span
-class="math inline">\(\mathbf{g}_{t}\)</span>替换为一个小批量而不是单个观测值</strong></p>
-<p><span class="math display">\[
-\mathbf{g}_t=\partial_\mathbf{w}\frac1{|\mathcal{B}_t|}\sum_{i\in\mathcal{B}_t}f(\mathbf{x}_i,\mathbf{w}).
-\]</span></p>
-<ul>
-<li>优良的副作用：
-<ul>
-<li>由于<span class="math inline">\(\mathbf{x}_t\)</span>和小批量<span
-class="math inline">\(\mathcal{B}_t\)</span>的所有元素都是从训练集中随机抽出的，因此梯度的期望保持不变。</li>
-<li>此外，方差显著降低。由于小批量梯度由正在被平均计算的<span
-class="math inline">\(b:=|\mathcal{B}_t|\)</span>个独立梯度组成，其标准差降低了<span
-class="math inline">\(b^{-\frac12}\)</span>。这本身就是一件好事，因为这意味着更新与完整的梯度更接近了。</li>
-</ul></li>
-</ul>
-<h2 id="动量法">动量法</h2>
-<h3 id="泄露平均值">泄露平均值</h3>
-<blockquote>
-<p>上一节中我们讨论了小批量随机梯度下降作为加速计算的手段。它也有很好的副作用，即平均梯度减小了方差。小批量随机梯度下降可以通过以下方式计算：
-<span class="math display">\[
-\mathbf{g}_{t,t-1}=\partial_\mathbf{w}\frac1{|\mathcal{B}_t|}\sum_{i\in\mathcal{B}_t}f(\mathbf{x}_i,\mathbf{w}_{t-1})=\frac1{|\mathcal{B}_t|}\sum_{i\in\mathcal{B}_t}\mathbf{h}_{i,t-1}.
-\]</span> 为了保持记法简单，在这里我们使用<span
-class="math inline">\(\mathbf{h}_{i,t-1}=\partial_{\mathbf{w}}f(\mathbf{x}_i,\mathbf{w}_{t-1})\)</span>作为样本<span
-class="math inline">\(i\)</span>的随机梯度下降，使用时间<span
-class="math inline">\(t-1\)</span>时更新的权重<span
-class="math inline">\(t-1\)</span>。</p>
-</blockquote>
-<blockquote>
-<p>如果我们能够从方差减少的影响中受益，甚至超过小批量上的梯度平均值，那很不错。</p>
-<p>完成这项任务的一种选择是<strong>用泄漏平均值 (leaky averaqe)
-取代梯度计算</strong>： <span class="math display">\[
-\mathbf{v}_t=\beta\mathbf{v}_{t-1}+\mathbf{g}_{t,t-1}
-\]</span></p>
-<ul>
-<li>其中<span class="math inline">\(\beta\in(0,1)\)</span>。</li>
-<li>这有效地将瞬时梯度替换为多个“过去”梯度的平均值。</li>
-<li><span class="math inline">\(\mathbf{v}\)</span>被称为动量(momentum),
-它累加了过去的梯度。</li>
-<li>为了更详细地解释，让我们递归地将<span
-class="math inline">\(\mathbf{v}_t\)</span>扩展到：</li>
-</ul>
-<p><span class="math display">\[
-\mathbf{v}_t=\beta^2\mathbf{v}_{t-2}+\beta\mathbf{g}_{t-1,t-2}+\mathbf{g}_{t,t-1}=\ldots,=\sum_{\tau=0}^{t-1}\beta^\tau\mathbf{g}_{t-\tau,t-\tau-1}.
-\]</span></p>
-<ul>
-<li>其中，较大的<span
-class="math inline">\(\beta\)</span>相当于长期平均值，而较小的<span
-class="math inline">\(\beta\)</span>相对于梯度法只是略有修正。</li>
-<li>新的梯度替换不再指向特定实例下降最陡的方向，而是指向过去梯度的加权平均值的方向。这使我们能够实现对单批量计算平均值的大部分好处，而不产生实际计算其梯度的代价。</li>
-</ul>
-</blockquote>
-<h3 id="动量法-1">动量法</h3>
-<p>使用<span class="math inline">\(\mathbf{v}_t\)</span>而不是梯度<span
-class="math inline">\(\mathbf{g}_t\)</span>生成以下更新等式：</p>
-<p><span class="math display">\[
-\begin{aligned}&amp;\mathbf{v}_t\leftarrow\beta\mathbf{v}_{t-1}+\mathbf{g}_{t,t-1},\\&amp;\mathbf{x}_t\leftarrow\mathbf{x}_{t-1}-\eta_t\mathbf{v}_t.\end{aligned}
-\]</span></p>
-<ul>
-<li><span class="math inline">\(g_{t,t-1}\)</span>指在时间<span
-class="math inline">\(t-1\)</span>的参数值下，时间<span
-class="math inline">\(t\)</span>的梯度</li>
-</ul>
-<p><strong>动量<span
-class="math inline">\(v_t\)</span>实际上是过去所有梯度的一个“加权平均”，可以看做是对历史梯度的“记忆”。每次迭代，我们不仅考虑当前的梯度，也考虑过去的梯度，用它们的加权平均值来指导搜索方向，使得搜索过程更加平滑，减少震荡，从而加快收敛速度。</strong></p>
-<p>这也是为什么被称为“动量”的原因，它像物理中的动量一样，赋予了我们的搜索过程惯性，使得搜索方向不会轻易地被当前梯度改变，从而使得搜索过程更加稳定。</p>
-]]></content>
-      <categories>
-        <category>学习笔记</category>
-      </categories>
-      <tags>
-        <tag>动手学深度学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CLIP论文理解</title>
-    <url>/2024/01/31/CLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><strong>在绝对的力量面前，技巧不值一提。</strong></p>
-<h1 id="clip论文理解">CLIP论文理解</h1>
-<h2 id="方法总结">方法总结</h2>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401311723505.png"
-alt="CLIP使用的方法总结" />
-<figcaption aria-hidden="true">CLIP使用的方法总结</figcaption>
-</figure>
-<p>CLIP (<em>Contrastive Language–Image Pre-training</em>)
-使用的方法非常简单，主要分为2个部分：</p>
-<span id="more"></span>
-<ol type="1">
-<li><p><strong>使用图像和文本进行对比学习预训练</strong></p>
-<ol type="1">
-<li><p>组件</p>
-<ul>
-<li><p>文本编码器：Transformer</p></li>
-<li><p>图像编码器：ResNet or Vision Transformer</p></li>
-<li><p>对比学习</p>
-<ul>
-<li><p>目标：通过最大化正样本对（图像和文本描述）的相似性，最小化负样本对（图像和不相关文本描述）的相似性来学习图像和文本的共享表示</p></li>
-<li><p>损失函数（InfoNCE loss）:</p>
-<p>论文MoCo提出，我们可以把对比学习看成是一个字典查询的任务，即训练一个编码器从而去做字典查询的任务。假设已经有一个编码好的query
-<span class="math inline">\(q\)</span> (一个特征),
-以及一系列编码好的样本 <span
-class="math inline">\(k0,k1,k2,\ldots\)</span>, 那么 <span
-class="math inline">\(k0,k1,k2,\ldots\)</span>
-可以看作是字典里的key。假设字典里只有一个key即 <span
-class="math inline">\(k+\)</span> (称为<span
-class="math inline">\(k\)</span> positive) 是跟<span
-class="math inline">\(q\)</span> 是匹配的，那么 <span
-class="math inline">\(q\)</span> 和 <span
-class="math inline">\(k+\)</span>
-就互为正样本对，其余的key为q的负样本。一旦定义好了正负样本对，就需要一个对比学习的损失函数来指导模型来进行学习。这个损失函数需要满足以下要求：</p>
-<ul>
-<li>当query <span class="math inline">\(q\)</span> 和唯一的正样本 <span
-class="math inline">\(k+\)</span>
-相似，并且和其他所有负样本key都不相似的时候，loss应该较小。</li>
-<li>反之，如果<span class="math inline">\(q\)</span>和<span
-class="math inline">\(k+\)</span>不相似，或者<span
-class="math inline">\(q\)</span> 和其他负样本的key相似了，那么loss
-应该较大，从而惩罚模型，促使模型进行参数更新。</li>
-</ul>
-<p>MoCo采用的对比学习损失函数是InfoNCE Ioss,
-以此来训练模型，公式如下：</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202401311753672.gif"
-alt="InfoNCE loss" />
-<figcaption aria-hidden="true">InfoNCE loss</figcaption>
-</figure></li>
-<li><p>优点：</p>
-<p>相比于让模型直接预测和图像匹配的文本描述中的每一个具体的单词，使用对比学习让模型预测哪条文本描述整体上和图片是配对的，如果两种方式都实现了相当的效果，那么使用对比学习的模型收敛更快，需要的算力更少。</p></li>
-</ul></li>
-</ul></li>
-<li><p>训练过程</p>
-<ul>
-<li><p>代理任务：给定一张图片，从一个随机采样的batch的文本描述中预测，哪一个文本描述是和这张图片匹配的</p></li>
-<li><p>训练过程：</p>
-<ol type="1">
-<li>在模型训练过程中，我们取到的每个batch由 <span
-class="math inline">\(N\)</span> 个图像-文本对组成</li>
-<li>将这 <span class="math inline">\(N\)</span>
-个图像送入到图像编码器中会得到 <span class="math inline">\(N\)</span>
-个图像特征向量 <span class="math inline">\((I_1,I_2,\cdots,I_N)\)</span>
-,</li>
-<li>同理，将这 <span class="math inline">\(N\)</span>
-个文本送入到文本编码器中我们可以得到<span
-class="math inline">\(N\)</span> 个文本特征向量 <span
-class="math inline">\((T_1,T_2,\cdots,T_N)\)</span></li>
-<li>因为不同编码器的输出的特征向量长度不一样，所以CLIP
-使用了一个线性映射将两个编码器生成的特征向量映射到统一长度（这样就把图像和文本映射到了同一个特征空间）</li>
-<li>使用向量内积计算相似度：这 <span class="math inline">\(N\)</span>
-个图像特征向量和这 <span class="math inline">\(N\)</span>
-个文本特征向量的相似度</li>
-<li>因为只有在对角线上的图像和文本是一对，
-所以CLIP的训练目标是让正样本对（图像和文本描述）的特征向量相似度尽可能高，而负样本对（图像和不相关文本描述）的相似度尽可能低。通过这个方式，CLIP构建了一个由
-<span class="math inline">\(N\)</span> 个正样本和<span
-class="math inline">\(N^2-N\)</span>
-个负样本组成的损失函数。CLIP的计算过程伪代码如下。</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># image_encoder - 残差网络 或者 ViT</span><br><span class="line"># text_encoder - CBOW 或者 文本Transformer</span><br><span class="line"># I[n, h, w, c] - 训练图像</span><br><span class="line"># T[n, l] - 训练文本</span><br><span class="line"># W_i[d_i, d_e] - 训练图像生成的特征向量</span><br><span class="line"># W_t[d_t, d_e]  - 训练文本生成的特征向量</span><br><span class="line"># t - softmax的温度（temperature）参数</span><br><span class="line"></span><br><span class="line"># 提取多模态的特征</span><br><span class="line">I_f = image_encoder(I) #[n, d_i]</span><br><span class="line">T_f = text_encoder(T) #[n, d_t]</span><br><span class="line"></span><br><span class="line"># 多模态特征向特征空间的映射</span><br><span class="line">I_e = l2_normalize(np.dot(I_f, W_i), axis=1)</span><br><span class="line">T_e = l2_normalize(np.dot(T_f, W_t), axis=1)</span><br><span class="line"></span><br><span class="line"># 计算余弦相似度</span><br><span class="line">logits = np.dot(I_e, T_e.T) * np.exp(t)</span><br><span class="line"></span><br><span class="line"># 构建损失函数</span><br><span class="line">labels = np.arange(n)</span><br><span class="line">loss_i = cross_entropy_loss(logits, labels, axis=0)</span><br><span class="line">loss_t  = cross_entropy_loss(logits, labels, axis=1)</span><br><span class="line">loss = (loss_i + loss_t)/2</span><br></pre></td></tr></table></figure></li>
-<li><p>训练结果：当模型训练完成后，CLIP模型的效果就是——获得了把图像和文本映射到同一个特征空间的能力，此时得到的模型并没有显式的分类头。</p></li>
-</ul></li>
-</ol></li>
-<li><p>执行零样本预测（推理过程）</p>
-<ol type="1">
-<li>当进行图像分类时，我们把待识别的图像通过图像编码器映射成一个特征向量</li>
-<li>然后将所有可能的图像类别标签全部使用文本编码器进行编码，得到一组特征向量。（"多项选择题"）</li>
-<li>将图像特征向量和一组文本对应的特征向量逐一计算相似度，相似度最高的那一个图像-文本对所对应的文本就是图像预测出的类别</li>
-<li>为了提升性能，这里的文本描述不是简单地将标签 plane, car, dog, ...,
-bird 送入文本编码器，而是进行了 prompt工程，通过使用 A photo of a
-{object} 作为输入，大大提升了零样本预测结果的准确度。</li>
-</ol></li>
-</ol>
-<h2 id="方法核心">方法核心</h2>
-<p>把图像和文本映射到同一个特征空间（可以理解为将文本特征向量和图像特征向量的维度变成一致的）。</p>
-<blockquote>
-<p>这个特征空间是一个抽象的概念，例如当我们看到一条狗的图片的时候，我们心中想的是狗，当我们读到狗的时候我们想的也是狗，那么我们心中想象的狗，便是“特征空间”。</p>
-</blockquote>
-<h2 id="模型评估">模型评估</h2>
-<p>模型通过零样本迁移可以展示其<strong>学习各种各样任务的能力</strong>，是一个能够很好地评估模型整体能力的指标。</p>
-<h2 id="优势">优势</h2>
-<ol type="1">
-<li>训练高效，节省算力
-<ul>
-<li>采用了对比学习，优于直接预测学习</li>
-</ul></li>
-<li>灵活且泛化性好
-<ul>
-<li>零样本迁移能力强大，能够很方便地解决全新的任务（/全新数据集）
-<ul>
-<li>过去的模型要迁移到新任务：
-<ol type="1">
-<li>build a new dataset</li>
-<li>add an output head</li>
-<li>and fine-tune the model</li>
-</ol></li>
-<li>CLIP要迁移到新任务：
-<ul>
-<li>不需要额外的训练数据</li>
-<li>只需要"告诉"CLIP的文本编码器新任务涉及到的视觉概念的名字，然后直接使用预训练好的CLIP模型进行预测，模型就能给出相应的新视觉概念的分类。</li>
-<li>碎碎念：我觉得这不是严格的零样本，感觉CLIP之所以能够"通过仅修改预测时文本编码器的输入就迁移到新任务"，还是离不开它在预训练过程中已经通过庞大的数据集来尽可能的覆盖下游任务（也就是说，只不过是因为CLIP训练用的4亿的图片-文本对见过这些新视觉概念对应的图片）、</li>
-</ul></li>
-</ul></li>
-<li>表征学习效果很好（Representation
-Learning）：说明它提取出的特征很好</li>
-</ul></li>
-</ol>
-<h2 id="局限性">局限性</h2>
-<ol type="1">
-<li><p><strong>夸大的零样本：</strong>CLIP在它预训练阶段没有覆盖到的数据上的泛化性很差。也就是说，CLIP还是通过庞大的数据集来尽可能的覆盖下游任务，搜易它在未见过的数据上表现非常不理想。比如在MNIST数据集上（1-9手写数字图片），CLIP
-只达到了88%的准确度，还不如一个作用在像素点上的逻辑回归。虽然 4
-亿数据集很大，但是很有可能没有包含这种不常见的手写数字的图片。这就引起了一些疑虑：<strong>CLIP
-的强大有多大程度上取决于这个高质量、大规模的数据集。</strong></p></li>
-<li><p>CLIP的零样本分类器（即文本编码器）对输入文本的提示工程很敏感（prompt
-engineering）</p>
-<ul>
-<li>提示工程：分类的时候不是直接把一个“dog”标签喂给文本编码器让它编码，而是设计一个prompt，变成“A
-photo of a dog.”再进行编码。原因有二：
-<ul>
-<li>多义词导致只用一个单词做标签很容易产生歧义，比如remote即可以是“远程的”又可以指遥控器，编码器难以确认是哪个意思，如果变成“A
-photo of a remote.”就很明显是遥控器的意思</li>
-<li>训练时文本编码器编的是句子，推理测试时如果只用单词会产生数据分布gap，可能会影响性能</li>
-</ul></li>
-</ul></li>
-<li><p>在一些任务上表现不好：</p>
-<ul>
-<li><p>更抽象和系统性的任务：如计数图像中目标的数量</p></li>
-<li><p>更复杂的任务：如预测照片中最近的车的距离（能不能注入领域知识，让模型学会思考这些？）</p></li>
-<li><p>极细粒度的分类任务：如说出不同汽车模型或者不同种类的花之间的区别</p></li>
-</ul></li>
-</ol>
-<h2 id="用途">用途</h2>
-<h3 id="根源用途">根源用途</h3>
-<p>​ 把图片和文字编码到同一空间，计算图像和文本的语义相似度</p>
-<h3 id="扩展用途">扩展用途</h3>
-<p>​ 1）图文搜索（根据图像搜索对应文本、或根据文本搜索对应图像） ​
-2）协助完成相关的多模态任务（例如在 Stable Diffusion 里作为文本编码器） ​
-3）作为评测工具（例如文生图任务中，计算生成图像与文本之间的相似度）</p>
-<h2 id="最大影响">最大影响</h2>
-<p><strong>允许人们设计自己的分类头，而不需要特定领域的训练数据。</strong></p>
-<p>怎么实现的呢？</p>
-<p><strong>在推理时，直接向文本编码器中输入所有可能的类别集合，这个类别集合里面就包括人们想要添加的新类别，这样模型在预测时就可能能够预测到这个新类别。</strong>（但是有个疑问：添加的新类别是否只能是WIT（WebImageText数据集）里面训练过的类别呢？）</p>
-<p>在推理过程中，通过自由设置“多项选择题”，我们就摆脱了事先定义好的分类标签，而实现了将模型扩展到自己专属的任务（因为可以定义自己模型需要预测的新类别），让下游任务的推理变得更灵活。</p>
-<ul>
-<li>过去的分类网络：
-<ul>
-<li>类别数量固定，一般时最后一层跟着 softmax 全连接层；</li>
-<li>如果要更改类别数量，就要更换最后一层</li>
-<li>并且预测的内容是固定的，不能超过训练集的类别范围。</li>
-</ul></li>
-<li>CLIP
-<ul>
-<li>提供给网络的分类标签不仅数量不固定，内容也是自由的</li>
-<li>如果提供两个标签，那就是一个二分类问题；如果提供1000个标签，那就是1000分类问题。</li>
-<li>标签内容可以是常规的分类标签，也可以是一些冷门的分类标签。</li>
-</ul></li>
-</ul>
-]]></content>
-      <categories>
-        <category>图像分类</category>
-      </categories>
-      <tags>
-        <tag>论文理解</tag>
-        <tag>CLIP</tag>
-        <tag>多模态</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GLIP论文理解</title>
-    <url>/2024/02/01/GLIP%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="glip论文理解">GLIP论文理解</h1>
-<p>GLIP(<em>Grounded Language-Image Pre-training)</em>
-是一个可扩展的（generalizable）目标检测模型（其实准确来说应该表述为短语定位模型，本句在这里将"目标检测"和"短语定位"任务混为一谈）</p>
-<p>在文章开头先解释一下GLIP论文中用到的一些"黑话"</p>
-<p>generalizable（可泛化）：侧重于描述模型<strong>在不同任务和数据集上的适应性</strong>，强调模型学到的特征能够泛化到新的情境。</p>
-<p>scalable（可扩展）：
-关注系统、算法、数据集的可扩展性，确保算法在面对更大规模、更复杂的情况时性能能够保持或提高。在本论文中用到的描述为"
-scalable and semantic-rich
-data"，侧重于强调数据集的可扩展性，论文通过自训练生成伪标注的方式提高数据集的可扩展性。</p>
-<p>language-aware（语言感知的）：模型能够理解和处理自然语言。本论文的模型接收文本描述prompt作为输入，自然是language
-aware的。</p>
-<p>semantic-rich（语义丰富的）：用于形容数据集包含了丰富的语义信息（包括对物体、场景或其他视觉元素的深层次、有意义的描述，能够捕捉图像中物体之间的关系等）</p>
-<span id="more"></span>
-<h2 id="方法核心">方法核心</h2>
-<p>通过将目标检测任务<strong>重新表述</strong>为视觉-语言任务（也叫短语定位任务），从而统一目标检测和短语定位任务。</p>
-<p><strong>如何实现目标检测和短语定位任务的统一？</strong></p>
-<ul>
-<li>改变训练输入
-<ul>
-<li>典型的目标检测模型训练时<strong>只输入图片</strong>，然后模型试图预测图片中目标的类别及边界框，为了使预测结果与ground
-truth越来越接近，模型不断地学习和调整，逐渐成为一个优秀的好模型。</li>
-<li>然而，GLIP选择不走寻常路。它舍弃了上述的典型输入（只输入图片），转而向模型输入"<strong>图片和对应的文本描述</strong>"，其中文本描述有两种类型，
-<ul>
-<li>针对目标检测数据集：一条由所有候选类名构成的合成句子</li>
-<li>针对短语定位数据集：对图片的自然语言描述</li>
-</ul></li>
-</ul></li>
-<li>改变训练目的
-<ul>
-<li>典型的目标检测模型是为了使预测结果（分类标签和边界框位置）和ground
-truth越来越接近</li>
-<li>而GLIP则是为了识别出句子中的短语和图像中的对象之间的细粒度对应关系</li>
-</ul></li>
-<li>改变损失函数（损失函数是由训练目的决定的）
-<ul>
-<li>用单词-区域对齐得分（word-region alignment
-scores）取代原先目标检测分类头的对象分类得分（object classification
-logits）</li>
-<li>通过region(or box) visual features 和 token(or phrase) language
-features 的点乘，来计算单词-区域对齐得分</li>
-</ul></li>
-</ul>
-<p><strong>统一这两个任务有什么好处？</strong></p>
-<ol type="1">
-<li>扩大数据集：训练时可以同时使用这两种任务的数据集</li>
-<li>训练结果有益于这两种任务（win-win）
-<ul>
-<li>从检测任务的角度来看，使用定位任务的数据，极大丰富了检测任务的视觉概念池子</li>
-<li>从定位任务角度来看，使用检测任务的数据，引入了更多边界框标注，有助于训练新的SOTA的定位模型</li>
-</ul></li>
-</ol>
-<h2 id="模型结构">模型结构</h2>
-<h3 id="模型结构-1">模型结构</h3>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/02/01/OvtOTa.png"
-alt="GLIP模型结构" />
-<figcaption aria-hidden="true">GLIP模型结构</figcaption>
-</figure>
-<h3 id="特点">特点</h3>
-<ol type="1">
-<li><p>双编码器结构</p>
-<ul>
-<li>文本编码器</li>
-<li>视觉编码器</li>
-</ul></li>
-<li><p>输入</p>
-<ul>
-<li>图片</li>
-<li>文本描述</li>
-</ul></li>
-<li><p>损失</p>
-<ul>
-<li>对齐损失</li>
-<li>定位损失</li>
-</ul></li>
-<li><p><strong>深度跨模态融合</strong>：</p>
-<p>相比于<u>CLIP只在最后一个层通过点乘来融合视觉和语义信息</u>，<strong>GLIP进行了深度跨模态融合</strong>，这对于学习高质量、语义感知的视觉表达很关键</p></li>
-</ol>
-<h2 id="训练过程">训练过程</h2>
-<ol type="1">
-<li><p>训练教师模型（train a teacher GLIP on a moderate amount of gold
-grounding data）</p>
-<ul>
-<li>模型结构：GLIP</li>
-<li>训练数据：<strong>适量的</strong>、人工标注的（gold
-data）、定位数据集</li>
-<li>训练结果：获得了一个良好的定位模型</li>
-</ul></li>
-<li><p><strong>利用教师模型生成伪标注边界框（generate grounding boxes
-for massive image-text-paired data）</strong></p>
-<ul>
-<li>做法：利用教师模型在massive image-text-paired
-data上做预测，预测与<u>文本中的短语</u>对应的<u>图像中的目标</u>的边界框</li>
-<li>源数据：massive image-text-paired
-data（互联网爬取的、<strong>大量的</strong>、图像-文本对、没有目标边界框信息）</li>
-<li>处理后数据：图像-文本-目标边界框，形成了一个新的、更大的、定位数据集</li>
-<li>好处：
-<ul>
-<li>过去为了训练一个更好的目标检测模型，通常会直接扩展目标检测数据集，但是再怎么扩展，模型依旧无法预测超出"训练数据涉及到的视觉概念库"中的视觉概念</li>
-<li>然而本文通过<strong>"互联网搜集大量图像-文本对" +
-"教师模型生成伪标注边界框"</strong>的方式，获得了一个<strong>语义丰富的定位数据集</strong>，从而极大地扩展了视觉概念，改善了下游任务的运行效果（尤其在一些罕见类别上）</li>
-</ul></li>
-</ul></li>
-<li><p>预训练学生模型</p>
-<ul>
-<li>数据集：2中大量的伪标注数据集+1中适量的人工标注数据集，构成了一个语义丰富的新数据集</li>
-<li>模型结构：GLIP</li>
-<li>训练结果：获得了一个语义丰富的目标检测模型</li>
-</ul></li>
-<li><p>微调上述学生模型，实现知识迁移</p>
-<ul>
-<li><p>法一：直接在预测时输入特定任务的文本描述prompt（如增加的新类别、对属性特征的进一步描述等），此时不需要额外标注数据，GLIP可以直接进行领域迁移</p>
-<figure>
-<img src="https://ooo.0x0.ooo/2024/02/21/OyUVwr.png"
-alt="手动提示微调" />
-<figcaption aria-hidden="true">手动提示微调</figcaption>
-</figure></li>
-<li><p>法二：当有特定领域的标注数据时，不需要微调整个模型，我们可以<strong>在保持模型参数不变的情况下，只微调特定领域的提示嵌入向量（prompt
-embedding）</strong>。通过提示学习，GLIP模型可以适应各种下游任务，减少了微调和部署的花费。（提示学习可以参考论文MaPLe：
-Multi-modal Prompt Learning）</p></li>
-</ul></li>
-</ol>
-]]></content>
-      <categories>
-        <category>目标检测</category>
-      </categories>
-      <tags>
-        <tag>论文理解</tag>
-        <tag>多模态</tag>
-        <tag>GLIP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>服务器端使用docker部署项目</title>
     <url>/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/</url>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="服务器端使用docker部署项目">服务器端使用docker部署项目</h1>
@@ -5061,461 +5481,6 @@ alt="image-20240220144219564" />
       <tags>
         <tag>docker</tag>
         <tag>项目部署</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vscode连接linux服务器</title>
-    <url>/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="vscode连接linux服务器">vscode连接linux服务器</h1>
-<p>前提：本地要使用蒲公英连接内网</p>
-<span id="more"></span>
-<h2 id="安装romote-ssh插件">安装Romote-SSH插件</h2>
-<p><img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281015836.png" /></p>
-<h2 id="修改配置文件">修改配置文件</h2>
-<p>修改配置文件，更新要连接的服务器的信息</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281017426.png"
-alt="打开配置文件" />
-<figcaption aria-hidden="true">打开配置文件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281018097.png"
-alt="更新配置文件信息" />
-<figcaption aria-hidden="true">更新配置文件信息</figcaption>
-</figure>
-<h2 id="连接服务器">连接服务器</h2>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281034311.png"
-alt="连接到服务器" />
-<figcaption aria-hidden="true">连接到服务器</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281034500.png"
-alt="选择刚才更新的服务器" />
-<figcaption aria-hidden="true">选择刚才更新的服务器</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281022816.png"
-alt="输入密码" />
-<figcaption aria-hidden="true">输入密码</figcaption>
-</figure>
-<h2 id="打开文件夹">打开文件夹</h2>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281024160.png"
-alt="打开服务器端的文件夹" />
-<figcaption aria-hidden="true">打开服务器端的文件夹</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281026464.png"
-alt="更改vscode布局" />
-<figcaption aria-hidden="true">更改vscode布局</figcaption>
-</figure>
-<h2 id="上传项目代码至服务器">上传项目代码至服务器</h2>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281410649.png"
-alt="安装SFTP插件" />
-<figcaption aria-hidden="true">安装SFTP插件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281409456.png"
-alt="上传本地项目" />
-<figcaption aria-hidden="true">上传本地项目</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281357902.png"
-alt="打开sftp配置文件" />
-<figcaption aria-hidden="true">打开sftp配置文件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281413611.png"
-alt="修改sftp的服务器端信息" />
-<figcaption aria-hidden="true">修改sftp的服务器端信息</figcaption>
-</figure>
-<h2 id="上传数据集">上传数据集</h2>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281427556.png"
-alt="使用Xftp上传本地数据集——创建连接" />
-<figcaption
-aria-hidden="true">使用Xftp上传本地数据集——创建连接</figcaption>
-</figure>
-<p>点击连接后，即可上传文件</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281431411.png"
-alt="上传数据集" />
-<figcaption aria-hidden="true">上传数据集</figcaption>
-</figure>
-]]></content>
-      <categories>
-        <category>经验技巧</category>
-      </categories>
-      <tags>
-        <tag>vscode</tag>
-        <tag>服务器</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GLIP代码运行</title>
-    <url>/2024/02/21/GLIP%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="glip代码运行">GLIP代码运行</h1>
-<p>GLIP论文官方的github仓库地址为https://github.com/microsoft/GLIP，因其推荐使用Docker来安装环境，因此接下来将在此基础上运行官方代码。</p>
-<h2 id="上传项目代码">上传项目代码</h2>
-<p>首先把本地的项目文件夹传输到远程的Linux服务器端，利用VScode中的SFTP插件上传，具体可参考笔记<a
-href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/">vscode连接linux服务器</a></p>
-<span id="more"></span>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281410649.png"
-alt="安装SFTP插件" />
-<figcaption aria-hidden="true">安装SFTP插件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281409456.png"
-alt="上传本地项目" />
-<figcaption aria-hidden="true">上传本地项目</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281357902.png"
-alt="打开sftp配置文件" />
-<figcaption aria-hidden="true">打开sftp配置文件</figcaption>
-</figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281413611.png"
-alt="修改sftp的服务器端信息" />
-<figcaption aria-hidden="true">修改sftp的服务器端信息</figcaption>
-</figure>
-<h2 id="上传数据集及预训练模型参数">上传数据集及预训练模型参数</h2>
-<p><strong>先本地下载数据集、预训练模型参数，利用Xftp软件上传</strong></p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281427556.png"
-alt="使用Xftp上传本地数据集——创建连接" />
-<figcaption
-aria-hidden="true">使用Xftp上传本地数据集——创建连接</figcaption>
-</figure>
-<p>点击连接后，即可上传文件</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202402281431411.png"
-alt="上传数据集" />
-<figcaption aria-hidden="true">上传数据集</figcaption>
-</figure>
-<p>在将所需的项目代码和文件都上传到服务器端后，我们就可以<strong>在服务器端</strong>着手搭建项目所需的环境及依赖了，这里首先进入服务器端的窗口。</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403021327359.png"
-alt="image-20240302132754316" />
-<figcaption aria-hidden="true">image-20240302132754316</figcaption>
-</figure>
-<h2 id="安装依赖及环境">安装依赖及环境</h2>
-<h3 id="docker未成功">Docker（未成功）</h3>
-<p>这里直接使用标准的Dockerfile文件进行搭建。</p>
-<ol type="1">
-<li><p>首先，在服务器端窗口进入项目所在目录，创建Dockerfile文件（无后缀名，用于构建自定义镜像）。</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403021330980.png"
-alt="image-20240302133000925" />
-<figcaption aria-hidden="true">image-20240302133000925</figcaption>
-</figure></li>
-<li><p>其中，Dockerfile文件内容如下（Dockerfile用于构建Docker
-镜像，其中包含了一系列的指令和配置，用于定义容器镜像的构建规则和运行环境）</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Use an official Python runtime as a parent image</span><br><span class="line"># 拉取官方提供的docker镜像</span><br><span class="line">FROM pengchuanzhang/pytorch:ubuntu20.04_torch1.9-cuda11.3-nccl2.9.9</span><br><span class="line"></span><br><span class="line"># 设置容器的工作空间为/app目录</span><br><span class="line"># Set the working directory in the container</span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line"># 将项目目录内容复制到容器的/app目录（不然我们容器里就没有项目的代码）</span><br><span class="line"># Copy the current directory contents into the container at /app</span><br><span class="line">COPY . /app</span><br><span class="line"></span><br><span class="line"># 安装其他模型构建所需的依赖（注意加镜像源）</span><br><span class="line">RUN pip install einops shapely timm yacs tensorboardX ftfy prettytable pymongo -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">RUN pip install transformers -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">RUN python setup.py build develop</span><br><span class="line"></span><br><span class="line"># Make port 80 available to the world outside this container</span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line"># Define environment variable</span><br><span class="line">ENV NAME World</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-<li><p>构建上述Dockerfile中自定义的镜像</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051148987.png"
-alt="image-20240305114805947" />
-<figcaption aria-hidden="true">image-20240305114805947</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首先在终端进入项目所在的文件夹</span><br><span class="line">cd GLIP-main</span><br><span class="line"># 基于当前文件夹构建镜像，镜像名字取为my-glip-app</span><br><span class="line">docker build -t my-glip-image .</span><br></pre></td></tr></table></figure></li>
-<li><p>基于上述镜像（my-glip-image）创建容器（my-glip-container）</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name my-glip-container my-glip-image /bin/bash</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051308890.png"
-alt="image-20240305130846846" />
-<figcaption aria-hidden="true">image-20240305130846846</figcaption>
-</figure></li>
-<li><p>检查容器内的工作空间有什么</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051309791.png"
-alt="image-20240305130949765" />
-<figcaption aria-hidden="true">image-20240305130949765</figcaption>
-</figure></li>
-<li><p>预训练（这段训练代码是glip官方提供的分布式训练代码，我只有单卡，需要修改这部分代码）</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python -m torch.distributed.launch --nnodes 1 --nproc_per_node=8 tools/train_net.py \</span><br><span class="line">    --config-file configs/pretrain/glip_A_Swin_T_O365.yaml \</span><br><span class="line">    --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure>
-<p>具体步骤为：</p>
-<ol type="1">
-<li><p>ctrl+D，退出容器</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403051326488.png"
-alt="image-20240305132651458" />
-<figcaption aria-hidden="true">image-20240305132651458</figcaption>
-</figure></li>
-<li><p>docker ps，列出所有运行中的容器</p></li>
-<li><p>再次进入容器</p>
-<ol type="1">
-<li><p>查找已存在的那个容器的ID</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker ps -a</span><br></pre></td></tr></table></figure></li>
-<li><p>拿到上述ID后，启动该容器</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 6baa7299310f</span><br><span class="line">docker strat &lt;容器ID或名称&gt;</span><br></pre></td></tr></table></figure></li>
-<li><p>再次进入其中</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 6baa7299310f</span><br><span class="line">docker exec -it &lt;容器ID或名称&gt; /bin/bash</span><br></pre></td></tr></table></figure></li>
-</ol></li>
-<li><p>修改训练代码，删除“分布式训练”的部分</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/train_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --skip-test --use-tensorboard --override_output_dir ./output_dir</span><br></pre></td></tr></table></figure></li>
-</ol></li>
-<li><p>零样本测试</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python tools/test_grounding_net.py --config-file configs/pretrain/glip_A_Swin_T_O365.yaml --weight MODEL/glip_a_tiny_o365.pth \</span><br><span class="line">        TEST.IMS_PER_BATCH 1 \</span><br><span class="line">        MODEL.DYHEAD.SCORE_AGG &quot;MEAN&quot; \</span><br><span class="line">        TEST.EVAL_TASK detection \</span><br><span class="line">        MODEL.DYHEAD.FUSE_CONFIG.MLM_LOSS False \</span><br><span class="line">        OUTPUT_DIR ./output_dir</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h3 id="conda">Conda</h3>
-<p>安装Conda及创建虚拟环境的步骤参考笔记<a
-href="http://localhost:4000/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">服务器端安装conda并创建虚拟环境</a></p>
-<h4 id="安装conda">安装Conda</h4>
-<p>见<a
-href="http://localhost:4000/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">服务器端安装conda并创建虚拟环境</a></p>
-<h4 id="创建虚拟环境">创建虚拟环境</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 创建</span><br><span class="line">conda create -n glip_env python=3.8</span><br><span class="line"># 激活</span><br><span class="line">conda activate glip_env</span><br></pre></td></tr></table></figure>
-<h4 id="安装依赖">安装依赖</h4>
-<ol type="1">
-<li>先安装torch、torchvision</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">################cuda#######################</span><br><span class="line"># 1.安装cuda</span><br><span class="line">## 1.1查找源上可用的cuda版本</span><br><span class="line">conda search cudatoolkit --info</span><br><span class="line">## 1.2选择想要的版本，会有下载url，wget+url 下载这一版本的cuda压缩包</span><br><span class="line">wget url</span><br><span class="line">## 1.3安装cuda</span><br><span class="line">conda install --use-local  本地cuda包所在的路径</span><br><span class="line"></span><br><span class="line"># 2.安装对应版本的cudann</span><br><span class="line">## 2.1查看cuda对应的cudnn版本</span><br><span class="line">conda search cudnn --info</span><br><span class="line">## 1.2选择想要的版本，会有下载url，wget+url 下载这一版本的cudann压缩包</span><br><span class="line"></span><br><span class="line">## 1.3 安装cudann</span><br><span class="line">conda install --use-local 本地cudnn包所在的路径</span><br><span class="line"></span><br><span class="line"># 3.检查是否安装成功</span><br><span class="line">conda list cudatoolkit</span><br></pre></td></tr></table></figure>
-<p>查找源上可用的cuda版本，选择想要的版本，会有下载url，wget+url
-下载这一版本的cuda压缩包</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081522904.png"
-alt="image-20240308152233840" />
-<figcaption aria-hidden="true">image-20240308152233840</figcaption>
-</figure>
-<p>查看cuda对应的cudnn版本，选择想要的版本，会有下载url，wget+url
-下载这一版本的cudann压缩包</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403082021716.png"
-alt="image-20240308202126665" />
-<figcaption aria-hidden="true">image-20240308202126665</figcaption>
-</figure>
-<p>检查cuda和cudann是否安装成功</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403082040613.png"
-alt="image-20240308204002569" />
-<figcaption aria-hidden="true">image-20240308204002569</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">##############torch#########################</span><br><span class="line">1.去官网查询与cuda匹配的pytorch和torchvision包</span><br><span class="line">官网：https://pytorch.org/get-started/previous-versions/</span><br><span class="line">我的cuda是11.3，因此我执行这句话：</span><br><span class="line">(用conda安装老是不成功，要用pip安装)</span><br><span class="line">(这里改成-i 清华源镜像找不到这个版本的依赖，所以直接复制官网链接下载)</span><br><span class="line">pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113</span><br><span class="line">2.验证</span><br><span class="line">#进入python环境</span><br><span class="line">python</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; import torch</span><br><span class="line">&gt;&gt;&gt; torch.__version__</span><br><span class="line">&#x27;1.12.1+cu113&#x27;</span><br><span class="line">&gt;&gt;&gt; torch.cuda.is_available()</span><br><span class="line">True</span><br><span class="line">&gt;&gt;&gt; torch.cuda.device_count()</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-<p>去官网查询与cuda匹配的pytorch和torchvision包</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403082049336.png"
-alt="image-20240308204944140" />
-<figcaption aria-hidden="true">image-20240308204944140</figcaption>
-</figure>
-<p>验证安装成功的torch、torchvision</p>
-<p>​ 2.安装其他依赖</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install certifi charset-normalizer==3.3.0 cycler==0.11.0 dnspython==2.3.0 einops==0.6.1 filelock==3.12.2 fonttools==4.38.0 fsspec ftfy==6.1.1 huggingface-hub==0.16.4 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install idna==3.4 importlib-metadata==6.7.0 kiwisolver==1.4.5 matplotlib==3.5.3 opencv-python==4.8.1.78 prettytable==3.7.0 protobuf==4.24.4 pycocotools==2.0.7 pymongo==4.5.0 python-dateutil==2.8.2 regex -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install safetensors==0.4.0 scipy==1.7.3 shapely==2.0.1 tensorboardX==2.6.2.2 timm==0.9.7 tokenizers==0.13.3 wcwidth==0.2.8 yacs==0.1.8 urllib3==2.0.6 transformers==4.30.2 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<ol start="3" type="1">
-<li>安装其他其他依赖</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python setup.py build develop --user</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>error: command '/usr/bin/nvcc' failed with exit code 1</p>
-<p>说是gcc与cuda版本不匹配，匹配表格见<a
-href="https://blog.csdn.net/ZXF_1991/article/details/125579226">gcc与cuda对应关系</a></p>
-</blockquote>
-<p>直接运行上一行代码<code>python setup.py build develop --user</code>会出错：</p>
-<blockquote>
-<p>The detected CUDA version (11.5) mismatches the version that was used
-to compile PyTorch (12.1). Please make sure to use the same CUDA
-versions.</p>
-</blockquote>
-<p>原因是：系统cuda版本为11.5，与编译pytorch的cuda版本12.1不一致。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 于是关键问题变成了调整cuda、torch、torchvision的版本</span><br></pre></td></tr></table></figure>
-<p>一凡提供的版本</p>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081024590.png"
-alt="image-20240308102417538" />
-<figcaption aria-hidden="true">image-20240308102417538</figcaption>
-</figure>
-<p>cuda版本排错步骤</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 激活conda环境</span><br><span class="line"># 检查现有的pytorch版本</span><br><span class="line"># 检查与现有的pytorch适配的cuda版本</span><br><span class="line"># 官网推荐的是：cuda11.3，pytorch1.9</span><br><span class="line"># 检查我的系统可用的最高cuda版本</span><br><span class="line"># 检查我的系统实际安装的cuda版本</span><br><span class="line"># 考虑上面的推荐版本，我需要：</span><br><span class="line">## 1.在conda虚拟环境中下载cuda11.1</span><br><span class="line">## 2.确认conda虚拟环境中python的版本</span><br><span class="line">## 3.由2确认需要下载的torch、torchvision的版本</span><br><span class="line">## 4.下载torch、torchvision</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>激活环境</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 激活conda环境</span><br><span class="line">source activate glip_dev</span><br></pre></td></tr></table></figure>
-<p>检查冲突版本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查现有的pytorch版本</span><br><span class="line"></span><br><span class="line">python -c &quot;import torch; print(torch.__version__)&quot;</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061215597.png"
-alt="image-20240306121548570" />
-<figcaption aria-hidden="true">image-20240306121548570</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查与现有的pytorch适配的cuda版本</span><br><span class="line">python -c &quot;import torch; print(torch.version.cuda)&quot;</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061216001.png"
-alt="image-20240306121632970" />
-<figcaption aria-hidden="true">image-20240306121632970</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查我的cuda版本（可用的最高版本）</span><br><span class="line">nvidia-smi</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061215422.png"
-alt="image-20240306121522369" />
-<figcaption aria-hidden="true">image-20240306121522369</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查我的系统实际安装的cuda版本</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403061220087.png"
-alt="image-20240306122022052" />
-<figcaption aria-hidden="true">image-20240306122022052</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 确定相应的pytorch版本 https://pytorch.org/get-started/previous-versions/</span><br><span class="line">## 官网没有cuda11.5对应的pytorch，我找了一个cuda11.3对应的pytorch</span><br><span class="line">conda install pytorch==1.9.1 torchvision==0.10.1 torchaudio==0.9.1 cudatoolkit=11.3 -c pytorch -c conda-forge</span><br><span class="line">## 上面哪个conda连接有问题，用下面这个pip安装pytorch1.9和cuda11.1</span><br><span class="line">pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html</span><br></pre></td></tr></table></figure>
-<p>安装新版本</p>
-<p>卸载旧版本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 首先卸载glip_dev中原有的与cuda相关的依赖</span><br><span class="line">pip list</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081041834.png"
-alt="image-20240308104147718" />
-<figcaption aria-hidden="true">image-20240308104147718</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 卸载上述cuda相关依赖</span><br><span class="line">pip uninstall nvidia-cublas-cu12 nvidia-cuda-cupti-cu12 nvidia-cuda-nvrtc-cu12 nvidia-cuda-runtime-cu12 nvidia-cudnn-cu12 nvidia-cufft-cu12 nvidia-curand-cu12 nvidia-cusolver-cu12 nvidia-cusparse-cu12 nvidia-nccl-cu12 nvidia-nvjitlink-cu12 nvidia-nvtx-cu12</span><br></pre></td></tr></table></figure>
-<p>安装新版本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 重新安装cuda11.1</span><br><span class="line"># 在conda环境安装cuda，更准确地说是要安装cudatoolkit</span><br><span class="line">conda install cudatoolkit=11.1</span><br><span class="line"></span><br><span class="line">#######安装安装不上啊，先不管了######</span><br><span class="line"># 安装cuda11.1</span><br><span class="line">conda install cudatoolkit=11.1 -c nvidia/label/cuda-11.1.1 -c conda-forge</span><br><span class="line"># 安装对应版本的cudann</span><br><span class="line">conda install cudnn=8.2.1 -c nvidia/label/cudnn8.2.1</span><br><span class="line"></span><br><span class="line">##安装时出现错误</span><br><span class="line">CondaHTTPError: HTTP 000 CONNECTION FAILED for url &lt;https://conda.anaconda.org/conda-forge/noarch/repodata.json&gt;</span><br><span class="line">Elapsed: -</span><br><span class="line"></span><br><span class="line">An HTTP error occurred when trying to retrieve this URL.</span><br><span class="line">HTTP errors are often intermittent, and a simple retry will get you on your way.</span><br><span class="line">SSLError(MaxRetryError(&#x27;HTTPSConnectionPool(host=\&#x27;conda.anaconda.org\&#x27;, port=443): Max retries exceeded with url: /conda-forge/noarch/repodata.json (Caused by SSLError(SSLError(&quot;bad handshake: Error([(\&#x27;SSL routines\&#x27;, \&#x27;ssl3_get_server_certificate\&#x27;, \&#x27;c</span><br><span class="line"></span><br><span class="line">##解决</span><br><span class="line">conda config --set ssl_verify false </span><br><span class="line"></span><br><span class="line">##还是不行</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 验证安装是否成功</span><br><span class="line">conda list cudatoolkit</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 确定python版本</span><br><span class="line">python --version</span><br></pre></td></tr></table></figure>
-<figure>
-<img
-src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202403081129398.png"
-alt="image-20240308112917305" />
-<figcaption aria-hidden="true">image-20240308112917305</figcaption>
-</figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 确定torch和torchvision版本——参考一凡推荐去官网找下载链接</span><br><span class="line">pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html</span><br><span class="line"># 改成镜像(改成镜像找不到包，但是直接用上面那个可以下载)</span><br><span class="line">pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 安装完torch、torchvision后，运行最开始的python setup.py build develop --user会出现以下错误</span><br><span class="line">error: command &#x27;/usr/bin/nvcc&#x27; failed with exit code 1</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>多模态</category>
-      </categories>
-      <tags>
-        <tag>代码复现</tag>
-        <tag>GLIP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>linux常用命令</title>
-    <url>/2024/02/21/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="linux常用命令">Linux常用命令</h1>
-<h2 id="查看版本">查看版本</h2>
-<ol type="1">
-<li><p>linux版本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lsb_release -a</span><br></pre></td></tr></table></figure></li>
-<li><p>CUDA版本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br></pre></td></tr></table></figure></li>
-<li></li>
-</ol>
-]]></content>
-      <categories>
-        <category>经验技巧</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>服务器端安装conda并创建虚拟环境</title>
-    <url>/2024/03/08/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%AE%89%E8%A3%85conda%E5%B9%B6%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="linux服务器端使用conda">Linux服务器端使用conda</h1>
-<p>在使用服务器运行项目的时候，为了区隔不同的环境，常常需要创建虚拟环境，而conda就是实现这一功能的最常用的工具之一。</p>
-<h2 id="安装conda">安装conda</h2>
-<p>清华镜像站（conda）：https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/?spm=a2c6h.12873639.article-detail.7.12df72424hBvxZ</p>
-<span id="more"></span>
-<ol type="1">
-<li><p>去清华镜像站找到自己想要的版本，右键-复制链接地址</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-5.3.1-Linux-x86_64.sh</span><br></pre></td></tr></table></figure></li>
-<li><p>在服务器端新建一个目录，比如直接叫conda，进入 conda
-文件夹后，wget + 复制好的地址，运行即可</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首先来到用户家目录</span><br><span class="line">cd /home/自己路径</span><br><span class="line"># 新建conda文件夹</span><br><span class="line">mkdir conda</span><br><span class="line"># 进入conda文件夹，运行下述命令</span><br><span class="line">## 这里加--user-agent=&quot;Mozilla&quot;的原因是镜像源的服务器会检查引用者，拒绝不以&quot;Mozilla&quot;开头的用户代理</span><br><span class="line">wget --user-agent=&quot;Mozilla&quot; https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-5.3.1-Linux-x86_64.sh</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-<li><p>安装.sh脚本后需要运行bash命令</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bash Anaconda3-5.3.1-Linux-x86_64.sh</span><br></pre></td></tr></table></figure>
-<p>按要求点击回车，最后重启终端</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 网络上有很多先修改.bashrc文件再重启的操作，貌似是老版conda才需要这么做；实测直接重启就可以</span><br><span class="line">source ~/.bashrc</span><br></pre></td></tr></table></figure></li>
-<li><p>检查conda是否安装成功</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda --version</span><br></pre></td></tr></table></figure></li>
-<li><p>升级conda版本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda update -n base -c defaults conda</span><br></pre></td></tr></table></figure></li>
-<li><p>配置conda镜像源</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"># 进入配置文件</span><br><span class="line">vim ~/.condarc</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">channels:</span><br><span class="line">  - defaults</span><br><span class="line">show_channel_urls: true</span><br><span class="line">default_channels:</span><br><span class="line">  - http://mirrors.aliyun.com/anaconda/pkgs/main</span><br><span class="line">  - http://mirrors.aliyun.com/anaconda/pkgs/r</span><br><span class="line">  - http://mirrors.aliyun.com/anaconda/pkgs/msys2</span><br><span class="line">custom_channels:</span><br><span class="line">  conda-forge: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  msys2: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  bioconda: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  menpo: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  pytorch: http://mirrors.aliyun.com/anaconda/cloud</span><br><span class="line">  simpleitk: http://mirrors.aliyun.com/anaconda/cloud</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="新建虚拟环境">新建虚拟环境</h2>
-<ol type="1">
-<li>检查已有虚拟环境</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda env list</span><br></pre></td></tr></table></figure>
-<ol start="2" type="1">
-<li>创建虚拟环境</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda create -n glip_dev python=3.8</span><br></pre></td></tr></table></figure>
-<ol start="3" type="1">
-<li>启动虚拟环境</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">source activate glip_dev</span><br></pre></td></tr></table></figure>
-<ol start="4" type="1">
-<li>安装包</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda install &lt;包名&gt;</span><br><span class="line">conda install python=3.8</span><br></pre></td></tr></table></figure>
-<ol start="5" type="1">
-<li>退出虚拟环境</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">source deactivate glip_dev</span><br></pre></td></tr></table></figure>
-<ol start="6" type="1">
-<li>查看安装了哪些包</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda list</span><br></pre></td></tr></table></figure>
-<ol start="7" type="1">
-<li>查看当前存在哪些虚拟环境</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda env list </span><br><span class="line">或者</span><br><span class="line">conda info -e</span><br></pre></td></tr></table></figure>
-<h2 id="安装依赖">安装依赖</h2>
-<ul>
-<li><p>用conda安装</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda install xxx</span><br></pre></td></tr></table></figure></li>
-<li><p>用pip安装</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 清华源</span><br><span class="line">pip install xxx -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"># 豆瓣源</span><br><span class="line">pip install xxx -i http://pypi.douban.com/simple/</span><br><span class="line"># 阿里云源</span><br><span class="line">pip install xxx -i http://mirrors.aliyun.com/pypi/simple/</span><br><span class="line">#中国科技大学</span><br><span class="line">pip install xxx -i https://pypi.mirrors.ustc.edu.cn/simple/ </span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># pip如果容易中断的话：</span><br><span class="line">pip --default-timeout=1000 install xxx -i xxx</span><br><span class="line">pip install xxx -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="导出依赖">导出依赖</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># conda打包环境</span><br><span class="line">conda env export &gt; xxx.yml</span><br><span class="line"># xxx.yml文件可以直接用记事本打开，里面有依赖包列表</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>经验技巧</category>
-      </categories>
-      <tags>
-        <tag>服务器</tag>
-        <tag>conda</tag>
       </tags>
   </entry>
 </search>
