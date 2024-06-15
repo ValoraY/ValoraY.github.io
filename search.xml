@@ -1043,7 +1043,8 @@ alt="Faster RCNN" />
 <figcaption aria-hidden="true">Faster RCNN</figcaption>
 </figure>
 <p>上述思维导图是我分析源码后重新绘制的代码结构图。</p>
-<p>源代码仓库：https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_object_detection/faster_rcnn</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">源代码仓库：https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_object_detection/faster_rcnn</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>目标检测</category>
