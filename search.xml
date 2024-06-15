@@ -5482,7 +5482,7 @@ memory. Please try to raise your shared memory limit.</p>
 <p>怎么将docker容器中的代码同步至github？</p>
 ]]></content>
       <categories>
-        <category>多模态</category>
+        <category>目标检测</category>
       </categories>
       <tags>
         <tag>代码复现</tag>
@@ -5530,7 +5530,7 @@ href="https://valoray.github.io/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%
 </ol>
 ]]></content>
       <categories>
-        <category>目标检测</category>
+        <category>图像分类</category>
       </categories>
       <tags>
         <tag>CLIP</tag>
