@@ -5549,6 +5549,7 @@ alt="image-20240615201110016" />
 <figcaption aria-hidden="true">image-20240615201110016</figcaption>
 </figure>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">论文地址：https://arxiv.org/abs/2106.08265</span><br><span class="line">github地址：https://github.com/amazon-science/patchcore-inspection</span><br><span class="line">平台：autodl云服务器</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 <h2 id="安装依赖">1.安装依赖</h2>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 有setup.py文件，将整个项目安装成一个可导入的依赖</span><br><span class="line">pip install -e .</span><br><span class="line"># 安装依赖</span><br><span class="line">## 注意这里的faiss用的就是cpu版，换成gpu反而会在推理时报错，而且超级影响模型性能（用faiss-gpu训练精度大概会掉30%-40%！！！）</span><br><span class="line">pip install -r requirements.txt</span><br><span class="line"># 运行过程中发现需要安装</span><br><span class="line">pip install timm</span><br></pre></td></tr></table></figure>
 <h2 id="训练">2.训练</h2>
