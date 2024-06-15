@@ -5495,6 +5495,7 @@ memory. Please try to raise your shared memory limit.</p>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="clip代码运行">CLIP代码运行</h1>
 <h2 id="整体步骤">整体步骤</h2>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1.上传代码至服务器</span><br><span class="line">2.创建conda环境clip_dev</span><br><span class="line">3.安装依赖pytorch、torchvision依赖</span><br><span class="line">4.安装其他依赖</span><br><span class="line">5.在项目路径下</span><br><span class="line">6.运行项目</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 <h2 id="具体实现">具体实现</h2>
 <ol type="1">
 <li><p>上传代码至服务器</p></li>
