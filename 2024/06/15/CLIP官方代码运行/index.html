@@ -19,45 +19,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"valoray.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="在AutoDL租用实例 1获得主机名、端口号、用户名和密码 点击 Tools，点击 部署Deployment，点击Configuration">
+    <meta name="description" content="CLIP代码运行 整体步骤 1234561.上传代码至服务器2.创建conda环境clip_dev3.安装依赖pytorch、torchvision依赖4.安装其他依赖5.在项目路径下6.运行项目 具体实现  上传代码至服务器 创建conda环境clip_dev 123conda create clip_dev python&#x3D;3.8# 如果镜像源出现问题导致无法创建上述环境，先用下行">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Pycharm连接云服务器训练">
-<meta property="og:url" content="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:title" content="CLIP官方代码运行.md">
+<meta property="og:url" content="https://valoray.github.io/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/index.html">
 <meta property="og:site_name" content="DeepRookie">
-<meta property="og:description" content="在AutoDL租用实例 1获得主机名、端口号、用户名和密码 点击 Tools，点击 部署Deployment，点击Configuration">
+<meta property="og:description" content="CLIP代码运行 整体步骤 1234561.上传代码至服务器2.创建conda环境clip_dev3.安装依赖pytorch、torchvision依赖4.安装其他依赖5.在项目路径下6.运行项目 具体实现  上传代码至服务器 创建conda环境clip_dev 123conda create clip_dev python&#x3D;3.8# 如果镜像源出现问题导致无法创建上述环境，先用下行">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfbuI.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfoUq.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfMPY.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfWE1.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKf5dr.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfO9v.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYILj.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYuNx.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKYwFU.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfqvc.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKY3up.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfxFD.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfTaM.png">
-<meta property="og:image" content="https://ooo.0x0.ooo/2023/12/29/OKfUNG.png">
-<meta property="article:published_time" content="2023-12-29T06:56:47.000Z">
-<meta property="article:modified_time" content="2024-01-03T07:09:06.075Z">
+<meta property="article:published_time" content="2024-06-15T11:52:57.000Z">
+<meta property="article:modified_time" content="2024-06-15T11:54:00.069Z">
 <meta property="article:author" content="deeprookie">
-<meta property="article:tag" content="Pycharm">
-<meta property="article:tag" content="云服务器">
+<meta property="article:tag" content="CLIP">
+<meta property="article:tag" content="多模态">
+<meta property="article:tag" content="代码复现">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png">
 
 
-<link rel="canonical" href="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/">
+<link rel="canonical" href="https://valoray.github.io/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/","path":"2023/12/29/Pycharm连接云服务器训练/","title":"Pycharm连接云服务器训练"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://valoray.github.io/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/","path":"2024/06/15/CLIP官方代码运行/","title":"CLIP官方代码运行.md"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Pycharm连接云服务器训练 | DeepRookie</title>
+<title>CLIP官方代码运行.md | DeepRookie</title>
   
 
 
@@ -157,9 +142,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8autodl%E7%A7%9F%E7%94%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">在AutoDL租用实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%82%B9%E5%87%BB-tools%E7%82%B9%E5%87%BB-%E9%83%A8%E7%BD%B2deployment%E7%82%B9%E5%87%BBconfiguration"><span class="nav-number">2.</span> <span class="nav-text">点击
-Tools，点击
-部署Deployment，点击Configuration</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BF%A1%E6%81%AF%E5%B9%B6%E6%B5%8B%E8%AF%95%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">配置服务器信息并测试连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E6%9C%AC%E5%9C%B0%E8%B7%AF%E5%BE%84%E5%92%8C%E8%BF%9C%E7%A8%8B%E8%B7%AF%E5%BE%84%E6%98%A0%E5%B0%84"><span class="nav-number">4.</span> <span class="nav-text">设置本地路径和远程路径映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8B%BE%E9%80%89%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81%E6%97%B6%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">勾选同步代码时自动创建文件夹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%BF%9C%E7%A8%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E5%92%8C%E5%90%8C%E6%AD%A5%E7%9B%AE%E5%BD%95"><span class="nav-number">6.</span> <span class="nav-text">设置远程解释器和同步目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%88%90%E5%8A%9F"><span class="nav-number">7.</span> <span class="nav-text">连接成功</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E8%BF%9C%E7%A8%8Bterminal"><span class="nav-number">8.</span> <span class="nav-text">打开远程Terminal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8C%E5%9C%B0%E5%8C%BA%E5%8F%AF%E4%BB%A5%E9%80%89%E6%8B%A9%E8%B7%A8%E5%AE%9E%E4%BE%8B%E6%8B%B7%E8%B4%9D%E6%95%B0%E6%8D%AE"><span class="nav-number">9.</span> <span class="nav-text">同地区可以选择跨实例拷贝数据</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#clip%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">CLIP代码运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.1.</span> <span class="nav-text">整体步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">具体实现</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -260,7 +243,7 @@ Tools，点击
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2023/12/29/Pycharm%E8%BF%9E%E6%8E%A5%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%AD%E7%BB%83/">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -273,12 +256,12 @@ Tools，点击
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Pycharm连接云服务器训练 | DeepRookie">
+      <meta itemprop="name" content="CLIP官方代码运行.md | DeepRookie">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Pycharm连接云服务器训练
+          CLIP官方代码运行.md
         </h1>
 
         <div class="post-meta-container">
@@ -298,7 +281,7 @@ Tools，点击
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>280</span>
+      <span>321</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -315,79 +298,41 @@ Tools，点击
     
     
     
-    <div class="post-body" itemprop="articleBody"><link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="在autodl租用实例">在AutoDL租用实例</h4>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获得主机名、端口号、用户名和密码</span><br></pre></td></tr></table></figure>
-<h4 id="点击-tools点击-部署deployment点击configuration">点击
-<code>Tools</code>，点击
-部署<code>Deployment</code>，点击<code>Configuration</code></h4>
-<span id="more"></span>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfzRF.png" alt="OKfzRF.png" />
-<figcaption aria-hidden="true">OKfzRF.png</figcaption>
-</figure>
-<h4 id="配置服务器信息并测试连接">配置服务器信息并测试连接</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfbuI.png" alt="OKfbuI.png" />
-<figcaption aria-hidden="true">OKfbuI.png</figcaption>
-</figure>
-<h4 id="设置本地路径和远程路径映射">设置本地路径和远程路径映射</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfoUq.png" alt="OKfoUq.png" />
-<figcaption aria-hidden="true">OKfoUq.png</figcaption>
-</figure>
-<h4 id="勾选同步代码时自动创建文件夹">勾选同步代码时自动创建文件夹</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfMPY.png" alt="OKfMPY.png" />
-<figcaption aria-hidden="true">OKfMPY.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfWE1.png" alt="OKfWE1.png" />
-<figcaption aria-hidden="true">OKfWE1.png</figcaption>
-</figure>
-<h4 id="设置远程解释器和同步目录">设置远程解释器和同步目录</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKf5dr.png" alt="OKf5dr.png" />
-<figcaption aria-hidden="true">OKf5dr.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfO9v.png" alt="OKfO9v.png" />
-<figcaption aria-hidden="true">OKfO9v.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYILj.png" alt="OKYILj.png" />
-<figcaption aria-hidden="true">OKYILj.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYuNx.png" alt="OKYuNx.png" />
-<figcaption aria-hidden="true">OKYuNx.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKYwFU.png" alt="OKYwFU.png" />
-<figcaption aria-hidden="true">OKYwFU.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfqvc.png" alt="OKfqvc.png" />
-<figcaption aria-hidden="true">OKfqvc.png</figcaption>
-</figure>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKY3up.png" alt="OKY3up.png" />
-<figcaption aria-hidden="true">OKY3up.png</figcaption>
-</figure>
-<h4 id="连接成功">连接成功</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfxFD.png" alt="OKfxFD.png" />
-<figcaption aria-hidden="true">OKfxFD.png</figcaption>
-</figure>
-<h4 id="打开远程terminal">打开远程Terminal</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfTaM.png" alt="OKfTaM.png" />
-<figcaption aria-hidden="true">OKfTaM.png</figcaption>
-</figure>
-<h4 id="同地区可以选择跨实例拷贝数据">同地区可以选择跨实例拷贝数据</h4>
-<figure>
-<img src="https://ooo.0x0.ooo/2023/12/29/OKfUNG.png" alt="OKfUNG.png" />
-<figcaption aria-hidden="true">OKfUNG.png</figcaption>
-</figure>
+    <div class="post-body" itemprop="articleBody"><link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="clip代码运行">CLIP代码运行</h1>
+<h2 id="整体步骤">整体步骤</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1.上传代码至服务器</span><br><span class="line">2.创建conda环境clip_dev</span><br><span class="line">3.安装依赖pytorch、torchvision依赖</span><br><span class="line">4.安装其他依赖</span><br><span class="line">5.在项目路径下</span><br><span class="line">6.运行项目</span><br></pre></td></tr></table></figure>
+<h2 id="具体实现">具体实现</h2>
+<ol type="1">
+<li><p>上传代码至服务器</p></li>
+<li><p>创建<code>conda</code>环境<code>clip_dev</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda create clip_dev python=3.8</span><br><span class="line"># 如果镜像源出现问题导致无法创建上述环境，先用下行代码换回默认源再创建</span><br><span class="line">conda config --remove-key channels </span><br></pre></td></tr></table></figure></li>
+<li><p>安装依赖<code>pytorch、torchvision</code>依赖（<code>conda</code>不行用<code>pip</code>）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 先检查一下nvidia的最高版本</span><br><span class="line">nvidia-smi</span><br><span class="line"># 复制pytorch安装代码（https://pytorch.org/get-started/previous-versions/）</span><br><span class="line">pip install torch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 --index-url https://download.pytorch.org/whl/cu118</span><br></pre></td></tr></table></figure></li>
+<li><p>安装其他依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 根据官网提示/requirements.txt文件安装其他依赖</span><br><span class="line">pip install ftfy regex tqdm</span><br><span class="line"></span><br><span class="line">#清华源 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure></li>
+<li><p>安装<code>setup.py</code>（<code>setup.py</code>文件会遍历<code>requirements.txt</code>，并自动安装其中包含的依赖，因此实际上5包含了4，按理说只要执行5就够了，但是由于<code>pip</code>安装常常需要镜像源，一般还是先用4安装，再用5作为双层保险）</p>
+<p><code>setup.py</code>的作用有两个：</p>
+<ol type="1">
+<li>自动安装<code>requirements.txt</code>的依赖</li>
+<li>将整个项目构建成一个包，让它可以在其他项目中作为一个依赖进行导入</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 先进入项目路径下</span><br><span class="line">cd CLIP_MAIN</span><br><span class="line"># 安装setup.py</span><br><span class="line">pip install -e .</span><br><span class="line">或pip install .</span><br></pre></td></tr></table></figure></li>
+<li><p>运行项目</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#根据官网提示，在项目路径下创建文件myEntry.py，复制官网提供的代码</span><br><span class="line">import torch</span><br><span class="line">import clip</span><br><span class="line">from PIL import Image</span><br><span class="line"></span><br><span class="line">device = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;</span><br><span class="line">model, preprocess = clip.load(&quot;ViT-B/32&quot;, device=device)</span><br><span class="line"></span><br><span class="line">image = preprocess(Image.open(&quot;CLIP.png&quot;)).unsqueeze(0).to(device)</span><br><span class="line">text = clip.tokenize([&quot;a diagram&quot;, &quot;a dog&quot;, &quot;a cat&quot;]).to(device)</span><br><span class="line"></span><br><span class="line">with torch.no_grad():</span><br><span class="line">    image_features = model.encode_image(image)</span><br><span class="line">    text_features = model.encode_text(text)</span><br><span class="line">    </span><br><span class="line">    logits_per_image, logits_per_text = model(image, text)</span><br><span class="line">    probs = logits_per_image.softmax(dim=-1).cpu().numpy()</span><br><span class="line"></span><br><span class="line">print(&quot;Label probs:&quot;, probs)  # prints: [[0.9927937  0.00421068 0.00299572]]</span><br><span class="line"></span><br><span class="line">#执行myEntry.py</span><br><span class="line">python myEntry.py</span><br></pre></td></tr></table></figure></li>
+<li><p>调试项目（Debug-参考<a
+href="https://valoray.github.io/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/">利用Docker容器部署GLIP项目</a>最后的Debug部分）</p>
+<ol type="1">
+<li><p>创建<code>launch.json</code>文件。点击vscode左侧的<code>run and debug</code>窗口=&gt;
+<code>create a launch.json</code> =&gt;选择<code>Python debugger</code>
+=&gt;
+<code>Python file</code>，然后就创建了一个<code>launch.json</code>文件</p></li>
+<li><p>点击右下角的<code>Python Interpreter</code>，选择服务器端的Python解释器（我选择的是之前安装conda创建的clip_dev这一虚拟环境的Python解释器）</p></li>
+<li><p>修改<code>launch.json</code>文件内容</p>
+<p>参考原本开启训练的代码<code>python myEntry.py</code>修改<code>launch.json</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 修改项目路径为开启训练时的python文件myEntry.py的绝对路径</span><br><span class="line"># 修改最后一项&quot;python&quot;对应的值，表示python解释器的地址。如果是conda环境，可以直接在环境中输入which python，即可获得该地址（这一步应该和步骤2是重复的）</span><br><span class="line">&#123;</span><br><span class="line">    // Use IntelliSense to learn about possible attributes.</span><br><span class="line">    // Hover to view descriptions of existing attributes.</span><br><span class="line">    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span><br><span class="line">    &quot;version&quot;: &quot;0.2.0&quot;,</span><br><span class="line">    &quot;configurations&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;name&quot;: &quot;Clip Debug&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;debugpy&quot;,</span><br><span class="line">            &quot;request&quot;: &quot;launch&quot;,</span><br><span class="line">            &quot;program&quot;: &quot;$&#123;file&#125;&quot;, # 将值修改为/data/xjingyu_data/CLIP_main/myEntry.py</span><br><span class="line">            &quot;console&quot;: &quot;integratedTerminal&quot;,</span><br><span class="line">            &quot;python&quot;: &quot;/home/xjingyu/anaconda3/envs/clip_dev/bin/python&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>回到文件目录，打断点调试</p></li>
+</ol></li>
+</ol>
 
     </div>
 
@@ -397,22 +342,20 @@ Tools，点击
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Pycharm/" rel="tag"># Pycharm</a>
-              <a href="/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag"># 云服务器</a>
+              <a href="/tags/CLIP/" rel="tag"># CLIP</a>
+              <a href="/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/" rel="tag"># 多模态</a>
+              <a href="/tags/%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/" rel="tag"># 代码复现</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2023/12/29/Faster-RCNN%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="prev" title="Faster RCNN代码分析（二）">
-                  <i class="fa fa-angle-left"></i> Faster RCNN代码分析（二）
+                <a href="/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/" rel="prev" title="利用Docker容器部署GLIP项目">
+                  <i class="fa fa-angle-left"></i> 利用Docker容器部署GLIP项目
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/01/03/Django%E5%88%9D%E5%AD%A6%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" rel="next" title="Django初学教程（一）">
-                  Django初学教程（一） <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>

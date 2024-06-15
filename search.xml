@@ -1748,7 +1748,7 @@ Epoch 20/20
     <url>/2023/12/29/RCNN%E8%AE%BA%E6%96%87%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="rcnn">RCNN</h1>
 <h2 id="背景">背景</h2>
-<p>过去主流的目标检测思路：输入一张图片==》获取一系列区域==》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,...xn）==》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
+<p>过去主流的目标检测思路：输入一张图片=》获取一系列区域=》传统的特征提取方法（HOG特征）得到一组特征表示（x1,x2,...xn）=》输入预训练好的机器学习算法（SVM、决策树）进行分类</p>
 <p>本文创新：用CNN代替传统的特征提取方法来提取图像特征</p>
 <span id="more"></span>
 <h2 id="主要贡献">主要贡献</h2>
@@ -2324,7 +2324,7 @@ class="math inline">\(\mathbf{x}^{(i)}\left(\mathbf{w}^\top\mathbf{x}^{(i)}+b-y^
 </ul></li>
 </ol></li>
 <li><p>全连接层的参数开销</p>
-<p>如果全连接层又d个输入，q个输出，那么共有dq个参数</p></li>
+<p>如果全连接层有d个输入，q个输出，那么共有dq个参数</p></li>
 <li><p>全连接层的偏置项的维度为（1,
 q），q为该层的输出维度。（习惯写法）</p></li>
 </ol>
@@ -2417,7 +2417,7 @@ class="math inline">\(\mathbf{H}=\sigma(\mathbf{X}\mathbf{W}^{(1)}+\mathbf{b}^{(
 </ul></li>
 </ul></li>
 <li><p>前向传播 and 反向传播</p>
-<p>反向传播计算各可调整参数的梯度时，需要使用<strong>前向传播过程中产生的中间值（即隐藏层的输出值H）</strong>，这也是训练阶段的显存大于测试阶段的原因（因为训练阶段需要存储前向传播的中间值，以备反向传播使用，而测试阶段不需要这样）</p></li>
+<p>反向传播计算各个可调整参数的梯度时，需要使用<strong>前向传播过程中产生的中间值（即隐藏层的输出值H）</strong>，这也是训练阶段的显存大于测试阶段的原因（因为训练阶段需要存储前向传播的中间值，以备反向传播使用，而测试阶段不需要这样）</p></li>
 <li><p>梯度爆炸</p>
 <ul>
 <li>含义：可调整参数（如权重W）更新过大，<u>破坏了模型的稳定收敛</u></li>
@@ -5487,6 +5487,54 @@ memory. Please try to raise your shared memory limit.</p>
       <tags>
         <tag>代码复现</tag>
         <tag>GLIP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CLIP官方代码运行.md</title>
+    <url>/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="clip代码运行">CLIP代码运行</h1>
+<h2 id="整体步骤">整体步骤</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1.上传代码至服务器</span><br><span class="line">2.创建conda环境clip_dev</span><br><span class="line">3.安装依赖pytorch、torchvision依赖</span><br><span class="line">4.安装其他依赖</span><br><span class="line">5.在项目路径下</span><br><span class="line">6.运行项目</span><br></pre></td></tr></table></figure>
+<h2 id="具体实现">具体实现</h2>
+<ol type="1">
+<li><p>上传代码至服务器</p></li>
+<li><p>创建<code>conda</code>环境<code>clip_dev</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda create clip_dev python=3.8</span><br><span class="line"># 如果镜像源出现问题导致无法创建上述环境，先用下行代码换回默认源再创建</span><br><span class="line">conda config --remove-key channels </span><br></pre></td></tr></table></figure></li>
+<li><p>安装依赖<code>pytorch、torchvision</code>依赖（<code>conda</code>不行用<code>pip</code>）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 先检查一下nvidia的最高版本</span><br><span class="line">nvidia-smi</span><br><span class="line"># 复制pytorch安装代码（https://pytorch.org/get-started/previous-versions/）</span><br><span class="line">pip install torch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 --index-url https://download.pytorch.org/whl/cu118</span><br></pre></td></tr></table></figure></li>
+<li><p>安装其他依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 根据官网提示/requirements.txt文件安装其他依赖</span><br><span class="line">pip install ftfy regex tqdm</span><br><span class="line"></span><br><span class="line">#清华源 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure></li>
+<li><p>安装<code>setup.py</code>（<code>setup.py</code>文件会遍历<code>requirements.txt</code>，并自动安装其中包含的依赖，因此实际上5包含了4，按理说只要执行5就够了，但是由于<code>pip</code>安装常常需要镜像源，一般还是先用4安装，再用5作为双层保险）</p>
+<p><code>setup.py</code>的作用有两个：</p>
+<ol type="1">
+<li>自动安装<code>requirements.txt</code>的依赖</li>
+<li>将整个项目构建成一个包，让它可以在其他项目中作为一个依赖进行导入</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 先进入项目路径下</span><br><span class="line">cd CLIP_MAIN</span><br><span class="line"># 安装setup.py</span><br><span class="line">pip install -e .</span><br><span class="line">或pip install .</span><br></pre></td></tr></table></figure></li>
+<li><p>运行项目</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#根据官网提示，在项目路径下创建文件myEntry.py，复制官网提供的代码</span><br><span class="line">import torch</span><br><span class="line">import clip</span><br><span class="line">from PIL import Image</span><br><span class="line"></span><br><span class="line">device = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;</span><br><span class="line">model, preprocess = clip.load(&quot;ViT-B/32&quot;, device=device)</span><br><span class="line"></span><br><span class="line">image = preprocess(Image.open(&quot;CLIP.png&quot;)).unsqueeze(0).to(device)</span><br><span class="line">text = clip.tokenize([&quot;a diagram&quot;, &quot;a dog&quot;, &quot;a cat&quot;]).to(device)</span><br><span class="line"></span><br><span class="line">with torch.no_grad():</span><br><span class="line">    image_features = model.encode_image(image)</span><br><span class="line">    text_features = model.encode_text(text)</span><br><span class="line">    </span><br><span class="line">    logits_per_image, logits_per_text = model(image, text)</span><br><span class="line">    probs = logits_per_image.softmax(dim=-1).cpu().numpy()</span><br><span class="line"></span><br><span class="line">print(&quot;Label probs:&quot;, probs)  # prints: [[0.9927937  0.00421068 0.00299572]]</span><br><span class="line"></span><br><span class="line">#执行myEntry.py</span><br><span class="line">python myEntry.py</span><br></pre></td></tr></table></figure></li>
+<li><p>调试项目（Debug-参考<a
+href="https://valoray.github.io/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/">利用Docker容器部署GLIP项目</a>最后的Debug部分）</p>
+<ol type="1">
+<li><p>创建<code>launch.json</code>文件。点击vscode左侧的<code>run and debug</code>窗口=&gt;
+<code>create a launch.json</code> =&gt;选择<code>Python debugger</code>
+=&gt;
+<code>Python file</code>，然后就创建了一个<code>launch.json</code>文件</p></li>
+<li><p>点击右下角的<code>Python Interpreter</code>，选择服务器端的Python解释器（我选择的是之前安装conda创建的clip_dev这一虚拟环境的Python解释器）</p></li>
+<li><p>修改<code>launch.json</code>文件内容</p>
+<p>参考原本开启训练的代码<code>python myEntry.py</code>修改<code>launch.json</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 修改项目路径为开启训练时的python文件myEntry.py的绝对路径</span><br><span class="line"># 修改最后一项&quot;python&quot;对应的值，表示python解释器的地址。如果是conda环境，可以直接在环境中输入which python，即可获得该地址（这一步应该和步骤2是重复的）</span><br><span class="line">&#123;</span><br><span class="line">    // Use IntelliSense to learn about possible attributes.</span><br><span class="line">    // Hover to view descriptions of existing attributes.</span><br><span class="line">    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span><br><span class="line">    &quot;version&quot;: &quot;0.2.0&quot;,</span><br><span class="line">    &quot;configurations&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;name&quot;: &quot;Clip Debug&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;debugpy&quot;,</span><br><span class="line">            &quot;request&quot;: &quot;launch&quot;,</span><br><span class="line">            &quot;program&quot;: &quot;$&#123;file&#125;&quot;, # 将值修改为/data/xjingyu_data/CLIP_main/myEntry.py</span><br><span class="line">            &quot;console&quot;: &quot;integratedTerminal&quot;,</span><br><span class="line">            &quot;python&quot;: &quot;/home/xjingyu/anaconda3/envs/clip_dev/bin/python&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>回到文件目录，打断点调试</p></li>
+</ol></li>
+</ol>
+]]></content>
+      <categories>
+        <category>目标检测</category>
+      </categories>
+      <tags>
+        <tag>CLIP</tag>
+        <tag>多模态</tag>
+        <tag>代码复现</tag>
       </tags>
   </entry>
 </search>

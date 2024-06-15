@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -187,6 +187,10 @@
         
         
           <li>
+            <a href="/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" title="CLIP官方代码运行.md" target="_blank">CLIP官方代码运行.md</a>
+          </li>
+        
+          <li>
             <a href="/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/" title="利用Docker容器部署GLIP项目" target="_blank">利用Docker容器部署GLIP项目</a>
           </li>
         
@@ -200,10 +204,6 @@
         
           <li>
             <a href="/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="vscode连接linux服务器" target="_blank">vscode连接linux服务器</a>
-          </li>
-        
-          <li>
-            <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" title="服务器端使用docker部署项目" target="_blank">服务器端使用docker部署项目</a>
           </li>
         
       </ul>
@@ -225,6 +225,95 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">服务器端使用docker部署项目</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="服务器端使用docker部署项目">服务器端使用docker部署项目</h1>
+<h2 id="docker介绍">Docker介绍</h2>
+<p>https://developer.aliyun.com/article/381989</p>
+<p>Docker
+是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的镜像中，然后发布到任何流行的
+Linux
+机器上。使用Docker可以让每个应用彼此相互隔离，在同一台机器上同时运行多个容器，他们彼此之间共享同一个操作系统。Docker的优势在于，它可以在更细的粒度上进行资源的管理，比虚拟化技术性能更高，更加节约资源。下面是普通虚拟化技术和Docker的对比。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -585,92 +674,6 @@ id="动手学深度学习2.0学习笔记四">《动手学深度学习2.0》学�
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="deeprookie">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/" class="post-title-link" itemprop="url">《动手学深度学习2.0》学习笔记（三）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>22k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1:13</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1
-id="动手学深度学习2.0学习笔记三">《动手学深度学习2.0》学习笔记（三）</h1>
-<p>《动手学深度学习2.0》电子书的链接地址为https://zh.d2l.ai/index.html</p>
-<p>本文记录了我在学习本书8-10章节（包括循环神经网络、现代循环神经网络、注意力机制）过程中的理解和收获。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/16/%E3%80%8A%E5%8A%A8%E6%89%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A02-0%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -694,13 +697,13 @@ id="动手学深度学习2.0学习笔记三">《动手学深度学习2.0》学�
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">98k</span>
+    <span title="站点总字数">95k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">5:25</span>
+    <span title="站点阅读时长">5:15</span>
   </span>
 </div>
 <div class="busuanzi-count">

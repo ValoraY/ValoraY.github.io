@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://ooo.0x0.ooo/2024/01/11/OZVFua.png">
 <meta property="og:image" content="https://ooo.0x0.ooo/2024/01/11/OZVizS.png">
 <meta property="article:published_time" content="2024-01-11T08:31:03.000Z">
-<meta property="article:modified_time" content="2024-01-18T03:20:34.361Z">
+<meta property="article:modified_time" content="2024-03-27T12:38:19.691Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="动手学深度学习">
 <meta name="twitter:card" content="summary">
@@ -158,7 +158,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -196,6 +196,10 @@
         
         
           <li>
+            <a href="/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" title="CLIP官方代码运行.md" target="_blank">CLIP官方代码运行.md</a>
+          </li>
+        
+          <li>
             <a href="/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/" title="利用Docker容器部署GLIP项目" target="_blank">利用Docker容器部署GLIP项目</a>
           </li>
         
@@ -209,10 +213,6 @@
         
           <li>
             <a href="/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="vscode连接linux服务器" target="_blank">vscode连接linux服务器</a>
-          </li>
-        
-          <li>
-            <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" title="服务器端使用docker部署项目" target="_blank">服务器端使用docker部署项目</a>
           </li>
         
       </ul>
@@ -282,14 +282,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>6.9k</span>
+      <span>4.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>23 分钟</span>
+      <span>15 分钟</span>
     </span>
 </div>
 
@@ -550,7 +550,7 @@ class="math inline">\(\mathbf{x}^{(i)}\left(\mathbf{w}^\top\mathbf{x}^{(i)}+b-y^
 </ul></li>
 </ol></li>
 <li><p>全连接层的参数开销</p>
-<p>如果全连接层又d个输入，q个输出，那么共有dq个参数</p></li>
+<p>如果全连接层有d个输入，q个输出，那么共有dq个参数</p></li>
 <li><p>全连接层的偏置项的维度为（1,
 q），q为该层的输出维度。（习惯写法）</p></li>
 </ol>
@@ -643,7 +643,7 @@ class="math inline">\(\mathbf{H}=\sigma(\mathbf{X}\mathbf{W}^{(1)}+\mathbf{b}^{(
 </ul></li>
 </ul></li>
 <li><p>前向传播 and 反向传播</p>
-<p>反向传播计算各可调整参数的梯度时，需要使用<strong>前向传播过程中产生的中间值（即隐藏层的输出值H）</strong>，这也是训练阶段的显存大于测试阶段的原因（因为训练阶段需要存储前向传播的中间值，以备反向传播使用，而测试阶段不需要这样）</p></li>
+<p>反向传播计算各个可调整参数的梯度时，需要使用<strong>前向传播过程中产生的中间值（即隐藏层的输出值H）</strong>，这也是训练阶段的显存大于测试阶段的原因（因为训练阶段需要存储前向传播的中间值，以备反向传播使用，而测试阶段不需要这样）</p></li>
 <li><p>梯度爆炸</p>
 <ul>
 <li>含义：可调整参数（如权重W）更新过大，<u>破坏了模型的稳定收敛</u></li>
@@ -731,13 +731,13 @@ class="math inline">\(\mathbf{H}=\sigma(\mathbf{X}\mathbf{W}^{(1)}+\mathbf{b}^{(
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">98k</span>
+    <span title="站点总字数">95k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">5:25</span>
+    <span title="站点阅读时长">5:15</span>
   </span>
 </div>
 <div class="busuanzi-count">

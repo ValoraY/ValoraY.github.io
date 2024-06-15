@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -187,6 +187,10 @@
         
         
           <li>
+            <a href="/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" title="CLIP官方代码运行.md" target="_blank">CLIP官方代码运行.md</a>
+          </li>
+        
+          <li>
             <a href="/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/" title="利用Docker容器部署GLIP项目" target="_blank">利用Docker容器部署GLIP项目</a>
           </li>
         
@@ -200,10 +204,6 @@
         
           <li>
             <a href="/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="vscode连接linux服务器" target="_blank">vscode连接linux服务器</a>
-          </li>
-        
-          <li>
-            <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" title="服务器端使用docker部署项目" target="_blank">服务器端使用docker部署项目</a>
           </li>
         
       </ul>
@@ -225,6 +225,116 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" class="post-title-link" itemprop="url">CLIP官方代码运行.md</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>321</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="clip代码运行">CLIP代码运行</h1>
+<h2 id="整体步骤">整体步骤</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1.上传代码至服务器</span><br><span class="line">2.创建conda环境clip_dev</span><br><span class="line">3.安装依赖pytorch、torchvision依赖</span><br><span class="line">4.安装其他依赖</span><br><span class="line">5.在项目路径下</span><br><span class="line">6.运行项目</span><br></pre></td></tr></table></figure>
+<h2 id="具体实现">具体实现</h2>
+<ol type="1">
+<li><p>上传代码至服务器</p></li>
+<li><p>创建<code>conda</code>环境<code>clip_dev</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda create clip_dev python=3.8</span><br><span class="line"># 如果镜像源出现问题导致无法创建上述环境，先用下行代码换回默认源再创建</span><br><span class="line">conda config --remove-key channels </span><br></pre></td></tr></table></figure></li>
+<li><p>安装依赖<code>pytorch、torchvision</code>依赖（<code>conda</code>不行用<code>pip</code>）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 先检查一下nvidia的最高版本</span><br><span class="line">nvidia-smi</span><br><span class="line"># 复制pytorch安装代码（https://pytorch.org/get-started/previous-versions/）</span><br><span class="line">pip install torch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 --index-url https://download.pytorch.org/whl/cu118</span><br></pre></td></tr></table></figure></li>
+<li><p>安装其他依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 根据官网提示/requirements.txt文件安装其他依赖</span><br><span class="line">pip install ftfy regex tqdm</span><br><span class="line"></span><br><span class="line">#清华源 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure></li>
+<li><p>安装<code>setup.py</code>（<code>setup.py</code>文件会遍历<code>requirements.txt</code>，并自动安装其中包含的依赖，因此实际上5包含了4，按理说只要执行5就够了，但是由于<code>pip</code>安装常常需要镜像源，一般还是先用4安装，再用5作为双层保险）</p>
+<p><code>setup.py</code>的作用有两个：</p>
+<ol type="1">
+<li>自动安装<code>requirements.txt</code>的依赖</li>
+<li>将整个项目构建成一个包，让它可以在其他项目中作为一个依赖进行导入</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 先进入项目路径下</span><br><span class="line">cd CLIP_MAIN</span><br><span class="line"># 安装setup.py</span><br><span class="line">pip install -e .</span><br><span class="line">或pip install .</span><br></pre></td></tr></table></figure></li>
+<li><p>运行项目</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#根据官网提示，在项目路径下创建文件myEntry.py，复制官网提供的代码</span><br><span class="line">import torch</span><br><span class="line">import clip</span><br><span class="line">from PIL import Image</span><br><span class="line"></span><br><span class="line">device = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;</span><br><span class="line">model, preprocess = clip.load(&quot;ViT-B/32&quot;, device=device)</span><br><span class="line"></span><br><span class="line">image = preprocess(Image.open(&quot;CLIP.png&quot;)).unsqueeze(0).to(device)</span><br><span class="line">text = clip.tokenize([&quot;a diagram&quot;, &quot;a dog&quot;, &quot;a cat&quot;]).to(device)</span><br><span class="line"></span><br><span class="line">with torch.no_grad():</span><br><span class="line">    image_features = model.encode_image(image)</span><br><span class="line">    text_features = model.encode_text(text)</span><br><span class="line">    </span><br><span class="line">    logits_per_image, logits_per_text = model(image, text)</span><br><span class="line">    probs = logits_per_image.softmax(dim=-1).cpu().numpy()</span><br><span class="line"></span><br><span class="line">print(&quot;Label probs:&quot;, probs)  # prints: [[0.9927937  0.00421068 0.00299572]]</span><br><span class="line"></span><br><span class="line">#执行myEntry.py</span><br><span class="line">python myEntry.py</span><br></pre></td></tr></table></figure></li>
+<li><p>调试项目（Debug-参考<a
+href="https://valoray.github.io/2024/03/14/%E5%88%A9%E7%94%A8Docker%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2GLIP%E9%A1%B9%E7%9B%AE/">利用Docker容器部署GLIP项目</a>最后的Debug部分）</p>
+<ol type="1">
+<li><p>创建<code>launch.json</code>文件。点击vscode左侧的<code>run and debug</code>窗口=&gt;
+<code>create a launch.json</code> =&gt;选择<code>Python debugger</code>
+=&gt;
+<code>Python file</code>，然后就创建了一个<code>launch.json</code>文件</p></li>
+<li><p>点击右下角的<code>Python Interpreter</code>，选择服务器端的Python解释器（我选择的是之前安装conda创建的clip_dev这一虚拟环境的Python解释器）</p></li>
+<li><p>修改<code>launch.json</code>文件内容</p>
+<p>参考原本开启训练的代码<code>python myEntry.py</code>修改<code>launch.json</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 修改项目路径为开启训练时的python文件myEntry.py的绝对路径</span><br><span class="line"># 修改最后一项&quot;python&quot;对应的值，表示python解释器的地址。如果是conda环境，可以直接在环境中输入which python，即可获得该地址（这一步应该和步骤2是重复的）</span><br><span class="line">&#123;</span><br><span class="line">    // Use IntelliSense to learn about possible attributes.</span><br><span class="line">    // Hover to view descriptions of existing attributes.</span><br><span class="line">    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span><br><span class="line">    &quot;version&quot;: &quot;0.2.0&quot;,</span><br><span class="line">    &quot;configurations&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;name&quot;: &quot;Clip Debug&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;debugpy&quot;,</span><br><span class="line">            &quot;request&quot;: &quot;launch&quot;,</span><br><span class="line">            &quot;program&quot;: &quot;$&#123;file&#125;&quot;, # 将值修改为/data/xjingyu_data/CLIP_main/myEntry.py</span><br><span class="line">            &quot;console&quot;: &quot;integratedTerminal&quot;,</span><br><span class="line">            &quot;python&quot;: &quot;/home/xjingyu/anaconda3/envs/clip_dev/bin/python&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>回到文件目录，打断点调试</p></li>
+</ol></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -571,95 +681,6 @@ alt="GLIP模型结构" />
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="deeprookie">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">服务器端使用docker部署项目</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.8k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>9 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="服务器端使用docker部署项目">服务器端使用docker部署项目</h1>
-<h2 id="docker介绍">Docker介绍</h2>
-<p>https://developer.aliyun.com/article/381989</p>
-<p>Docker
-是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的镜像中，然后发布到任何流行的
-Linux
-机器上。使用Docker可以让每个应用彼此相互隔离，在同一台机器上同时运行多个容器，他们彼此之间共享同一个操作系统。Docker的优势在于，它可以在更细的粒度上进行资源的管理，比虚拟化技术性能更高，更加节约资源。下面是普通虚拟化技术和Docker的对比。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/02/20/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E4%BD%BF%E7%94%A8docker%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -683,13 +704,13 @@ Linux
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">98k</span>
+    <span title="站点总字数">95k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">5:25</span>
+    <span title="站点阅读时长">5:15</span>
   </span>
 </div>
 <div class="busuanzi-count">
