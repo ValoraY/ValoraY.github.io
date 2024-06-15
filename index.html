@@ -149,18 +149,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -187,6 +187,10 @@
         
         
           <li>
+            <a href="/2024/06/15/PatchCore%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/" title="PatchCore代码复现" target="_blank">PatchCore代码复现</a>
+          </li>
+        
+          <li>
             <a href="/2024/06/15/CLIP%E5%AE%98%E6%96%B9%E4%BB%A3%E7%A0%81%E8%BF%90%E8%A1%8C/" title="CLIP官方代码运行" target="_blank">CLIP官方代码运行</a>
           </li>
         
@@ -200,10 +204,6 @@
         
           <li>
             <a href="/2024/02/21/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" title="linux常用命令" target="_blank">linux常用命令</a>
-          </li>
-        
-          <li>
-            <a href="/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="vscode连接linux服务器" target="_blank">vscode连接linux服务器</a>
           </li>
         
       </ul>
@@ -225,6 +225,107 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/06/15/PatchCore%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="deeprookie">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | DeepRookie">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/06/15/PatchCore%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/" class="post-title-link" itemprop="url">PatchCore代码复现</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>166</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="运行patchcore代码">运行PatchCore代码</h1>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406152011104.png"
+alt="image-20240615201110016" />
+<figcaption aria-hidden="true">image-20240615201110016</figcaption>
+</figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">论文地址：https://arxiv.org/abs/2106.08265</span><br><span class="line">github地址：https://github.com/amazon-science/patchcore-inspection</span><br><span class="line">平台：autodl云服务器</span><br></pre></td></tr></table></figure>
+<h2 id="安装依赖">1.安装依赖</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 有setup.py文件，将整个项目安装成一个可导入的依赖</span><br><span class="line">pip install -e .</span><br><span class="line"># 安装依赖</span><br><span class="line">## 注意这里的faiss用的就是cpu版，换成gpu反而会在推理时报错，而且超级影响模型性能（用faiss-gpu训练精度大概会掉30%-40%！！！）</span><br><span class="line">pip install -r requirements.txt</span><br><span class="line"># 运行过程中发现需要安装</span><br><span class="line">pip install timm</span><br></pre></td></tr></table></figure>
+<h2 id="训练">2.训练</h2>
+<blockquote>
+<p><code>.sh</code>是一个命令行脚本文件，用于存储原本会手动在命令行执行的命令。通过将命令集中在一个脚本，可以自动化运行代码的流程。</p>
+</blockquote>
+<p>修改<code>sample_training_copy.sh</code>，修改后文件内容为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">datapath=/root/autodl-fs/mvtec2d</span><br><span class="line">datasets=(&#x27;bottle&#x27;  &#x27;cable&#x27;  &#x27;capsule&#x27;  &#x27;carpet&#x27;  &#x27;grid&#x27;  &#x27;hazelnut&#x27; &#x27;leather&#x27;  &#x27;metal_nut&#x27;  &#x27;pill&#x27; &#x27;screw&#x27; &#x27;tile&#x27; &#x27;toothbrush&#x27; &#x27;transistor&#x27; &#x27;wood&#x27; &#x27;zipper&#x27;)</span><br><span class="line">dataset_flags=($(for dataset in &quot;$&#123;datasets[@]&#125;&quot;; do echo &#x27;-d &#x27;&quot;$&#123;dataset&#125;&quot;; done))</span><br><span class="line"></span><br><span class="line">############# Detection</span><br><span class="line">### IM224:</span><br><span class="line"># Baseline: Backbone: WR50, Blocks: 2 &amp; 3, Coreset Percentage: 10%, Embedding Dimensionalities: 1024 &gt; 1024, neighbourhood aggr. size: 3, neighbours: 1, seed: 0</span><br><span class="line"># Performance: Instance AUROC: 0.992, Pixelwise AUROC: 0.981, PRO: 0.944</span><br><span class="line"></span><br><span class="line">##下述命令行代码的调整：1.将参数采样率-p的值由原来的0.1调整为了0.01，因为显存不够 2.去掉了原来的参数--faiss_on_gpu，因为用的是faiss-cpu 3.去掉参数--log_online</span><br><span class="line"></span><br><span class="line">python bin/run_patchcore.py --gpu 0 --seed 0 --save_patchcore_model --log_group IM224_WR50_L2-3_P01_D1024-1024_PS-3_AN-1_S0 --log_project MVTecAD_Results results \</span><br><span class="line">patch_core -b wideresnet50 -le layer2 -le layer3 --pretrain_embed_dimension 1024  --target_embed_dimension 1024 --anomaly_scorer_num_nn 1 --patchsize 3 sampler -p 0.01 approx_greedy_coreset dataset --resize 256 --imagesize 224 &quot;$&#123;dataset_flags[@]&#125;&quot; mvtec $datapath</span><br></pre></td></tr></table></figure>
+<p>运行<code>sample_training_copy.sh</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在命令行执行：</span><br><span class="line">chmod +x sample_training_copy.sh</span><br><span class="line">./sample_training_copy.sh</span><br></pre></td></tr></table></figure>
+<h2 id="评估">3.评估</h2>
+<p>修改<code>sample_evaluate_copy.sh</code>，修改后文件内容为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># 注意这里评估的模型是我上面自己训练的模型，如果需要评估官方预训练好的权重，注意修改loadpath和modelfolder</span><br><span class="line"># Set paths</span><br><span class="line">datapath=&quot;/root/autodl-fs/mvtec2d&quot;</span><br><span class="line">loadpath=&quot;results/MVTecAD_Results&quot;</span><br><span class="line">modelfolder=&quot;IM224_WR50_L2-3_P01_D1024-1024_PS-3_AN-1_S0_2&quot;</span><br><span class="line">savefolder=&quot;evaluated_results/$modelfolder&quot;</span><br><span class="line"></span><br><span class="line"># Define datasets</span><br><span class="line">datasets=(&#x27;bottle&#x27; &#x27;cable&#x27; &#x27;capsule&#x27; &#x27;carpet&#x27; &#x27;grid&#x27; &#x27;hazelnut&#x27; &#x27;leather&#x27; &#x27;metal_nut&#x27; &#x27;pill&#x27; &#x27;screw&#x27; &#x27;tile&#x27; &#x27;toothbrush&#x27; &#x27;transistor&#x27; &#x27;wood&#x27; &#x27;zipper&#x27;)</span><br><span class="line"></span><br><span class="line"># Generate flags</span><br><span class="line">dataset_flags=($(for dataset in &quot;$&#123;datasets[@]&#125;&quot;; do echo &quot;-d $dataset&quot;; done))</span><br><span class="line">model_flags=($(for dataset in &quot;$&#123;datasets[@]&#125;&quot;; do echo &quot;-p $&#123;loadpath&#125;/$&#123;modelfolder&#125;/models/mvtec_$&#123;dataset&#125;&quot;; done))</span><br><span class="line"></span><br><span class="line"># Run the evaluation</span><br><span class="line"># 注意去掉官方提供的代码中的--faiss_on_gpu参数</span><br><span class="line">python bin/load_and_evaluate_patchcore.py --gpu 0 --seed 0 &quot;$savefolder&quot; \</span><br><span class="line">patch_core_loader &quot;$&#123;model_flags[@]&#125;&quot; --faiss_on_gpu \</span><br><span class="line">dataset --resize 256 --imagesize 224 &quot;$&#123;dataset_flags[@]&#125;&quot; mvtec &quot;$datapath&quot;</span><br></pre></td></tr></table></figure>
+<p>运行<code>sample_evaluation_copy.sh</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在命令行执行：</span><br><span class="line">chmod +x sample_evaluation_copy.sh</span><br><span class="line">./sample_evaluation_copy.sh</span><br></pre></td></tr></table></figure>
+<h2 id="遇到的问题及解决">4.遇到的问题及解决</h2>
+<p>问题：无法下载官方训练好的模型权重，导致想要加载预训练模型直接评估时报错<code>_pickle.UnpicklingError: invalid load key, ‘＜‘</code></p>
+<p>原因：模型加载不完整，需要<code>git lfs clone + 链接</code>下载项目</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -572,90 +673,6 @@ alt="GLIP模型结构" />
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://valoray.github.io/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="deeprookie">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | DeepRookie">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="post-title-link" itemprop="url">vscode连接linux服务器</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>222</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="vscode连接linux服务器">vscode连接linux服务器</h1>
-<p>前提：本地要使用蒲公英连接内网</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/02/21/vscode%E8%BF%9E%E6%8E%A5linux%E6%9C%8D%E5%8A%A1%E5%99%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -685,7 +702,7 @@ alt="GLIP模型结构" />
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">5:15</span>
+    <span title="站点阅读时长">5:16</span>
   </span>
 </div>
 <div class="busuanzi-count">
