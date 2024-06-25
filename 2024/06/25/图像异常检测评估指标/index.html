@@ -31,9 +31,9 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190819151930729.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMwOTkyMTAz,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251106975.png">
 <meta property="og:image" content="https://imgur.com/W18kiTA.png">
-<meta property="og:image" content="https://images2018.cnblogs.com/blog/1188231/201803/1188231-20180317192137987-2118846259.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251419487.png">
 <meta property="article:published_time" content="2024-06-25T05:55:22.000Z">
-<meta property="article:modified_time" content="2024-06-25T06:07:50.183Z">
+<meta property="article:modified_time" content="2024-06-25T06:20:06.410Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="评估">
 <meta name="twitter:card" content="summary">
@@ -545,15 +545,13 @@ J = Sensitivity+Specificity−1 = TPR - FPR
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Youden&#x27;s J统计量最佳阈值</span></span><br><span class="line">J = tpr - fpr</span><br><span class="line">best_J_index = np.argmax(J)</span><br><span class="line">best_J_threshold = roc_thresholds[best_J_index]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best Youden\&#x27;s J Threshold: <span class="subst">&#123;best_J_threshold:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best Youden\&#x27;s J Statistic: <span class="subst">&#123;J[best_J_index]:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>优点</strong></p>
 <ol type="1">
-<li>兼顾正例和负例的权衡。因为<code>TPR</code>聚焦于正例，<code>FPR</code>聚焦于与负例，使其成为一个比较均衡的评估方法。</li>
-<li>==<code>ROC</code>曲线选用的两个指标，<span
+<li><p>兼顾正例和负例的权衡。因为<code>TPR</code>聚焦于正例，<code>FPR</code>聚焦于与负例，使其成为一个比较均衡的评估方法。</p></li>
+<li><p>==<code>ROC</code>曲线选用的两个指标，<span
 class="math inline">\(TPR=\frac{TP}{P}=\frac{TP}{TP+FN},FPR=\frac{FP}{N}=\frac{FP}{FP+TN}\)</span>，<strong>都不依赖于具体的类别分布(类别分布:
-正负类的数量比例)</strong>。<strong>因为<code>TPR</code>用到的<code>TP</code>和<code>FN</code>同属<code>P</code>列，<code>FPR</code>用到的<code>FP</code>和<code>TN</code>同属<code>N</code>列，所以即使<code>P</code>或<code>N</code>的整体数量发生了改变，也不会影响到另一列。也就是说，即使正例与负例的比例发生了很大变化，<code>ROC</code>曲线也不会产生大的变化</strong>，<strong>而像<code>Precision</code>使用的<code>TP</code>和<code>FP</code>就分属两列，则易受类别分布改变的影响</strong>。==参考文献[1]中举了个例子，负例增加了10倍，<code>ROC</code>曲线没有改变，而<code>PR</code>曲线则变了很多。作者认为这是<code>ROC</code>曲线的优点，即具有鲁棒性，在类别分布发生明显改变的情况下依然能客观地识别出较好的分类器。</li>
+正负类的数量比例)</strong>。<strong>因为<code>TPR</code>用到的<code>TP</code>和<code>FN</code>同属<code>P</code>列，<code>FPR</code>用到的<code>FP</code>和<code>TN</code>同属<code>N</code>列，所以即使<code>P</code>或<code>N</code>的整体数量发生了改变，也不会影响到另一列。也就是说，即使正例与负例的比例发生了很大变化，<code>ROC</code>曲线也不会产生大的变化</strong>，<strong>而像<code>Precision</code>使用的<code>TP</code>和<code>FP</code>就分属两列，则易受类别分布改变的影响</strong>。==参考文献[1]中举了个例子，负例增加了10倍，<code>ROC</code>曲线没有改变，而<code>PR</code>曲线则变了很多。作者认为这是<code>ROC</code>曲线的优点，即具有鲁棒性，在类别分布发生明显改变的情况下依然能客观地识别出较好的分类器。</p>
+<p><img src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251419487.png" alt="ROC曲线不依赖于具体的分布类别-例证" style="zoom:67%;" /></p></li>
 </ol></li>
-</ul>
-<p><img src="https://images2018.cnblogs.com/blog/1188231/201803/1188231-20180317192137987-2118846259.png" alt="ROC曲线不依赖于具体的分布类别-例证" style="zoom:67%;" /></p>
-<ul>
-<li><strong>缺点</strong>
+<li><p><strong>缺点</strong></p>
 <ol type="1">
 <li>上文提到<code>ROC</code>曲线的优点是<strong>不会随着类别分布的改变而改变</strong>，但这在某种程度上也是其缺点。因为负例<code>N</code>增加了很多，而曲线却没变，这等于产生了大量<code>FP</code>。如果特定应用主要关注正类预测的准确率，也就是<code>Precision</code>的话，这就不可接受了。</li>
 <li>==<strong>在类别不平衡的背景下，负例的数目众多致使FPR的增长不明显，导致ROC曲线呈现一个过分乐观的效果估计</strong>==。<code>ROC</code>曲线的横轴采用<code>FPR</code>，根据<span
