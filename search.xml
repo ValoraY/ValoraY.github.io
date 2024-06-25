@@ -5301,8 +5301,7 @@ class="math inline">\((x^{\prime},y^{\prime})\)</span>的相对距离来计算�
   <entry>
     <title>图像异常检测评估指标</title>
     <url>/2024/06/25/%E5%9B%BE%E5%83%8F%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="图像异常检测评估指标">图像异常检测评估指标</h1>
-<h1 id="混淆矩阵">混淆矩阵</h1>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="混淆矩阵">混淆矩阵</h1>
 <figure>
 <img
 src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406241938192.png"
