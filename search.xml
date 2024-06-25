@@ -5298,4 +5298,381 @@ class="math inline">\((x^{\prime},y^{\prime})\)</span>的相对距离来计算�
         <tag>conda</tag>
       </tags>
   </entry>
+  <entry>
+    <title>图像异常检测评估指标</title>
+    <url>/2024/06/25/%E5%9B%BE%E5%83%8F%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text&#x2F;css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="图像异常检测评估指标">图像异常检测评估指标</h1>
+<h1 id="混淆矩阵">混淆矩阵</h1>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406241938192.png"
+alt="混淆矩阵" />
+<figcaption aria-hidden="true">混淆矩阵</figcaption>
+</figure>
+<p>混淆矩阵包括4个用于衡量分类算法性能的基本数值</p>
+<p>四个字母代表的含义是：<code>P（Positive）</code>代表算法将样本预测为正类，<code>N（Negative）</code>代表算法将样本预测为负类；<code>T（True）</code>代表算法对该样本的预测正确（即该样本的预测类别和实际类别一致），<code>F（False）</code>代表算法对该样本的预测错误（即该样本的预测类别和实际类别相反）</p>
+<ul>
+<li><code>TP (True Positive)</code>：预测为正类，实际也为正类的样本数</li>
+<li><code>TN (True Negative)</code>：预测为负类，实际也为负类的样本数</li>
+<li><code>FP (False Positive)</code>：预测为正类，实际为负类的样本数</li>
+<li><code>FN (False Negative)</code>：预测为负类，实际为正类的样本数</li>
+</ul>
+<span id="more"></span>
+<h1 id="评估单一阈值下算法的分类性能">评估单一阈值下算法的分类性能</h1>
+<p>首先利用训练集拟合好分类算法，然后在<strong>验证集</strong>上推理得到上述的<code>TP, TN, FP</code>
+和
+<code>FN</code>，进而可以计算该分类算法的性能评估指标——准确率（<code>accuracy</code>）、精确率（<code>precision</code>）、召回率（<code>recall</code>）和
+<code>F1-Score</code></p>
+<h2 id="accuracy">accuracy</h2>
+<ul>
+<li><p>指标名称：准确率</p></li>
+<li><p>定义：正确分类的样本（<code>TP</code>）占所有样本（<code>TP+TN+FP+FN</code>）的比例（本文所有这些评估指标都是根据验证集进行计算的）</p></li>
+<li><p>公式：</p></li>
+</ul>
+<p><span class="math display">\[
+Accuracy=\frac{(TP+TN)}{(TP+FP+FN+TN)}
+\]</span></p>
+<ul>
+<li><p>用准确率来评估可能存在一些问题：</p>
+<ol type="1">
+<li><p><strong>类别不平衡问题</strong>：当数据集中的类别分布不均衡时，准确率可能会产生误导。例如，如果一个数据集中99%的样本属于一个类别，1%的样本属于另一个类别，那么一个简单的总是预测为多数类别的模型也会有99%的准确率，但实际上这个模型对于少数类别的预测效果非常差。</p></li>
+<li><p><strong>忽视错误分类的不同重要性</strong>：准确率无法区分不同类型的错误分类，<code>accuracy</code>的分子代表正确预测的样本数，包括
+<code>TP</code> 和 <code>TN</code>
+，与之相对应的错误率是<code>error = 1-accuracy</code>，它的分子就包括
+<code>FP</code> 和 <code>FN</code>
+，在医学诊断中，<code>FP</code>和<code>FN</code>分别代表误诊和漏诊，而误诊和漏诊的影响可能完全不同，但准确率不会反映出这些错误分类的不同重要性。</p></li>
+</ol></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> (</span><br><span class="line">    accuracy_score, balanced_accuracy_score, precision_score, recall_score, f1_score, fbeta_score,</span><br><span class="line">    precision_recall_curve, roc_curve, auc</span><br><span class="line">)</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例数据</span></span><br><span class="line"><span class="comment"># y_true: 实际标签</span></span><br><span class="line"><span class="comment"># y_scores: 模型预测概率</span></span><br><span class="line">y_true = np.array([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>])</span><br><span class="line">y_scores = np.array([<span class="number">0.1</span>, <span class="number">0.4</span>, <span class="number">0.35</span>, <span class="number">0.8</span>, <span class="number">0.7</span>, <span class="number">0.3</span>, <span class="number">0.6</span>, <span class="number">0.2</span>, <span class="number">0.9</span>, <span class="number">0.5</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将概率转换为二分类预测==&gt; 注意只有在这里选定阈值的情况下,后面才能计算Precision/Recall/F1Score</span></span><br><span class="line">threshold = <span class="number">0.5</span></span><br><span class="line">y_pred = (y_scores &gt;= threshold).astype(<span class="built_in">int</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Accuracy</span></span><br><span class="line">accuracy = accuracy_score(y_true, y_pred)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Accuracy: <span class="subst">&#123;accuracy:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p><u>针对正负样本不平衡的数据，可以引入平均准确率进行更合理的评估。</u></p>
+<h2 id="average-accuracy">average accuracy</h2>
+<ul>
+<li>指标名称：平均准确率</li>
+<li>定义：对各个类别分别计算准确率，然后求平均</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+averageAccuracy=\frac{\sum accuracy_i}n
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 平均准确率</span></span><br><span class="line">average_accuracy = balanced_accuracy_score(y_true, y_pred)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Average Accuracy (Balanced Accuracy): <span class="subst">&#123;average_accuracy:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="precision">precision</h2>
+<ul>
+<li><p>指标名称：精确率、查准率</p></li>
+<li><p>定义：正确分类的正样本（<code>TP</code>）占所有预测正样本（<code>TP+FP</code>）的比例</p></li>
+<li><p>公式：</p></li>
+</ul>
+<p><span class="math display">\[
+Precision=\frac{TP}{TP+FP}
+\]</span></p>
+<ul>
+<li>意义：==衡量模型在正类预测上的准确率==（<strong>注意是预测正类的准确率！！！</strong>），如在垃圾邮件过滤中，精确率高（<code>FP小</code>）意味着很少将正常邮件误判为垃圾邮件。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 精确率</span></span><br><span class="line">precision = precision_score(y_true, y_pred)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Precision: <span class="subst">&#123;precision:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="recall">recall</h2>
+<ul>
+<li>指标名称：召回率、查全率、真正率（<code>TPR</code>）</li>
+<li>定义：正确分类的正样本（<code>TP</code>）占所有实际正样本（<code>TP+FN</code>）的比例</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+\mathrm{Re}call=\frac{TP}{TP+FN}
+\]</span></p>
+<ul>
+<li>意义：召回率衡量的是<u>模型在检测所有实际为正类的样本时的有效性，==或者说对正类样本的查全率==（<strong>注意是正类样本的查全率！！！</strong>）</u>。<strong>高召回率意味着模型能够识别大多数的正类样本，漏检情况很少</strong>。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 召回率</span></span><br><span class="line">recall = recall_score(y_true, y_pred)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Recall: <span class="subst">&#123;recall:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>==<code>Precision</code> 和
+<code>Recall</code>都适合用于类别不平衡的验证集，因为在二者的公式中都没有考虑<code>True Negatives (TN)</code>
+，只专注于正确判断正样本，因此，就算验证集中负样本的数目远大于正样本，<code>Recall</code>
+及 <code>Precision</code>仍是有效的参考指标。反之，<code>FPR</code>
+则会受到影响，当我们负样本很多，模型若全部预测为负样本，会得到<code>FPR = 0</code>，但这样的模型并非好的模型，所以<code>ROC curve</code>比较容易受到不平衡的验证集影响。==</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251045981.png"
+alt="precision和recall的定义" />
+<figcaption aria-hidden="true">precision和recall的定义</figcaption>
+</figure>
+<h2 id="f1-score">F1 score</h2>
+<ul>
+<li>定义：针对<u>特定某个门槛值</u>的<code>Recall</code>
+及<code>Precision</code>
+所计算出来的调和平均数(<code>precision</code>和<code>recall</code>的重要程度相同)</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+F1Score=\frac{2^*precision^*recall}{precision+recall}
+\]</span></p>
+<h2 id="pr-curve">PR Curve</h2>
+<ul>
+<li><p>指标全称：<code>Precision Recall Curve</code></p></li>
+<li><p>定义：纵坐标为精准率<code>Precision</code>，横坐标为召回率<code>Recall</code></p></li>
+<li><p>意义：<code>PR</code>曲线是在不同阈值下绘制的，和下文的<code>ROC</code>曲线类似，都用于反映模型在不同阈值下的整体表现，<code>PR</code>曲线越往右上角凸起，则代表整体更好的模型表现，因为，反之越平则代表模型性能越差。</p></li>
+<li><p>==<strong>如何选取最优阈值？</strong>==</p>
+<p>==PR曲线是通过在各个阈值下计算精确率（<code>Precision</code>）和召回率（<code>Recall</code>）来绘制的，要确定最佳阈值，可以：==</p>
+<ol type="1">
+<li>==法一：计算不同阈值下的<code>F1 Score</code>，选择使<code>F1 Score</code>最大的阈值。==</li>
+<li>==法二：==
+<ul>
+<li>==根据实际应用对Precision和Recall的不同重视程度，赋予二者不同的权重，计算<code>Fβ-score</code>，选择使<code>Fβ-score</code>最大的阈值。==</li>
+<li>==Fβ-score是准确Precision和Recall的加权调和平均值，该<code>β</code>参数表示召回率重要性与精确度重要性的比率，<code>β&gt;1</code>会给<code>recall</code>更多的权重，<code>β&lt;1</code>会给<code>precision</code>更多的权重。例如<code>β=2</code>代表<code>recall</code>的重要性是<code>precision</code>的2倍，<code>β=0.5</code>则刚好相反。==</li>
+</ul></li>
+</ol></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Precision-Recall曲线和AU-PR</span></span><br><span class="line">precisions, recalls, pr_thresholds = precision_recall_curve(y_true, y_scores)</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(recalls, precisions, label=<span class="string">&#x27;Precision-Recall Curve&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Recall&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;Precision&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;Precision-Recall Curve&#x27;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># F1 Score和F-beta Score最佳阈值</span></span><br><span class="line">f1_scores = <span class="number">2</span> * (precisions * recalls) / (precisions + recalls)</span><br><span class="line">best_f1_index = np.argmax(f1_scores)</span><br><span class="line">best_f1_threshold = pr_thresholds[best_f1_index]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best F1 Threshold: <span class="subst">&#123;best_f1_threshold:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best F1 Score: <span class="subst">&#123;f1_scores[best_f1_index]:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line">beta = <span class="number">2</span></span><br><span class="line">fbeta_scores = (<span class="number">1</span> + beta**<span class="number">2</span>) * (precisions * recalls) / (beta**<span class="number">2</span> * precisions + recalls)</span><br><span class="line">best_fbeta_index = np.argmax(fbeta_scores)</span><br><span class="line">best_fbeta_threshold = pr_thresholds[best_fbeta_index]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best F-beta Threshold: <span class="subst">&#123;best_fbeta_threshold:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best F-beta Score: <span class="subst">&#123;fbeta_scores[best_fbeta_index]:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="au-pr">AU-PR</h2>
+<ul>
+<li>指标全称：<code>Area under the Precision-Recall Curve</code></li>
+<li><code>PR</code>曲线的<code>AUC</code>面积计算公式为：</li>
+</ul>
+<p><span class="math display">\[
+\sum_n(R_n-R_{n-1})P_n
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">au_pr = auc(recalls, precisions)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;AU-PR: <span class="subst">&#123;au_pr:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="评估不同阈值下算法的分类性能">评估不同阈值下算法的分类性能</h1>
+<figure>
+<img
+src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251045347.png"
+alt="TPR和FPR的定义" />
+<figcaption aria-hidden="true">TPR和FPR的定义</figcaption>
+</figure>
+<h2 id="tpr">TPR</h2>
+<ul>
+<li>指标名称：真正率，<code>True Positive Rate</code>，召回率、查全率，<code>Sensitivity</code></li>
+<li>定义：所有真实类别为1的样本中，预测类别为1的比例</li>
+<li>公式（TP除以其所在的列和）：</li>
+</ul>
+<p><span class="math display">\[
+TPR=\frac{TP}{TP+FN}
+\]</span></p>
+<h2 id="fpr">FPR</h2>
+<ul>
+<li><p>指标名称：假正率，<code>False Positive Rate</code>，误诊率，(<code>1-Specificity</code>)</p></li>
+<li><p>定义：所有真实类别为0的样本中，预测类别为1的比例</p></li>
+<li><p>公式（<code>FP</code>除以其所在的列和）： <span
+class="math display">\[
+FPR=\frac{FP}{FP+TN}
+\]</span></p></li>
+</ul>
+<h2 id="fnr">FNR</h2>
+<ul>
+<li>指标名称：<code>False Negative Rate</code>，<strong>漏诊率</strong></li>
+<li>定义：所有真实类别为1的样本中，预测类别为0的比例</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+FNR=\frac{FN}{TP+FN}
+\]</span></p>
+<h2 id="roc-curve">ROC Curve</h2>
+<ul>
+<li><p>指标名称：<code>Receiver Operating Characteristic Curve</code></p></li>
+<li><p>定义：纵坐标是真正率<strong>TPR</strong>，横坐标是假正率<strong><code>FPR</code></strong></p></li>
+<li><p><strong>如何画ROC曲线?</strong></p>
+<blockquote>
+<p>二分类模型的输出是预测样本为正例的概率，而<code>ROC</code>曲线正是通过不断移动分类器的“阈值”来生成曲线上的一组关键点的。</p>
+<p>ROC曲线的绘制步骤如下：</p>
+<ol type="1">
+<li>假设已经得出一系列样本被划分为正类的概率<code>Score</code>值，按照大小排序。</li>
+<li>从高到低，依次将“<code>Score</code>”值作为阈值<code>threshold</code>，当测试样本属于正样本的概率大于或等于这个<code>threshold</code>时，我们认为它为正样本，否则为负样本。举例来说，对于某个样本，其“<code>Score</code>”值为0.6，那么“<code>Score</code>”值大于等于0.6的样本都被认为是正样本，而其他样本则都认为是负样本。</li>
+<li>每次选取一个不同的<code>threshold</code>，得到一组<code>FPR</code>和<code>TPR</code>，以<code>FPR</code>值为横坐标和<code>TPR</code>值为纵坐标，即<code>ROC</code>曲线上的一点。</li>
+<li>根据3中的每个坐标点，画图。</li>
+</ol>
+<p>举例如下：</p>
+<p>假设验证集样本的预测结果如下表，图中共有20个验证集样本，“<code>Class</code>”一栏表示每个验证集样本真正的标签（<code>p</code>表示正样本，<code>n</code>表示负样本），“<code>Score</code>”表示每个验证集样本属于正样本的概率。</p>
+<p><img src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406242023290.png" alt="一系列样本被划分为正类的score值示例" style="zoom:50%;" /></p>
+<p>接下来，我们<strong>从高到低</strong>，依次将“<code>Score</code>”值作为阈值<code>threshold</code>，当测试样本属于正样本的概率大于或等于这个<code>threshold</code>时，我们认为它为正样本，否则为负样本。从第一个样本开始，设该样本的<code>Score</code>值为阈值，则该样本及之后的样本(均比该样本概率值小)判为负样本，即所有样本判为全负，计算得<code>TPR=FPR=0</code>，即<code>ROC</code>曲线(0,0)点；再选择第二个样本点的<code>Score</code>作为阈值，大于等于该阈值的样本(在该样本之前)判为正样本，小于该阈值的判为负样本，计算<code>TPR</code>和<code>FRP</code>，可在<code>ROC</code>图画出该点。</p>
+<p>举例来说，对于图中的第4个样本，其“<code>Score</code>”值为0.6，那么样本1，2，3，4都被认为是正样本，因为它们的“<code>Score</code>”值都大于等于0.6，而其他样本则都认为是负样本。每次选取一个不同的threshold，我们就可以得到一组<code>FPR</code>和<code>TPR</code>，即<code>ROC</code>曲线上的一点。这样一来，我们一共得到了20组<code>FPR</code>和<code>TPR</code>的值，将它们画在<code>ROC</code>曲线的结果如下图：</p>
+<p><img src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406242022444.png" alt="ROC曲线示例" style="zoom:50%;" /></p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ROC曲线和AUC</span></span><br><span class="line">fpr, tpr, roc_thresholds = roc_curve(y_true, y_scores)</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(fpr, tpr, label=<span class="string">&#x27;ROC Curve&#x27;</span>)</span><br><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>], <span class="string">&#x27;k--&#x27;</span>, label=<span class="string">&#x27;Random Classifier&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;False Positive Rate&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;True Positive Rate&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;ROC Curve&#x27;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line">roc_auc = auc(fpr, tpr)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;AUC: <span class="subst">&#123;roc_auc:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>意义：(1)
+利用<code>ROC</code>曲线比较不同模型，进而选择最佳模型</strong></p>
+<ul>
+<li><p>首先，了解一下<code>ROC</code>曲线图上很重要的四个点：</p>
+<ol type="1">
+<li><code>( 0 , 1 )</code>
+，即<code>FPR=0, TPR=1</code>，这意味着<code>FN（False Negative）=0，并且FP（False Positive）=0</code>。代表这是一个完美的分类器，它将所有的样本都正确分类。</li>
+<li><code>( 1 , 0 )</code>
+，即<code>FPR=1，TPR=0</code>，意味着这是一个最糟糕的分类器，因为它成功避开了所有的正确答案。</li>
+<li><code>( 0 , 0 )</code>
+，即<code>FPR=TPR=0</code>，即<code>FP（False Positive）=TP（True Positive）=0</code>，代表该分类器预测所有的样本都为负样本（<code>Negative</code>）。</li>
+<li><code>( 1 , 1 )</code>
+，即<code>FPR=TPR=1</code>，代表分类器预测所有的样本都为正样本。</li>
+</ol>
+<p>从上面给出的四个点可以发现:</p>
+<ul>
+<li><strong><code>ROC</code>曲线图中，越靠近(0,1)的点对应的模型分类性能越好</strong></li>
+<li>此外，注意<strong>同一条<code>ROC</code>曲线图中的点对应的模型，它们的不同之处仅仅是在分类时选用的阈值(<code>Threshold</code>)不同</strong>，这里的阈值代表样本被预测为正类的概率值。</li>
+</ul></li>
+<li><p>其次，如何在不同模型之间选择最优模型？＝＞<strong>基于<code>AUC</code>值</strong></p>
+<ul>
+<li><p>不同模型对应的<code>ROC</code>曲线中，<code>AUC</code>值大的模型性能相对较好。</p></li>
+<li><p>当<code>AUC</code>值近似相等时，并不代表两个模型的分类性能也相等。有两种情况：第一种是<code>ROC</code>曲线之间没有交点；第二种是<code>ROC</code>曲线之间存在交点。</p>
+<blockquote>
+<p>(1)<code>ROC</code>曲线之间没有交点</p>
+<p>如下图所示，A，B，C三个模型对应的<code>ROC</code>曲线之间交点，且<code>AUC</code>值是不相等的，此时明显更靠近<code>( 0 , 1 )</code>点的A模型的分类性能会更好。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190819151930729.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMwOTkyMTAz,size_16,color_FFFFFF,t_70" alt="无交点的ROC曲线性能比较" style="zoom: 67%;" /></p>
+<p>(2)<code>ROC</code>曲线之间存在交点</p>
+<p>如下图所示，模型A、B对应的<code>ROC</code>曲线相交却<code>AUC</code>值相等，此时就需要具体问题具体分析：当需要高<code>TPR</code>值时，A模型好过B；当需要低<code>FPR</code>值时，B模型好过A。</p>
+<p><img src="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251106975.png" alt="有交点的ROC曲线性能比较" style="zoom:50%;" /></p>
+</blockquote></li>
+</ul></li>
+</ul></li>
+<li><p>==<strong>意义：(2) 同一模型中如何选择最优阈值?</strong>==</p>
+<p>==已知：在同一条ROC曲线上，<u>越靠近( 0 , 1 )
+的坐标点对应的模型性能越好，因为此时模型具有较高的真正率和较低的假正率</u>。那么我们如何定量地从一条ROC曲线上找到这个最优的点呢？==</p>
+<p>==<strong><code>Youden's J</code>统计量:</strong>==</p>
+<p><code>Youden index</code>（又称<code>Youden's J statistic</code>）经常应用于<code>ROC</code>
+曲线的分析。 <code>ROC</code>
+曲线上的每个点根据不同阈值会<strong>各自</strong>算出这项指标，然后我们把<code>Youden Index</code>
+数值最大的那个点视为最佳阈值。</p>
+<p><code>Youden index</code> （以<code>J</code>表示）的计算公式如下：
+<span class="math display">\[
+J=\frac{\mathrm{true~positives}}{\mathrm{true~positives}+\mathrm{false~negatives}}+\frac{\mathrm{true~negatives}}{\mathrm{true~negatives}+\mathrm{false~positives}}-1
+\]</span> 用<code>ROC</code>
+曲线上的指标来呈现的话，正是<code>Y 轴</code>减去<code>X 轴</code>数据：
+<span class="math display">\[
+J = Sensitivity+Specificity−1 = TPR - FPR
+\]</span> <code>Youden Index</code>
+亦存在图形上的意义，它代表从<code>ROC</code>
+上某一点到<code>45 度完全乱猜线</code>之间的<strong>垂直距离</strong>，这个垂直距离最大的点，可以视为<code>ROC</code>
+曲线的最佳阈值。如下图示，由于45 度线代表<code>TPR = FPR</code>，所以45
+度线到<code>ROC</code>
+线上某点的垂直距离可以用<code>TPR - FPR</code>计算，此数值也正是<code>Youden index</code>：</p>
+<p><img src="https://imgur.com/W18kiTA.png" alt="Youden Index图形意义" style="zoom:50%;" /></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Youden&#x27;s J统计量最佳阈值</span></span><br><span class="line">J = tpr - fpr</span><br><span class="line">best_J_index = np.argmax(J)</span><br><span class="line">best_J_threshold = roc_thresholds[best_J_index]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best Youden\&#x27;s J Threshold: <span class="subst">&#123;best_J_threshold:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best Youden\&#x27;s J Statistic: <span class="subst">&#123;J[best_J_index]:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>优点</strong></p>
+<ol type="1">
+<li>兼顾正例和负例的权衡。因为<code>TPR</code>聚焦于正例，<code>FPR</code>聚焦于与负例，使其成为一个比较均衡的评估方法。</li>
+<li>==<code>ROC</code>曲线选用的两个指标，<span
+class="math inline">\(TPR=\frac{TP}{P}=\frac{TP}{TP+FN},FPR=\frac{FP}{N}=\frac{FP}{FP+TN}\)</span>，<strong>都不依赖于具体的类别分布(类别分布:
+正负类的数量比例)</strong>。<strong>因为<code>TPR</code>用到的<code>TP</code>和<code>FN</code>同属<code>P</code>列，<code>FPR</code>用到的<code>FP</code>和<code>TN</code>同属<code>N</code>列，所以即使<code>P</code>或<code>N</code>的整体数量发生了改变，也不会影响到另一列。也就是说，即使正例与负例的比例发生了很大变化，<code>ROC</code>曲线也不会产生大的变化</strong>，<strong>而像<code>Precision</code>使用的<code>TP</code>和<code>FP</code>就分属两列，则易受类别分布改变的影响</strong>。==参考文献[1]中举了个例子，负例增加了10倍，<code>ROC</code>曲线没有改变，而<code>PR</code>曲线则变了很多。作者认为这是<code>ROC</code>曲线的优点，即具有鲁棒性，在类别分布发生明显改变的情况下依然能客观地识别出较好的分类器。</li>
+</ol></li>
+</ul>
+<p><img src="https://images2018.cnblogs.com/blog/1188231/201803/1188231-20180317192137987-2118846259.png" alt="ROC曲线不依赖于具体的分布类别-例证" style="zoom:67%;" /></p>
+<ul>
+<li><strong>缺点</strong>
+<ol type="1">
+<li>上文提到<code>ROC</code>曲线的优点是<strong>不会随着类别分布的改变而改变</strong>，但这在某种程度上也是其缺点。因为负例<code>N</code>增加了很多，而曲线却没变，这等于产生了大量<code>FP</code>。如果特定应用主要关注正类预测的准确率，也就是<code>Precision</code>的话，这就不可接受了。</li>
+<li>==<strong>在类别不平衡的背景下，负例的数目众多致使FPR的增长不明显，导致ROC曲线呈现一个过分乐观的效果估计</strong>==。<code>ROC</code>曲线的横轴采用<code>FPR</code>，根据<span
+class="math inline">\(FPR=\frac{FP}N=\frac{FP}{FP+TN}\)</span>，即使<code>FP</code>大量增长，如果负例过多(<code>N</code>过大)，也可能导致<code>FPR</code>增长不明显，导致<code>ROC</code>曲线显得过分乐观。举个例子，假设一个数据集有正例20，负例10000，开始时有20个负例被错判，<span
+class="math inline">\(FPR=\frac{20}{20+9980}=0.002\)</span>,接着又有20个负例错判，<span
+class="math inline">\(FPR_{2}=\frac{40}{40+9960}=0.004\)</span>,在ROC曲线上这个变化是很细微的。而与此同时<code>Precision</code>则从原来的0.5下降到了0.33，在<code>PR</code>曲线上将会是一个大幅下降。</li>
+</ol></li>
+</ul>
+<h2 id="auc">AUC</h2>
+<ul>
+<li><p>指标名称：<code>AUC-ROC</code>，<code>Area Under the ROC Curve</code></p></li>
+<li><p>定义：<code>AUC</code>表示<code>ROC</code>曲线下的面积，主要用于衡量模型的泛化性能，即分类效果的好坏。<strong><code>AUC</code>是衡量二分类模型优劣的一种评价指标，表示正例排在负例前面的概率。</strong>一般在分类模型中，预测结果都是以概率的形式表现，如果要计算准确率，通常都会手动设置一个阈值来将对应的概率转化成类别，这个阈值也就很大程度上影响了模型准确率的计算。<u>之所以采用<code>AUC</code>来评价，主要还是考虑到<code>ROC</code>曲线本身并不能直观的说明一个分类器性能的好坏，而<code>AUC</code>值作为一个数量值，具有可比较性，可以进行定量的比较。</u></p></li>
+<li><p>==意义：随机从正样本和负样本中各选一个，分类器对于该正样本打分大于该负样本打分的概率。==</p></li>
+<li><p><strong>AUC值对模型性能的判断标准：</strong></p>
+<ol type="1">
+<li><p><code>AUC = 1</code>，是完美分类器，采用这个预测模型时，存在至少一个阈值能得出完美预测。绝大多数预测的场合，不存在完美分类器。</p></li>
+<li><p><code>0.5 &lt; AUC &lt; 1</code>，优于随机猜测。这个分类器妥善设定阈值的话，能有预测价值。</p></li>
+<li><p><code>AUC = 0.5</code>，跟随机猜测一样，模型没有预测价值。</p></li>
+<li><p><code>AUC &lt; 0.5</code>，比随机猜测还差；但只要总是反预测而行，就优于随机猜测。</p>
+<p>利用<code>AUC</code>来粗略衡量模型整体表现，可以参考以下范围：</p>
+<ul>
+<li><code>AUC= 0.5</code>(无鉴别力)</li>
+<li><code>0.7≤AUC≤ 0.80</code>(可接受的鉴别力)</li>
+<li><code>0.8≤AUC≤ 0.90</code>(优良的鉴别力)</li>
+<li><code>0.9≤AUC≤ 1.00</code>(极佳的鉴别力)</li>
+</ul></li>
+</ol></li>
+<li><p>问题：<code>AUROC</code>将整条ROC curve
+归纳到一个单一的值上，忽略了不同系统之间的<code>Tradeoff</code>（不同<code>threshold</code>值）</p></li>
+</ul>
+<h1 id="对比">对比</h1>
+<h2 id="pr-curve-v.s.-roc-curve">PR Curve v.s. ROC Curve</h2>
+<h3 id="区别">区别</h3>
+<ol type="1">
+<li><strong>关注的指标不同</strong>：
+<ul>
+<li><strong><code>ROC</code>曲线</strong>：<code>ROC</code>曲线描绘的是真正率（<code>True Positive Rate, TPR</code>）与假正率（<code>False Positive Rate, FPR</code>）之间的关系。<strong>它显示的是模型在不同阈值下，如何在正类和负类样本中进行区分。</strong></li>
+<li><strong><code>PR</code>曲线</strong>：PR曲线描绘的是精确率（<code>Precision</code>）与召回率（<code>Recall</code>）之间的关系。<strong>它特别关注模型在正类样本中的表现。</strong></li>
+</ul></li>
+<li>==<strong>适用场景不同</strong>：==
+<ul>
+<li>==<strong><code>ROC</code>曲线</strong>：适用于<strong>类别平衡的验证集</strong>以及需要<strong>评估整体分类性能</strong>的场景。在类别不平衡的数据集上，由于假正率(<code>FPR</code>)的值往往较小，<code>ROC</code>曲线可能会显得过于乐观。==</li>
+<li>==<strong><code>PR</code>曲线</strong>：适用于<strong>类别不平衡的验证集</strong>，特别是在<strong>关注正类样本</strong>时。<strong>因为<code>PR</code>曲线直接关注精确率和召回率，能够更好地反映模型在少数类上的表现。</strong>==</li>
+</ul></li>
+<li><strong>曲线的解读方式不同</strong>：
+<ul>
+<li><strong><code>ROC</code>曲线</strong>：曲线下方的面积（<code>AUC</code>）越大，<strong>模型的总体表现越好</strong>。完美的分类器会有一条经过左上角的曲线（<code>AUC=1</code>）。</li>
+<li><strong><code>PR</code>曲线</strong>：曲线下方的面积（<code>AU-PR</code>）越大，<strong>模型在正类样本上的表现越好</strong>。完美的分类器会有一条经过右上角的曲线（<code>AU-PR=1</code>）。</li>
+</ul></li>
+</ol>
+<h3 id="联系">联系</h3>
+<ul>
+<li><strong>基于阈值变化</strong>：两者都基于改变决策阈值来绘制曲线，通过观察在不同阈值下模型性能的变化来评估模型。</li>
+<li><strong>面积衡量性能</strong>：两者都通过计算曲线下方的面积（<code>AUC</code>和<code>AU-PR</code>）来衡量模型的整体性能。</li>
+</ul>
+<h2 id="au-pr-v.s.-auc">AU-PR v.s. AUC</h2>
+<h3 id="区别-1">区别</h3>
+<ol type="1">
+<li><strong>评估指标不同</strong>：
+<ul>
+<li><strong><code>AUC（Area Under the ROC Curve）</code></strong>：衡量<code>ROC</code>曲线下的面积，<strong>反映模型在区分正类和负类样本上的能力</strong>。</li>
+<li><strong><code>AU-PR（Area Under the Precision-Recall Curve）</code></strong>：衡量<code>PR</code>曲线下的面积，<strong>反映模型在正类样本上的精确度和召回率的综合表现</strong>。</li>
+</ul></li>
+<li><strong>适用数据集不同</strong>：
+<ul>
+<li><strong><code>AUC</code></strong>：在<strong>类别平衡或近似平衡</strong>的<strong>验证数据集</strong>上，<code>AUC</code>是一个很好的评估指标。</li>
+<li><strong><code>AU-PR</code></strong>：在<strong>类别不平衡</strong>的<strong>验证数据集</strong>上，<code>AU-PR</code>更能反映模型在少数类上的性能。</li>
+</ul></li>
+</ol>
+<h3 id="联系-1">联系</h3>
+<ul>
+<li><strong>用于模型评估</strong>：两者都是用于评估分类模型性能的指标，通过曲线下的面积提供一个综合的性能评估。</li>
+<li><strong>基于阈值变化</strong>：两者都依赖于通过改变决策阈值来评估模型在不同条件下的表现。</li>
+</ul>
+<h1 id="结论">结论</h1>
+<ol type="1">
+<li><code>ROC</code>曲线兼顾正例与负例，因此适用于评估分类器整体的效能，而<code>PR</code>
+曲线则专注于正例
+<ul>
+<li>若在类别平衡且正例及负例的判断都重要的情况下，选择<code>ROC</code>
+曲线更合理</li>
+<li>由于<code>ROC</code>
+曲线的X轴使用到了<code>FPR</code>，在类别不平衡的情况下(负样本较多)，使得<code>FPR</code>的增长会被稀释，进而导致<code>ROC</code>曲线呈现出过度乐观的结果，因此在类别不平衡的情况下，<code>PR</code>
+曲线是较好的选择</li>
+<li>总结：<strong>类别不平衡问题中由于主要关心正例，所以在此情况下<code>PR</code>曲线被广泛认为优于<code>ROC</code>曲线。</strong></li>
+</ul></li>
+<li><strong>如果有多份数据且存在不同的类别分布</strong>，比如信用卡欺诈问题中每个月正例和负例的比例可能都不相同，这时候如果只想单纯地<u>比较分类器的性能且剔除类别分布改变的影响，则<code>ROC</code>曲线比较适合</u>，因为类别分布改变可能使得PR曲线发生变化时好时坏，这种时候难以进行模型比较；反之，如果想<u>测试不同类别分布下对分类器的性能的影响，则<code>PR</code>曲线比较适合</u>。</li>
+<li>如果想要评估<u>在相同的类别分布下正例的预测情况</u>，则宜选<code>PR</code>曲线。</li>
+<li><strong>最后可以根据具体的应用，在曲线上找到最优的点，得到相对应的<code>precision，recall，f1 score</code>等指标，去调整模型的阈值，从而得到一个符合具体应用的模型。</strong></li>
+</ol>
+<h1 id="参考资料">参考资料</h1>
+<ol type="1">
+<li>https://blog.csdn.net/qq_30992103/article/details/99730059</li>
+<li>https://tsupei.github.io/nlp/2019/12/30/prcurve.html</li>
+<li>https://www.cnblogs.com/massquantity/p/8592091.html</li>
+<li>https://blog.csdn.net/universsky2015/article/details/137303932</li>
+<li>https://blog.csdn.net/u013230291/article/details/108555329</li>
+<li>https://www.cnblogs.com/pythonfl/p/12286742.html</li>
+<li>https://blog.csdn.net/weixin_42267615/article/details/107834639</li>
+<li>https://blog.csdn.net/Jasminexjf/article/details/88681444</li>
+<li>https://blog.csdn.net/whether_you/article/details/80571485</li>
+<li>https://blog.csdn.net/KANG157/article/details/130674038</li>
+<li>https://blog.csdn.net/qq_41804812/article/details/125255346</li>
+<li>https://blog.csdn.net/taotiezhengfeng/article/details/80456110</li>
+<li>https://blog.csdn.net/w1301100424/article/details/84546194</li>
+<li>https://microstrong.blog.csdn.net/article/details/79946787</li>
+<li>https://www.zybuluo.com/frank-shaw/note/152851</li>
+<li>https://www.zhihu.com/question/39840928?from=profile_question_card</li>
+<li>https://www.dataschool.io/roc-curves-and-auc-explained/</li>
+<li>https://blog.csdn.net/m0_55434618/article/details/133971872</li>
+<li>https://blog.csdn.net/weixin_44609958/article/details/136739187</li>
+<li>https://blog.csdn.net/hjxu2016/article/details/131789657</li>
+<li>https://github.com/openvinotoolkit/anomalib</li>
+<li>https://blog.csdn.net/weixin_42010722/article/details/133924723</li>
+</ol>
+]]></content>
+      <categories>
+        <category>图像异常检测</category>
+      </categories>
+      <tags>
+        <tag>评估</tag>
+      </tags>
+  </entry>
 </search>
