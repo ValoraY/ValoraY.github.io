@@ -5428,6 +5428,33 @@ F1Score=\frac{2^*precision^*recall}{precision+recall}
 \sum_n(R_n-R_{n-1})P_n
 \]</span></p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">au_pr = auc(recalls, precisions)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;AU-PR: <span class="subst">&#123;au_pr:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="ap">AP</h2>
+<ul>
+<li>指标名称：Average Precision</li>
+<li>定义：各阈值下精确率的加权平均值，权重是召回率的变化</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+\mathrm{AP}=\sum_n(R_n-R_{n-1})P_n
+\]</span></p>
+<p><span class="math inline">\(P_n{:}\)</span>Precision at the nth
+threshold</p>
+<p><span class="math inline">\(R_n{:}\)</span> Recall at the nth
+threshold</p>
+<ul>
+<li>意义：将precision-recall curve
+总结成各阈值下精确率的加权平均，更关注模型的精确率</li>
+</ul>
+<h2 id="ar">AR</h2>
+<ul>
+<li>指标名称：Average Recall</li>
+<li>定义：各阈值下召回率的加权平均值，权重是精确率的变化</li>
+<li>意义：这是和AP对称的公式，不常用，适用于强调召回率的场景</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+\text{AR}=\sum_n(P_n-P_{n-1})R_n
+\]</span></p>
 <h1 id="评估不同阈值下算法的分类性能">评估不同阈值下算法的分类性能</h1>
 <figure>
 <img

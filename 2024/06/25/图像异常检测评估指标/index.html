@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://imgur.com/W18kiTA.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251419487.png">
 <meta property="article:published_time" content="2024-06-25T05:55:22.000Z">
-<meta property="article:modified_time" content="2024-06-25T06:21:36.696Z">
+<meta property="article:modified_time" content="2024-06-26T03:15:02.747Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="评估">
 <meta name="twitter:card" content="summary">
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="nav-number">1.</span> <span class="nav-text">混淆矩阵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E5%8D%95%E4%B8%80%E9%98%88%E5%80%BC%E4%B8%8B%E7%AE%97%E6%B3%95%E7%9A%84%E5%88%86%E7%B1%BB%E6%80%A7%E8%83%BD"><span class="nav-number">2.</span> <span class="nav-text">评估单一阈值下算法的分类性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#accuracy"><span class="nav-number">2.1.</span> <span class="nav-text">accuracy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#average-accuracy"><span class="nav-number">2.2.</span> <span class="nav-text">average accuracy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#precision"><span class="nav-number">2.3.</span> <span class="nav-text">precision</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#recall"><span class="nav-number">2.4.</span> <span class="nav-text">recall</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#f1-score"><span class="nav-number">2.5.</span> <span class="nav-text">F1 score</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pr-curve"><span class="nav-number">2.6.</span> <span class="nav-text">PR Curve</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#au-pr"><span class="nav-number">2.7.</span> <span class="nav-text">AU-PR</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E4%B8%8D%E5%90%8C%E9%98%88%E5%80%BC%E4%B8%8B%E7%AE%97%E6%B3%95%E7%9A%84%E5%88%86%E7%B1%BB%E6%80%A7%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">评估不同阈值下算法的分类性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tpr"><span class="nav-number">3.1.</span> <span class="nav-text">TPR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fpr"><span class="nav-number">3.2.</span> <span class="nav-text">FPR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fnr"><span class="nav-number">3.3.</span> <span class="nav-text">FNR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#roc-curve"><span class="nav-number">3.4.</span> <span class="nav-text">ROC Curve</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#auc"><span class="nav-number">3.5.</span> <span class="nav-text">AUC</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94"><span class="nav-number">4.</span> <span class="nav-text">对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pr-curve-v.s.-roc-curve"><span class="nav-number">4.1.</span> <span class="nav-text">PR Curve v.s. ROC Curve</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">4.1.1.</span> <span class="nav-text">区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E7%B3%BB"><span class="nav-number">4.1.2.</span> <span class="nav-text">联系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#au-pr-v.s.-auc"><span class="nav-number">4.2.</span> <span class="nav-text">AU-PR v.s. AUC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E7%B3%BB-1"><span class="nav-number">4.2.2.</span> <span class="nav-text">联系</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">5.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="nav-number">1.</span> <span class="nav-text">混淆矩阵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E5%8D%95%E4%B8%80%E9%98%88%E5%80%BC%E4%B8%8B%E7%AE%97%E6%B3%95%E7%9A%84%E5%88%86%E7%B1%BB%E6%80%A7%E8%83%BD"><span class="nav-number">2.</span> <span class="nav-text">评估单一阈值下算法的分类性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#accuracy"><span class="nav-number">2.1.</span> <span class="nav-text">accuracy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#average-accuracy"><span class="nav-number">2.2.</span> <span class="nav-text">average accuracy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#precision"><span class="nav-number">2.3.</span> <span class="nav-text">precision</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#recall"><span class="nav-number">2.4.</span> <span class="nav-text">recall</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#f1-score"><span class="nav-number">2.5.</span> <span class="nav-text">F1 score</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pr-curve"><span class="nav-number">2.6.</span> <span class="nav-text">PR Curve</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#au-pr"><span class="nav-number">2.7.</span> <span class="nav-text">AU-PR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ap"><span class="nav-number">2.8.</span> <span class="nav-text">AP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ar"><span class="nav-number">2.9.</span> <span class="nav-text">AR</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E4%B8%8D%E5%90%8C%E9%98%88%E5%80%BC%E4%B8%8B%E7%AE%97%E6%B3%95%E7%9A%84%E5%88%86%E7%B1%BB%E6%80%A7%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">评估不同阈值下算法的分类性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tpr"><span class="nav-number">3.1.</span> <span class="nav-text">TPR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fpr"><span class="nav-number">3.2.</span> <span class="nav-text">FPR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fnr"><span class="nav-number">3.3.</span> <span class="nav-text">FNR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#roc-curve"><span class="nav-number">3.4.</span> <span class="nav-text">ROC Curve</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#auc"><span class="nav-number">3.5.</span> <span class="nav-text">AUC</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94"><span class="nav-number">4.</span> <span class="nav-text">对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pr-curve-v.s.-roc-curve"><span class="nav-number">4.1.</span> <span class="nav-text">PR Curve v.s. ROC Curve</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">4.1.1.</span> <span class="nav-text">区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E7%B3%BB"><span class="nav-number">4.1.2.</span> <span class="nav-text">联系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#au-pr-v.s.-auc"><span class="nav-number">4.2.</span> <span class="nav-text">AU-PR v.s. AUC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E7%B3%BB-1"><span class="nav-number">4.2.2.</span> <span class="nav-text">联系</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">5.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -286,14 +286,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>9k</span>
+      <span>5.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>8 分钟</span>
+      <span>19 分钟</span>
     </span>
 </div>
 
@@ -430,6 +430,33 @@ F1Score=\frac{2^*precision^*recall}{precision+recall}
 \sum_n(R_n-R_{n-1})P_n
 \]</span></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">au_pr = auc(recalls, precisions)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;AU-PR: <span class="subst">&#123;au_pr:<span class="number">.2</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="ap">AP</h2>
+<ul>
+<li>指标名称：Average Precision</li>
+<li>定义：各阈值下精确率的加权平均值，权重是召回率的变化</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+\mathrm{AP}=\sum_n(R_n-R_{n-1})P_n
+\]</span></p>
+<p><span class="math inline">\(P_n{:}\)</span>Precision at the nth
+threshold</p>
+<p><span class="math inline">\(R_n{:}\)</span> Recall at the nth
+threshold</p>
+<ul>
+<li>意义：将precision-recall curve
+总结成各阈值下精确率的加权平均，更关注模型的精确率</li>
+</ul>
+<h2 id="ar">AR</h2>
+<ul>
+<li>指标名称：Average Recall</li>
+<li>定义：各阈值下召回率的加权平均值，权重是精确率的变化</li>
+<li>意义：这是和AP对称的公式，不常用，适用于强调召回率的场景</li>
+<li>公式：</li>
+</ul>
+<p><span class="math display">\[
+\text{AR}=\sum_n(P_n-P_{n-1})R_n
+\]</span></p>
 <h1 id="评估不同阈值下算法的分类性能">评估不同阈值下算法的分类性能</h1>
 <figure>
 <img
@@ -717,13 +744,13 @@ class="math inline">\(FPR_{2}=\frac{40}{40+9960}=0.004\)</span>,在ROC曲线上�
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">65k</span>
+    <span title="站点总字数">61k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">54 分钟</span>
+    <span title="站点阅读时长">3:25</span>
   </span>
 </div>
 <div class="busuanzi-count">
