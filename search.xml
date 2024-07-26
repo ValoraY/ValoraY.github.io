@@ -5350,6 +5350,24 @@ Accuracy=\frac{(TP+TN)}{(TP+FP+FN+TN)}
 <li>定义：对各个类别分别计算准确率，然后求平均</li>
 <li>公式：</li>
 </ul>
+<ol type="1">
+<li>类别<code>i</code>的准确率</li>
+</ol>
+<p><span class="math display">\[
+\text{Accuracy}_i=\frac{\text{True Positives}_i+\text{True
+Negatives}_i}{\text{Total Samples}_i}
+\]</span></p>
+<ul>
+<li>True Positives<span class="math inline">\(_i\)</span> 是 category
+<span class="math inline">\(i\)</span> 预测正确的正例数量</li>
+<li>True Negatives<span class="math inline">\(_i\)</span> 是 category
+<span class="math inline">\(i\)</span> 预测正确的负例数量</li>
+<li>Total Samples<span class="math inline">\(_i\)</span> 是 category
+<span class="math inline">\(i\)</span> 的总样本数（包含正例和负例）</li>
+</ul>
+<ol start="2" type="1">
+<li>计算平均准确率</li>
+</ol>
 <p><span class="math display">\[
 averageAccuracy=\frac{\sum accuracy_i}n
 \]</span></p>

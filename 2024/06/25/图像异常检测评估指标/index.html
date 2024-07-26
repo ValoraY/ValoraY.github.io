@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://imgur.com/W18kiTA.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/ValoraY/blog-imgs/main/img/202406251419487.png">
 <meta property="article:published_time" content="2024-06-25T05:55:22.000Z">
-<meta property="article:modified_time" content="2024-06-26T03:15:02.747Z">
+<meta property="article:modified_time" content="2024-06-27T02:11:26.504Z">
 <meta property="article:author" content="deeprookie">
 <meta property="article:tag" content="评估">
 <meta name="twitter:card" content="summary">
@@ -286,7 +286,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>5.7k</span>
+      <span>5.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -352,6 +352,24 @@ Accuracy=\frac{(TP+TN)}{(TP+FP+FN+TN)}
 <li>定义：对各个类别分别计算准确率，然后求平均</li>
 <li>公式：</li>
 </ul>
+<ol type="1">
+<li>类别<code>i</code>的准确率</li>
+</ol>
+<p><span class="math display">\[
+\text{Accuracy}_i=\frac{\text{True Positives}_i+\text{True
+Negatives}_i}{\text{Total Samples}_i}
+\]</span></p>
+<ul>
+<li>True Positives<span class="math inline">\(_i\)</span> 是 category
+<span class="math inline">\(i\)</span> 预测正确的正例数量</li>
+<li>True Negatives<span class="math inline">\(_i\)</span> 是 category
+<span class="math inline">\(i\)</span> 预测正确的负例数量</li>
+<li>Total Samples<span class="math inline">\(_i\)</span> 是 category
+<span class="math inline">\(i\)</span> 的总样本数（包含正例和负例）</li>
+</ul>
+<ol start="2" type="1">
+<li>计算平均准确率</li>
+</ol>
 <p><span class="math display">\[
 averageAccuracy=\frac{\sum accuracy_i}n
 \]</span></p>
@@ -744,7 +762,7 @@ class="math inline">\(FPR_{2}=\frac{40}{40+9960}=0.004\)</span>,在ROC曲线上�
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">61k</span>
+    <span title="站点总字数">62k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
